@@ -1,0 +1,12 @@
+md5: 7fc8240b93aa9a71ed23214119a3b145
+frozen: true
+deps:
+- path: data/kdd12/kdd12_training.csv
+  repo:
+    url: https://github.com/martinbatek/mlds_final_project_milestone2.git
+    rev_lock: 0e4825b39e3dfda3f406f8db7e62119b9f42107f
+outs:
+- md5: 5d1963cd7289b83f043ea40eca663cb5
+  size: 7209740
+  hash: md5
+  path: kdd12_training.csv

@@ -1,0 +1,12 @@
+md5: da0374ea60b4fd441a9093a300d6b41e
+frozen: true
+deps:
+- path: data/avazu/avazu_train.csv
+  repo:
+    url: https://github.com/martinbatek/mlds_final_project_milestone2.git
+    rev_lock: 0e4825b39e3dfda3f406f8db7e62119b9f42107f
+outs:
+- md5: ba5183dc819737dedff3094cad7f0427
+  size: 15606924
+  hash: md5
+  path: avazu_train.csv
