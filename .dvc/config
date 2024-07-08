@@ -1,0 +1,4 @@
+[core]
+    remote = milestone_2_http
+['remote "milestone_2_http"']
+    url = https://mlds-final-project-bucket.s3.eu-west-2.amazonaws.com/dvc_tracked/
