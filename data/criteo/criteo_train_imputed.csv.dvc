@@ -1,0 +1,12 @@
+md5: e007a4a7c7d4b5c150d7bcb3839a437d
+frozen: true
+deps:
+- path: data/criteo/criteo_train_imputed.csv
+  repo:
+    url: https://github.com/martinbatek/mlds_final_project_milestone2/
+    rev_lock: 0e4825b39e3dfda3f406f8db7e62119b9f42107f
+outs:
+- md5: a8943e325c4d8abc9f11b19a98cc08f1
+  size: 41875438
+  hash: md5
+  path: criteo_train_imputed.csv
