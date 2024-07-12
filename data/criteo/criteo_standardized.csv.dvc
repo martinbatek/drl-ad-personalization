@@ -1,0 +1,12 @@
+md5: 2a4240bba39ca928b432032df23158c5
+frozen: true
+deps:
+- path: data/criteo/criteo_standardized.csv
+  repo:
+    url: https://github.com/martinbatek/mlds_final_project_milestone2.git
+    rev_lock: 0e4825b39e3dfda3f406f8db7e62119b9f42107f
+outs:
+- md5: 1d90d277d49383e0ce01184c9013faef
+  size: 50819941
+  hash: md5
+  path: criteo_standardized.csv
