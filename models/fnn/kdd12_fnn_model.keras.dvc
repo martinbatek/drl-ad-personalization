@@ -1,0 +1,5 @@
+outs:
+- md5: 1854c23d7532ca6d4d180a823c4dd2cd
+  size: 861108
+  hash: md5
+  path: kdd12_fnn_model.keras

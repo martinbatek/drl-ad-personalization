@@ -1,0 +1,5 @@
+outs:
+- md5: 39b22b9144c2db08fd828bec8150108c
+  size: 2023864
+  hash: md5
+  path: criteo_fnn_model.keras
