@@ -47,6 +47,16 @@ kdd12_standardized[kdd12_categorical_columns] = kdd12_standardized[kdd12_categor
 avazu_standardized[avazu_categorical_columns] = avazu_standardized[avazu_categorical_columns].astype(str)
 criteo_standardized[criteo_categorical_columns] = criteo_standardized[criteo_categorical_columns].astype(str)
 
+## Label Encode the categorical columns
+for feat in kdd12_categorical_columns:
+    kdd12_standardized[feat] = kdd12_standardized[feat].astype('category').cat.codes
+
+for feat in avazu_categorical_columns:
+    avazu_standardized[feat] = avazu_standardized[feat].astype('category').cat.codes
+
+for feat in criteo_categorical_columns:
+    criteo_standardized[feat] = criteo_standardized[feat].astype('category').cat.codes
+
 # Split the datasets into training and validation sets
 kdd12_train, kdd12_val = train_test_split(kdd12_standardized, test_size=0.2, random_state=42)
 avazu_train, avazu_val = train_test_split(avazu_standardized, test_size=0.2, random_state=42)
