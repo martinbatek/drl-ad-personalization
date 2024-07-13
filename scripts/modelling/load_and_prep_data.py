@@ -39,7 +39,8 @@ avazu_categorical_columns = [
     'c21'
 ]
 
-criteo_categorical_columns = [f'cat_{i}' for i in np.arange(1,27)]
+criteo_numerical_columns = [f'int_{i}' for i in np.arange(1,14)]
+criteo_categorical_columns = [col for col in criteo_standardized.columns.tolist() if col not in criteo_numerical_columns+['click']]
 
 ## Cast categorical columns to string
 kdd12_standardized[kdd12_categorical_columns] = kdd12_standardized[kdd12_categorical_columns].astype(str)
