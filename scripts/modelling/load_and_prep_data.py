@@ -77,3 +77,43 @@ criteo_train_X = criteo_train.drop(columns='click')
 criteo_train_y = criteo_train['click']
 criteo_val_X = criteo_val.drop(columns='click')
 criteo_val_y = criteo_val['click']
+
+# Generate feature columns
+
+## Define the dense columns
+kdd12_dense_features = [col for col in kdd12_standardized.columns.tolist() if col not in kdd12_categorical_columns+['click']]
+avazu_dense_features = [col for col in avazu_standardized.columns.tolist() if col not in avazu_categorical_columns+['click']]
+criteo_dense_features = [col for col in criteo_standardized.columns.tolist() if col not in criteo_categorical_columns+['click']]
+
+## Define feature mappings
+kdd12_fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=kdd12_standardized[feat].unique().shape[0], embedding_dim=4) for feat in kdd12_categorical_columns]\
++ [DenseFeat(feat,1) for feat in kdd12_dense_features]
+avazu_fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=avazu_standardized[feat].unique().shape[0], embedding_dim=4) for feat in avazu_categorical_columns]\
++ [DenseFeat(feat,1) for feat in avazu_dense_features]
+criteo_fixlen_feature_columns = [SparseFeat(feat, vocabulary_size=criteo_standardized[feat].unique().shape[0], embedding_dim=4) for feat in criteo_categorical_columns]\
++ [DenseFeat(feat,1) for feat in criteo_dense_features]
+
+## Generate the dnn and linear feature columns
+kdd12_dnn_feature_columns = kdd12_fixlen_feature_columns
+kdd12_linear_feature_columns = kdd12_fixlen_feature_columns
+
+avazu_dnn_feature_columns = avazu_fixlen_feature_columns
+avazu_linear_feature_columns = avazu_fixlen_feature_columns
+
+criteo_dnn_feature_columns = criteo_fixlen_feature_columns
+criteo_linear_feature_columns = criteo_fixlen_feature_columns
+
+## Get feature names
+kdd12_feature_names = get_feature_names(kdd12_dnn_feature_columns + kdd12_linear_feature_columns)
+avazu_feature_names = get_feature_names(avazu_dnn_feature_columns + avazu_linear_feature_columns)
+criteo_feature_names = get_feature_names(criteo_dnn_feature_columns + criteo_linear_feature_columns)
+
+# Define model inputs
+kdd12_train_model_input = {name:kdd12_train_X[name].values for name in kdd12_feature_names}
+kdd12_test_model_input = {name:kdd12_val_X[name].values for name in kdd12_feature_names}
+
+avazu_train_model_input = {name:avazu_train_X[name].values for name in avazu_feature_names}
+avazu_test_model_input = {name:avazu_val_X[name].values for name in avazu_feature_names}
+
+criteo_train_model_input = {name:criteo_train_X[name].values for name in criteo_feature_names}
+criteo_test_model_input = {name:criteo_val_X[name].values for name in criteo_feature_names}
