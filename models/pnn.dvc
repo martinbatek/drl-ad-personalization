@@ -1,0 +1,6 @@
+outs:
+- md5: 211cc9be59074e898f54ca5c9804db9e.dir
+  size: 7979544
+  nfiles: 3
+  hash: md5
+  path: pnn
