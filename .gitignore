@@ -471,3 +471,8 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 /logs
+
+# Specific files
+data/avazu/avazu_train.csv
+data/criteo/criteo_train.csv
+data/kdd12/kdd12_training.csv
