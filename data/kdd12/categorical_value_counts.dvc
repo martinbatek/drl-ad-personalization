@@ -1,0 +1,6 @@
+outs:
+- md5: 195970439bf8daf881766c373abe2817.dir
+  size: 246091350
+  nfiles: 11
+  hash: md5
+  path: categorical_value_counts
