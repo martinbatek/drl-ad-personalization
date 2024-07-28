@@ -25,7 +25,7 @@ Brotli @ file:///croot/brotli-split_1714483155106/work
 cachetools @ file:///croot/cachetools_1713977085444/work
 category-encoders @ file:///croot/category_encoders_1702406615616/work
 celery @ file:///home/conda/feedstock_root/build_artifacts/celery_1703905883217/work
-certifi @ file:///croot/certifi_1717618050233/work/certifi
+certifi @ file:///croot/certifi_1720453481653/work/certifi
 cffi @ file:///croot/cffi_1714483155441/work
 charset-normalizer @ file:///tmp/build/80754af9/charset-normalizer_1630003229654/work
 click @ file:///croot/click_1698129812380/work
@@ -78,7 +78,7 @@ grandalf @ file:///home/conda/feedstock_root/build_artifacts/grandalf_1632832336
 grpcio @ file:///croot/grpc-suite_1685746860162/work
 gssapi @ file:///croot/python-gssapi_1713971740602/work
 gto @ file:///home/conda/feedstock_root/build_artifacts/gto_1711157984154/work
-h5py==3.7.0
+h5py @ file:///tmp/build/80754af9/h5py_1608649014695/work
 hydra-core @ file:///home/conda/feedstock_root/build_artifacts/hydra-core_1677543700389/work
 idna @ file:///croot/idna_1714398848350/work
 importlib-metadata @ file:///croot/importlib_metadata-suite_1704813515092/work
@@ -133,6 +133,7 @@ ptyprocess @ file:///tmp/build/80754af9/ptyprocess_1609355006118/work/dist/ptypr
 pure-eval @ file:///opt/conda/conda-bld/pure_eval_1646925070566/work
 pyasn1 @ file:///Users/ktietz/demo/mc3/conda-bld/pyasn1_1629708007385/work
 pyasn1-modules==0.2.8
+PyAthena @ file:///home/conda/feedstock_root/build_artifacts/pyathena_1716887874522/work
 pycparser @ file:///tmp/build/80754af9/pycparser_1636541352034/work
 pydantic @ file:///croot/pydantic_1709577974639/work
 pydantic_core @ file:///croot/pydantic-core_1709573961665/work
@@ -173,6 +174,7 @@ sqltrie @ file:///home/conda/feedstock_root/build_artifacts/sqltrie_170321433375
 stack-data @ file:///opt/conda/conda-bld/stack_data_1646927590127/work
 statsmodels @ file:///croot/statsmodels_1718381181899/work
 tabulate @ file:///croot/tabulate_1701354810597/work
+tenacity @ file:///croot/tenacity_1721222508356/work
 tensorboard @ file:///home/builder/mesters/opt/envs/tensorflow/conda-bld/tensorboard_1682445826165/work/tensorboard-2.12.1-py3-none-any.whl
 tensorboard-data-server @ file:///croot/tensorboard-data-server_1681498183723/work/tensorboard_data_server-0.7.0-py3-none-manylinux2014_x86_64.whl
 tensorboard-plugin-wit @ file:///home/builder/tkoch/workspace/tensorflow/tensorboard-plugin-wit_1658918494740/work/tensorboard_plugin_wit-1.8.1-py3-none-any.whl
