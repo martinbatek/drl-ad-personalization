@@ -1,0 +1,5 @@
+outs:
+- md5: 775588f946437c994223b8cf6aa71ac4
+  size: 586
+  hash: md5
+  path: means_variances.csv
