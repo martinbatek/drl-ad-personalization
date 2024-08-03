@@ -1,0 +1,5 @@
+outs:
+- md5: 10a62cf07fb9026c9e9cddae7e3dd7d5
+  size: 621047676
+  hash: md5
+  path: kdd12_wdl_model.keras

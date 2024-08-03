@@ -1,0 +1,5 @@
+outs:
+- md5: 1155caa5313ee9d16cee796f12f08887
+  size: 1318
+  hash: md5
+  path: avazu_pnn.csv

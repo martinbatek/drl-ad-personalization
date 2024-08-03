@@ -1,0 +1,5 @@
+outs:
+- md5: 485a539892ac7215b6892e436c97021f
+  size: 1331
+  hash: md5
+  path: kdd12_wdl.csv

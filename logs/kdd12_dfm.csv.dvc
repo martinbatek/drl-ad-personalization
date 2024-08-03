@@ -1,5 +1,5 @@
 outs:
-- md5: 3375cda7c70c1c966a432da6e4f6e057
-  size: 878
+- md5: d41d8cd98f00b204e9800998ecf8427e
+  size: 0
   hash: md5
   path: kdd12_dfm.csv

@@ -1,0 +1,5 @@
+outs:
+- md5: dbfb19b852a0980d7c5b6091253bb9e5
+  size: 1297
+  hash: md5
+  path: criteo_wdl.csv

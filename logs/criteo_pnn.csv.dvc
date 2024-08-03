@@ -1,0 +1,5 @@
+outs:
+- md5: cece3069b361e3da4b10efafafe1aef2
+  size: 1303
+  hash: md5
+  path: criteo_pnn.csv

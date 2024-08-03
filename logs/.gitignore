@@ -7,3 +7,9 @@
 /kdd12_fnn.csv
 /avazu_fnn.csv
 /criteo_fnn.csv
+/avazu_pnn.csv
+/avazu_wdl.csv
+/criteo_pnn.csv
+/criteo_wdl.csv
+/kdd12_pnn.csv
+/kdd12_wdl.csv
