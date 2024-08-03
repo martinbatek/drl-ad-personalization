@@ -1,5 +1,5 @@
 outs:
-- md5: 02dd28dd62660d4ba1e9b041fdf0f2e0
-  size: 933576
+- md5: 1fa9ead43d5f0f15b20f6f4f7479c83d
+  size: 621116308
   hash: md5
   path: kdd12_autoint_model.keras
