@@ -1,0 +1,5 @@
+outs:
+- md5: 79c586b91c7f1812fee5fcc0029b8090
+  size: 872
+  hash: md5
+  path: avazu_autoint.csv

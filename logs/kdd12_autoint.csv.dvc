@@ -1,0 +1,5 @@
+outs:
+- md5: 2f191312a5c3dd6c4ea0fbb892ea62a5
+  size: 883
+  hash: md5
+  path: kdd12_autoint.csv
