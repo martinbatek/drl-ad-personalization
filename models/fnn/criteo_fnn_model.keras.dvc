@@ -1,5 +1,5 @@
 outs:
-- md5: 6f9d89e48a178782d14ffcf410804b4c
-  size: 2010824
+- md5: 12d28d691362b7558d9d6fe90a1b69a4
+  size: 61207496
   hash: md5
   path: criteo_fnn_model.keras
