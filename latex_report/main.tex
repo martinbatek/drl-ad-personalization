@@ -63,11 +63,25 @@ higher order feature interactions in the sparse multi-value categorical Ad Marke
 shown to show superior predictive ability on these datasets. The focus of my reasearch project is therefore to explore the merits of different Deep 
 Learning architechtures for click-through rate prediction.
 
-Paragraph about Reinforcement Learning and how it can be used for Ad Personalization.
+A number of Deep Learning models have been proposed for CTR prediction, some of which will be explored in this report. Each of these models
+outperform their shallow counterparts in terms of predictive ability. In a static environment, these models are able to serve the CTR prediction
+function of Ad personalization, but in a dynamic environment, the model must be able to adapt to the changing user preferences. This is where
+Reinforcement Learning comes in. Reinforcement Learning is a type of Machine Learning that is used to make a sequence of decisions in an environment
+in order to maximize some notion of cumulative reward. In the context of Ad personalization, the environment is composed of the user, the Ad platform
+and the advertisments, whereas the reward is the users' engagement with the advertisments and with the Ad platform.
 
-Paragraph about the structure of the thesis.
+In this report, I aim to construct a Deep Reinforcement Learning model for Ad personalization that is able to adapt to the changeing user preferences
+and advertisment characteristics available on the platform. In chapter~\ref{chap:background}, I begin by providing a background to the problem
+of Click-Through Rate prediction in the context of Ad personalization, and explore the unique challenges posed by the typically sparse multi-value
+categorical datasets that are common in the Ad marketplace. I then proceed to review the literature on Deep Learning models for CTR prediction, highlighting
+the different techniques that each framework uses to capture the key feature interactions in the data. I also review the literature on Deep Reinforcement
+Learning and its applications across different domains. In chapter \ref{chap:deep-ctr-model-evaluation}, I evaluate the performance of different
+Deep Learning models for CTR prediction on three well-known benchmark datasets, Criteo \citep{RefWorks:tien2014display}, KDD12 \citep{RefWorks:aden2012kdd} 
+and Avazu \citep{RefWorks:wang2014click-through}. In chapter~\ref{chap:deep-rl-for-ad-personalization}, I construct a Deep Reinforcement Learning model for Ad personalization and evaluate its performance
+on the same benchmark datasets. Finally, in chapter~\ref{chap:discussion}, I discuss the results of the experiments and provide some concluding remarks.
 
 \chapter{Background}
+\label{chap:background}
 
 Background chapter.
 
@@ -82,6 +96,7 @@ Section content goes here.
 \subsection{Deep Reinforcement Learning}
 
 \chapter{Deep CTR model Evaluation}
+\label{chap:deep-ctr-model-evaluation}
 
 \section{Model Selection Methodology}
 
@@ -114,6 +129,7 @@ Section content goes here.
 \section{Deep CTR Model Results}
 
 \chapter{Deep Reinforcement Learning for Ad Personalization}
+\label{chap:deep-rl-for-ad-personalization}
 
 \section{DeepCTR-RL Framework}
 
@@ -122,6 +138,7 @@ Section content goes here.
 \section{Results}
 
 \chapter{Discussion}
+\label{chap:discussion}
 
 Discussion goes here.
 
