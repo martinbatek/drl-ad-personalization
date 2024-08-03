@@ -1,5 +1,5 @@
 outs:
-- md5: 25b19db773c13f921dc4577ed4676a92
-  size: 860
+- md5: b14439d12b4d4cf9c73dd0640ec9ef9f
+  size: 1334
   hash: md5
   path: kdd12_fnn.csv

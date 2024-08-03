@@ -1,5 +1,5 @@
 outs:
-- md5: 9810aca56732ca8a9e89bf214eabfb0e
+- md5: 5668833a4ee7cb608d92a30c5720a91b
   size: 35313404
   hash: md5
   path: avazu_fnn_model.keras
