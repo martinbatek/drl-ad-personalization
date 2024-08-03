@@ -1,0 +1,5 @@
+outs:
+- md5: eee37c8bf5877a46acf4fe2c971e5edb
+  size: 497022768
+  hash: md5
+  path: kdd12_pnn_model.keras

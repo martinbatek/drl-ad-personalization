@@ -1,0 +1,5 @@
+outs:
+- md5: 933339d9558ee0e5d2ee1eef9dcbf139
+  size: 1220724
+  hash: md5
+  path: avazu_autoint_model.keras

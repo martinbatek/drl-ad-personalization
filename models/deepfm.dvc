@@ -1,6 +1,0 @@
-outs:
-- md5: a2c8168610f26b3aa9dff6457ed6a3d2.dir
-  size: 4032792
-  nfiles: 3
-  hash: md5
-  path: deepfm

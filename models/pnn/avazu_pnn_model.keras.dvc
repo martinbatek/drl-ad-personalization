@@ -1,0 +1,5 @@
+outs:
+- md5: 98559d0e11be5867317cdb604058f214
+  size: 28999360
+  hash: md5
+  path: avazu_pnn_model.keras

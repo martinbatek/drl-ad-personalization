@@ -1,0 +1,5 @@
+outs:
+- md5: aa8fdebab39c271f59a84036c3f2e720
+  size: 50079312
+  hash: md5
+  path: criteo_pnn_model.keras
