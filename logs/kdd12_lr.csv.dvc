@@ -1,0 +1,5 @@
+outs:
+- md5: e5bda0df878b5881a3b273abf234f118
+  size: 2188
+  hash: md5
+  path: kdd12_lr.csv

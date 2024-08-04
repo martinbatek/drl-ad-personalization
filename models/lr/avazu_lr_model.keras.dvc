@@ -1,0 +1,5 @@
+outs:
+- md5: f1f8ca726bd1803bdcc28193029f3b4a
+  size: 14208
+  hash: md5
+  path: avazu_lr_model.keras
