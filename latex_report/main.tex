@@ -149,6 +149,25 @@ The DNN is then able to learn the higher order feature interactions in the data,
 
 \subsubsection{Product Based Neural Networks}
 
+The Product Based Neural Network (PNN) model
+proposed by \cite{RefWorks:qu2016product-based} is another Deep Learning
+model that was developed around the same time as the FNN model. The key 
+innovation of the PNN moel is the use of a pair-wisely connected Product Layer
+after a field-wise connected embetting layer for the categorical features, as shown
+in Figure~\ref{fig:pnn}. The Product Layer is able to directly model inter-field feature
+interaction by means of either an inner product or outer production operation, and then further
+distill higher feature inturactions by passing the output of the Product Layer through fully
+connected MLP layers.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[]{../figures/pnn.png}
+\caption{Product Based Neural Network as proposed by \cite{RefWorks:qu2016product-based}}
+\label{fig:pnn}
+\end{figure}
+
+
 \subsubsection{Wide \& Deep Learning}
 
 \subsubsection{DeepFM}
