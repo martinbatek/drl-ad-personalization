@@ -16,3 +16,6 @@
 /kdd12_lr.csv
 /avazu_lr.csv
 /criteo_lr.csv
+/avazu_fm.csv
+/criteo_fm.csv
+/kdd12_fm.csv

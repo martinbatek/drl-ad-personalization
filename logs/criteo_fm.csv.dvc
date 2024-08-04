@@ -1,0 +1,5 @@
+outs:
+- md5: 243f086c841c82fb578a188fad02a7ef
+  size: 3054
+  hash: md5
+  path: criteo_fm.csv

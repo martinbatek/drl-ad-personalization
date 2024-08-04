@@ -1,0 +1,5 @@
+outs:
+- md5: 63cdf0073a2a3c68fdd7ac21ffc0eb76
+  size: 40640
+  hash: md5
+  path: avazu_fm_model.keras

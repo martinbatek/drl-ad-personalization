@@ -1,0 +1,5 @@
+outs:
+- md5: 16446986b816b7243876b427938346e4
+  size: 23476
+  hash: md5
+  path: kdd12_fm_model.keras

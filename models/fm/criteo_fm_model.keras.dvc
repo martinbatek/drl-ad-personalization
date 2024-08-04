@@ -1,0 +1,5 @@
+outs:
+- md5: 80bfd89376517f4c2f22e1de5f8d2593
+  size: 46928
+  hash: md5
+  path: criteo_fm_model.keras

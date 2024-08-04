@@ -1,0 +1,5 @@
+outs:
+- md5: f0487febd32111c2c06a4c23210a01d8
+  size: 2990
+  hash: md5
+  path: avazu_fm.csv
