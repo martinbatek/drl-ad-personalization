@@ -98,6 +98,42 @@ f(\mathbf{x}) = \mathbb{P}(y = 1 | \mathbf{x}) = \mathbb{P}(\text{click}| \mathb
 $$
 
 In other words, for a given set of features $\mathbf{x}$, the model should output the probability that the user will click on the ad.
+A defining characteristic for this type of data is that many of the features are multi-value categories with a high degree of of cardinality \citep{RefWorks:he2017neural}. 
+This in turn means that the ad marketplace datasets used for CTR predictions can be extremely sparse, which increases the difficulty of the classification problem at 
+hand \citep{RefWorks:gu2021ad}.
+
+A key requirement for CTR modelling is therefore working out which of the many sparse features and feature 
+interactions (combinations of two or more features) are significant for determining the correct prediction 
+\citep{RefWorks:gu2021ad}. Factorization Machines \citep{RefWorks:rendle2010factorization} and Field-aware Factorization Machines \citep{RefWorks:juan2016field-aware}
+were popularized shallow modelling methods that explicitly account for first order interactions between features. 
+However, these techniques do not capture higher order interactions (combinations of three or more features) and 
+have thus been known to perform poorly in scenarios with highly sparse data \citep{RefWorks:zhang2021deep}. Since 2015 the 
+research cummunity has been increasingly turning to Deep Learning techniques to enhance prior CTR prediction 
+techniques (such as in the case of DeepFM \citep{RefWorks:guo2017deepfm:}), as well as to develop novel approaches. Neural based 
+network models excel at simulataneoulsy extracting high-order and low-order feature interations virtue to the use 
+of pooling layers, multiple hidden layers and activation units \cite{RefWorks:gu2021ad}. Due the aforementioned importance of 
+feature interation modelling, a number of Feature Interaction Operator layers have been developed to explicitly 
+capture the key combinations of features. These layers are then typically incorporated with a supplimentary Deep 
+Neural Network in a single or dual tower architecture, as shown in Figure~\ref{fig:dnn_architecture}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../figures/single_dual_dnn.png}
+\caption{Deep Neural Network Architecture for CTR prediction. Image taken from \cite{RefWorks:zhang2021deep}}
+\label{fig:dnn_architecture}
+\end{figure}
+
+Feature Interaction Operators can be categorized as either Product Operators, Convolutional Operators or 
+Attention Operators. Product Operators such as the Product-based Neural Network (PNN) \citep{RefWorks:qu2016product-based}, 
+Neural Factorization Machines (NFM) \citep{RefWorks:he2017neural}, Deep and Cross Network \citep{RefWorks:wang2017deep} and 
+Gated Deep Cross Network (GDCN) \citep{RefWorks:wang2023deeper} introduce a product layer between the categorical 
+feature embedding layer and the rest of the neural network in order to explicitly model the important feature 
+interactions. Convolutional Operators such as the Convolutional Click Prediction Model (CCPM) \citep{RefWorks:liu2015convolutional} 
+utilized convolution, pooling and non-linear activation in order to calculate arbitrary-order interactions. 
+Finally, Attention Operators such as Attentional Factorization Machines (AFM) \citep{RefWorks:xiao2017attentional}, AutoInt 
+\cite{RefWorks:song2019autoint} and Interpretable CTR prediction model with Hierarchical Attention (InterHAt) \citep{RefWorks:li2020interpretable}
+utilize the attention mechanism to enable different feature interactions to contribute differently to the 
+prediction.
 
 \section{Deep Reinforcement Learning}
 
