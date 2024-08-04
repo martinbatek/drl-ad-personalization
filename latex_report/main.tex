@@ -106,7 +106,20 @@ Section content goes here.
 
 \subsubsection{Logistic Regression}
 
+Factorization Machines were first introduced in \citep{RefWorks:rendle2010factorization} as
+a model class that ``combines the advantages of Support Vector Machines (SVM) with factorization models''.
+The model is able to capture the second order feature interactions in the data, which is a key advantage over
+Logistic Regression. The model is defined as follows:
+
+$$
+\hat{y}(\mathbf{x}) = w_0 + \sum_{i=1}^{n} w_i x_i + \sum_{i=1}^{n} \sum_{j=i+1}^{n} \langle \mathbf{v}_i, \mathbf{v}_j \rangle x_i x_j
+$$
+
+where $w_0$ is the bias term, $w_i$ are the weights for the $i$-th feature, $\mathbf{v}_i$ are the latent vectors for the $i$-th feature.
+
 \subsubsection{Factorization Machines}
+
+
 
 \subsection{Deep Models}
 
