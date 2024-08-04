@@ -83,17 +83,23 @@ on the same benchmark datasets. Finally, in chapter~\ref{chap:discussion}, I dis
 \chapter{Background}
 \label{chap:background}
 
-Background chapter.
+\section{Deep CTR Prediction}
 
-\section{Problem Statement}
+In their respective surveys on the use of Deep Learning methods for CTR prediction, \cite{RefWorks:gu2021ad} and \cite{RefWorks:zhang2021deep} outline the 
+problem of CTR prediction as one that essentially boils down to a binary (click/no-click) classification problem utilizing user/ad-view event level 
+online session records. The goal of CTR prediction is to predict the probability of a user clicking on an advertisment given the information available
+about the user, advertisment and the context in which the advertisement is shown. Suppose that $\mathbf{x} \in \mathbb{R}^n$
+is a vector of features that describes the user, ad and platform for a given instance, and
+$y \in \{0, 1\}$ is the binary label indicating whether the user clicked on the ad or not. The goal of CTR prediction is to learn a function
+$f: \mathbb{R}^n \rightarrow (0,1)$ such that:
 
-Section content goes here. 
+$$
+f(\mathbf{x}) = \mathbb{P}(y = 1 | \mathbf{x}) = \mathbb{P}(\text{click}| \mathbf{x})
+$$
 
-\section{Literatiure Review}
+In other words, for a given set of features $\mathbf{x}$, the model should output the probability that the user will click on the ad.
 
-\subsection{Deep CTR Prediction}
-
-\subsection{Deep Reinforcement Learning}
+\section{Deep Reinforcement Learning}
 
 \chapter{Deep CTR model Evaluation}
 \label{chap:deep-ctr-model-evaluation}
@@ -106,24 +112,40 @@ Section content goes here.
 
 \subsubsection{Logistic Regression}
 
+
+\subsubsection{Factorization Machines}
+
 Factorization Machines were first introduced in \citep{RefWorks:rendle2010factorization} as
 a model class that ``combines the advantages of Support Vector Machines (SVM) with factorization models''.
 The model is able to capture the second order feature interactions in the data, which is a key advantage over
 Logistic Regression. The model is defined as follows:
 
-$$
+\begin{equation}
+\label{eq:fm}
 \hat{y}(\mathbf{x}) = w_0 + \sum_{i=1}^{n} w_i x_i + \sum_{i=1}^{n} \sum_{j=i+1}^{n} \langle \mathbf{v}_i, \mathbf{v}_j \rangle x_i x_j
-$$
+\end{equation}
 
 where $w_0$ is the bias term, $w_i$ are the weights for the $i$-th feature, $\mathbf{v}_i$ are the latent vectors for the $i$-th feature.
-
-\subsubsection{Factorization Machines}
-
+\cite{RefWorks:rendle2010factorization} shows that the learned biases and weights of the FM model can be
+computed in linear time, ``and can be learned efficiently by gradient descent methods'', such as Stochastic Gradient Descent (SGD).
 
 
 \subsection{Deep Models}
 
 \subsubsection{Factirization Supported Neural Networks}
+
+The first Deep Learning model that we will consider is the Factorization Supported
+Neural Network (FNN) model proposed by \cite{RefWorks:zhang2016deep}. The model works by first training a Factorization Machine
+model on the sparse-encoded categorical input features. It then uses the latent vectors learned by the FM model (see $\mathbf{v}_i$ in equation~\ref{eq:fm})
+as inputs to a Neural Network, as shown in Figure~\ref{fig:fnn}. In doing so, the FNN model is effectively using the FM latent factors to initialize the embedding layer of the Neural Network.
+The DNN is then able to learn the higher order feature interactions in the data, which the FM model is unable to capture.
+
+\begin{figure}[h]
+\centering
+\includegraphics[]{../figures/fnn.png}
+\caption{Factorization Supported Neural Network as proposed by \cite{RefWorks:zhang2016deep}}
+\label{fig:fnn}
+\end{figure}
 
 \subsubsection{Product Based Neural Networks}
 
