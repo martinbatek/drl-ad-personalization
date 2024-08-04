@@ -1,5 +1,0 @@
-outs:
-- md5: d71ecc412e9acf713cee80ecf5767c93
-  size: 23790
-  hash: md5
-  path: criteo_logistic_regression.pkl

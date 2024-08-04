@@ -1,5 +1,0 @@
-outs:
-- md5: 5628d5481e5da270c79596ad009fef39
-  size: 11984
-  hash: md5
-  path: avazu_logistic_regression.pkl
