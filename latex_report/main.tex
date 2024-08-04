@@ -143,7 +143,7 @@ The DNN is then able to learn the higher order feature interactions in the data,
 \begin{figure}[h]
 \centering
 \includegraphics[]{../figures/fnn.png}
-\caption{Factorization Supported Neural Network as proposed by \cite{RefWorks:zhang2016deep}}
+\caption{Factorization Supported Neural Network as proposed by \cite{RefWorks:zhang2016deep}. Image taken from \cite{RefWorks:shen2017deepctr:}}
 \label{fig:fnn}
 \end{figure}
 
@@ -163,12 +163,32 @@ connected MLP layers.
 \begin{figure}[h]
 \centering
 \includegraphics[]{../figures/pnn.png}
-\caption{Product Based Neural Network as proposed by \cite{RefWorks:qu2016product-based}}
+\caption{Product Based Neural Network as proposed by \cite{RefWorks:qu2016product-based}. Image taken from \cite{RefWorks:shen2017deepctr:}}
 \label{fig:pnn}
 \end{figure}
 
 
 \subsubsection{Wide \& Deep Learning}
+
+The Wide \& Deep Learning (WDL) model proposed by \cite{RefWorks:cheng2016wide} introduces the concept
+of dual-tower model architecture \citep{RefWorks:zhang2021deep}. While both the FNN and the PNN models
+generally tend to be constructed as a single fully connected DNN model, the Wide \& Deep model
+consists of a wide component, consisting of a three layer Deep Neural Network that takes the concatinated
+embedding vectors of the categorical features as input, and a deep component, consisting of a cross product
+transformation of selected sparse categorical features. The logits from the wide and deep components are added
+together to produce the final prediction. The architecture of the WDL model is shown in Figure~\ref{fig:wdl}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[]{../figures/wdl.png}
+\caption{Wide \& Deep Learning model as proposed by \cite{RefWorks:cheng2016wide}}
+\label{fig:wdl}
+\end{figure}
+
+The purpose behind the Dual-Tower architecture is to counteract the tendancy of the fully connected
+single tower DNN models to lose the ability to capture low-order feature interactions \citep{RefWorks:zhang2021deep}.
+The Wide component is able to capture the low-order feature interactions, while the Deep component is able to capture
+the higher order feature interactions.
 
 \subsubsection{DeepFM}
 
