@@ -106,6 +106,26 @@ In other words, for a given set of features $\mathbf{x}$, the model should outpu
 
 \section{Model Selection Methodology}
 
+As explained above, I will explore a number of deep learning models. I selected five popular models on the basis of the following criteria
+
+\begin{itemize}
+\item Competitive predition accuracy in the KDD12, Criteo and Avazu datasets as published on Papers with Code.
+\item Ideally, I was looking for a representitive set of models for each model type as discussed in (Zhang et. al. 2021). Therefore I was looking for models that employed Product Interaction Opetators, Attention Operators and Factorization Machines as a basis.
+\item The code for the model has to be accessible and intuitive to use.
+\end{itemize}
+
+On the basis of the above critea, I have chosen the following models to explore:
+
+\begin{itemize}
+\item Factorization Supported Neural Networks
+\item Product Based Neural Networks
+\item Wide and Deep
+\item DeepFM
+\item Automatic Feature Interaction (AutoInt)
+\end{itemize}
+
+In the section below, I briefly introduce each of the models, and evaluate against the benchmark datasets loaded and preprocessed above.
+
 \section{Model Summaries}
 
 \subsection{Shallow Models}
@@ -192,9 +212,54 @@ the higher order feature interactions.
 
 \subsubsection{DeepFM}
 
-\subsubsection{Feature Generation by Convolutional Neural Network}
+The DeepFM model proposed by \cite{RefWorks:guo2017deepfm:} can be thought of as an
+imporvement of the aforementioned FNN \citep{RefWorks:zhang2016deep} and WDL \citep{RefWorks:cheng2016wide} models.
+Like the FNN model, the DeepFM model usilises the Factorization Machine model \citep{RefWorks:rendle2010factorization}
+to learn lower-order feature interactions. However, it also employs a dual-tower architecture
+like the WDL model, with the Wide component being the FM model and the Deep component being a fully connected
+DNN model. The DeepFM model is therefore able to avoid the limitations on capturing low-order
+interactions that are inherent in the FNN model. In addition, due the the application of the FM to all
+feature embeddings, the DeepFM model eliminates the need to choose which features 
+to feed through the wide component, as is the case in the WDL model. The architecture of the DeepFM model is shown 
+in Figure~\ref{fig:deepfm}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../figures/dfm.png}
+\caption{DeepFM model as proposed by \cite{RefWorks:guo2017deepfm:}. Image taken from \cite{RefWorks:shen2017deepctr:}}
+\label{fig:deepfm}
+\end{figure}
+
+%\subsubsection{Feature Generation by Convolutional Neural Network}
 
 \subsubsection{Automatic Feature Interaction Learning}
+
+The Autotomatic Feature Interaction Learning (AutoInt) model proposed by
+\cite{RefWorks:song2019autoint} makes use of a multi-head self attention
+network to model the important feature interactions in the data. The initial 
+paper separates the model into three parts: an embedding layer, an interaction layer 
+and an output layer. The embedding layer aims to project each sparse multi-value
+categorical a and dense numerical feature into a lower dimensional space, as per the equation~\ref{eq:autoint-embedding}:
+
+\begin{equation}
+\label{eq:autoint-embedding}
+\mathbf{e_i} = \frac{1}{q} \mathbf{V_i x_i}
+\end{equation}
+
+where $\mathbf{V_i}$ is the embedding matrix for the $i$-th field, $x_i$ is a multi-hot vector, and $q$ 
+is the number of non-zero values in $x_i$. The interaction layer employs the multi-head
+mechanism to determine which higher order feature interaction are meaningful in the data. This not only
+improves the efficiency of model traning, but it also improves the model's explainability. Lastly,
+the output layer is a fully connected layer that takes in the concatinated output 
+of the interaction layer, and applies the sigmoid activation function to produce the final prediction.
+The architecture of the AutoInt model is shown in Figure~\ref{fig:autoint}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../figures/autoint.png}
+\caption{AutoInt model as proposed by \cite{RefWorks:song2019autoint}}
+\label{fig:autoint}
+\end{figure}
 
 \section{Benchmark Datasets and Exploratory Data Analysis}
 
