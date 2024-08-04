@@ -137,6 +137,27 @@ prediction.
 
 \section{Deep Reinforcement Learning}
 
+In their survey, \citep{RefWorks:wang2024deep} describe how deep reinforcement learning combines 
+the aforementioned feature extraction capabilities of DNN’s with the decision-making 
+capability of reinforcement learning, which aims to learn an optimal state-action policy 
+which maximizes the expected reward gained in a given environment. In the context of 
+recommendation systems, a significant amount of research has been dedicated to formulating 
+the recommendation problem as a Contextual Multi-Armed Bandit (MAB) problem setting, where 
+the context consists of user, site and item features \citep{RefWorks:bouneffouf2012contextual-bandit,RefWorks:li2010contextual-bandit,RefWorks:zeng2016online}. 
+However, a shortcoming for the MAB approach 
+is that it does not explicitly model the future expected reward for the policy, which may 
+be detrimental in the longer term \citep{RefWorks:zheng2018drn:}. Markov Decision Process (MDP) models 
+solve for this issue by modelling the state-action progression as a Markov Process, allowing 
+for the stochastic valuation of the future potential rewards for a given recommendation 
+policy \citep{RefWorks:lu2016partially,RefWorks:mahmood2007learning}. DRN \citep{RefWorks:zheng2018drn:} is a MDP framework 
+that leverages a Deep Neural Network to approximate the expected total user response for 
+each recommendation at each state. The two major advantages of DRN are firstly that it is 
+composed on the basis of a continuous state and action representation, meaning that it can 
+be scaled to large and sparse datasets, and secondly that the proposed reward function 
+consists of both the immediate reward (user click) as well as the future expected reward 
+(long term user engagement), thereby allowing for better recommendations over a user’s 
+lifetime.
+
 \chapter{Deep CTR model Evaluation}
 \label{chap:deep-ctr-model-evaluation}
 
