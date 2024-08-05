@@ -19,3 +19,6 @@
 /avazu_fm.csv
 /criteo_fm.csv
 /kdd12_fm.csv
+/avazu_model_scores.csv
+/criteo_model_scores.csv
+/kdd12_model_scores.csv

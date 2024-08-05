@@ -1,0 +1,5 @@
+outs:
+- md5: 20a0d2977b07afa10f0642c5ad656b2b
+  size: 651
+  hash: md5
+  path: criteo_model_scores.csv
