@@ -1,5 +1,0 @@
-outs:
-- md5: 4703ff7c8dea34534aae353ef67ebf10
-  size: 868012
-  hash: md5
-  path: kdd12_dfm_model.keras
