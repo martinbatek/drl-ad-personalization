@@ -1,0 +1,3 @@
+[submodule "DeepCTR"]
+	path = DeepCTR
+	url = https://github.com/shenweichen/DeepCTR.git
