@@ -1,0 +1,5 @@
+outs:
+- md5: 7e1af31ee9be81121a00adac1ebf8925
+  size: 9634
+  hash: md5
+  path: avazu_fnn.ckpt.index

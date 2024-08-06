@@ -1,0 +1,5 @@
+outs:
+- md5: 9fcf81f93f0673d8bcf29e7ab38a711b
+  size: 620884156
+  hash: md5
+  path: kdd12_fnn.ckpt.data-00000-of-00001
