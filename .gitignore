@@ -478,3 +478,9 @@ data/kdd12/kdd12_training.csv
 data/avazu/avazu_test.csv
 data/criteo/criteo_test.csv
 data/kdd12/kdd12_test.csv
+data/kdd12/train_split
+data/kdd12/test_split
+data/avazu/train_split
+data/avazu/test_split
+data/criteo/train_split
+data/criteo/test_split
