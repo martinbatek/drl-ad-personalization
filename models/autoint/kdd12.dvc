@@ -1,6 +1,6 @@
 outs:
-- md5: d751713988987e9331980363e24189ce.dir
-  size: 0
-  nfiles: 0
+- md5: 6f67b3d5d27e8335a7db5ac8af6effe0.dir
+  size: 621395650
+  nfiles: 3
   hash: md5
   path: kdd12

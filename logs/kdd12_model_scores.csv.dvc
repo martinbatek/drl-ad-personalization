@@ -1,5 +1,5 @@
 outs:
-- md5: 43dbc054a163b4f50201f6b46ed1b0e7
-  size: 614
+- md5: a045ce6da342f9b873fb25df05e168c8
+  size: 579
   hash: md5
   path: kdd12_model_scores.csv
