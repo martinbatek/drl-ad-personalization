@@ -1,0 +1,6 @@
+outs:
+- md5: bf53247a67e01ee3226f285ecb7ff84f.dir
+  size: 35451868
+  nfiles: 3
+  hash: md5
+  path: avazu

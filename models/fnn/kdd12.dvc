@@ -1,0 +1,6 @@
+outs:
+- md5: 15c06d7af89f3f85c217206c59ea3a74.dir
+  size: 621337708
+  nfiles: 3
+  hash: md5
+  path: kdd12
