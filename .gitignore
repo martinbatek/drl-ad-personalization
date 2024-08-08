@@ -484,3 +484,4 @@ data/avazu/train_split
 data/avazu/test_split
 data/criteo/train_split
 data/criteo/test_split
+data/avazu/rl_data
