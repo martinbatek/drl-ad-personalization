@@ -1,0 +1,6 @@
+outs:
+- md5: fd67f262c90875902db862cf448fa257.dir
+  size: 150595087
+  nfiles: 12
+  hash: md5
+  path: shape
