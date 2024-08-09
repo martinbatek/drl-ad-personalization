@@ -1,5 +1,5 @@
 outs:
-- md5: 6b0ef738c0f66e6e50cdef2637859a97
-  size: 3680
+- md5: 650f9c51230e018bcf33679725d8f388
+  size: 2793
   hash: md5
   path: shape_diamond.csv
