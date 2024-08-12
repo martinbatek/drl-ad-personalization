@@ -52,12 +52,14 @@
 The global digital advertising market is worth approximately \$602 billion today. Due to the increasing rate of of online participation since the 
 COVID-19 pandemic, this number has been rapidly increasing and is expected to reach \$871 billion by the end of 2027 \citep{RefWorks:emarketer2023digital}.
 Many of the of the major Ad platforms such as Google, Facebook and Amazon operate on a cost-per-user-engagement pricing model, which usually means that 
-advertisers get charged for every time a user clicks on an advertisment. This means that these platforms are incentivized to make sure that the content 
-shown to each user is as relevent as possible in order to maximize the number of clicks in the long term. Attaining accurate Click-Through Rate (CTR) 
-prediction is a necessary first step for Ad persionalization, which is why study of CTR prediction methods have been an extremely active part of 
-Machine Learning research over the past through years.
+advertisers get charged for every time a user clicks on an advertisment. This means that there is
+a significant commercial incentive to design Ad-serving platforms that ensure that the content 
+shown to each user is as relevent as possible, so as to maximize user engagement and platform revenues
+as much as possible. 
 
-Initially, shallow prediction methods such as Logistic Regression, Factorization Machines \citep{RefWorks:rendle2010factorization} and Field-Aware Factorization 
+Attaining accurate Click-Through Rate (CTR) 
+prediction is a necessary first step for Ad persionalization, which is why study of CTR prediction methods have been an extremely active part of 
+Machine Learning research over the past through years. Initially, shallow prediction methods such as Logistic Regression, Factorization Machines \citep{RefWorks:rendle2010factorization} and Field-Aware Factorization 
 Machines \citep{RefWorks:juan2016field-aware} have been used for CTR prediction. However, these methods have often been shown to be unable to capture the 
 higher order feature interactions in the sparse multi-value categorical Ad Marketplace datasets \citep{RefWorks:zhang2021deep}. Since then, Deep Learning methods have been 
 shown to show superior predictive ability on these datasets. A number of Deep Learning models have been proposed, each using a
@@ -78,7 +80,17 @@ state-action-reward progression can be modelled as a Markov Decision Process
 \citep{puterman2014markov}. Early Reinforcement Learning methods involved 
 deriving a the transition probabilities for the state-action pairs on the basis of interactions
 with the environment and then using Dynamic Programming methods such as the Upper Confidence
-Bound RL (UCBRL) algorith \citep{RefWorks:auer2008near-optimal}
+Bound RL (UCBRL) algorithm \citep{RefWorks:auer2008near-optimal} and the
+the Thompson Sampling algorithm for Reinforcement Learning \citep{RefWorks:pike-burke2024optimism/thompson}.
+However, in cases where the state-action space is too sparce to be
+reasonably enumerated, it is often more practical to user a function approximator 
+to directly estimate the expacted cumalative reward for each action in each state. This method of Reinfocement
+Learning is commonly referred to as Q-learning \citep{RefWorks:watkins1989learning},
+and has the advantage of being \emph{model-free}, meaning that
+it does not require the agent to have a model of the environment
+thereby making it more scalable to large and sparce datasets. 
+
+\subsubsection{Reasearch Question and Contributions}
 
 In this report, I aim to construct a Deep Reinforcement Learning model for Ad personalization that is able to adapt to the changeing user preferences
 and advertisment characteristics available on the platform. In chapter~\ref{chap:background}, I begin by providing a background to the problem
@@ -89,6 +101,8 @@ Learning and its applications across different domains. In chapter \ref{chap:dee
 Deep Learning models for CTR prediction on three well-known benchmark datasets, Criteo \citep{RefWorks:tien2014display}, KDD12 \citep{RefWorks:aden2012kdd} 
 and Avazu \citep{RefWorks:wang2014click-through}. In chapter~\ref{chap:deep-rl-for-ad-personalization}, I construct a Deep Reinforcement Learning model for Ad personalization and evaluate its performance
 on the same benchmark datasets. Finally, in chapter~\ref{chap:discussion}, I discuss the results of the experiments and provide some concluding remarks.
+
+\subsubsection{Structure of the Report}
 
 \chapter{Background}
 \label{chap:background}
