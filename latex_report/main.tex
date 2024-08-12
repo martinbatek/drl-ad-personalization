@@ -55,7 +55,14 @@ Many of the of the major Ad platforms such as Google, Facebook and Amazon operat
 advertisers get charged for every time a user clicks on an advertisment. This means that there is
 a significant commercial incentive to design Ad-serving platforms that ensure that the content 
 shown to each user is as relevent as possible, so as to maximize user engagement and platform revenues
-as much as possible. 
+as much as possible.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{../figures/eMarketer - Ad Spending.png}
+\caption{Global Digital Ad Spending 2021-2027. Image taken from \cite{RefWorks:emarketer2023digital}}
+\label{fig:ad-spending}
+\end{figure}
 
 Attaining accurate Click-Through Rate (CTR) 
 prediction is a necessary first step for Ad persionalization, which is why study of CTR prediction methods have been an extremely active part of 
@@ -80,7 +87,7 @@ state-action-reward progression can be modelled as a Markov Decision Process
 \citep{puterman2014markov}. Early Reinforcement Learning methods involved 
 deriving a the transition probabilities for the state-action pairs on the basis of interactions
 with the environment and then using Dynamic Programming methods such as the Upper Confidence
-Bound RL (UCBRL) algorithm \citep{RefWorks:auer2008near-optimal} and the
+Bound RL (UCB-RL) algorithm \citep{RefWorks:auer2008near-optimal} and the
 the Thompson Sampling algorithm for Reinforcement Learning \citep{RefWorks:pike-burke2024optimism/thompson}.
 However, in cases where the state-action space is too sparce to be
 reasonably enumerated, it is often more practical to user a function approximator 
@@ -88,42 +95,92 @@ to directly estimate the expacted cumalative reward for each action in each stat
 Learning is commonly referred to as Q-learning \citep{RefWorks:watkins1989learning},
 and has the advantage of being \emph{model-free}, meaning that
 it does not require the agent to have a model of the environment
-thereby making it more scalable to large and sparce datasets. 
+thereby making it more scalable to large and sparce datasets. In \citep{RefWorks:hornik1989multilayer},
+\citep{RefWorks:cybenko1989approximation} and \citep{RefWorks:hornik1990universal} Deep
+Neural Networks with activation functions are shown to be universal function approximators
+which naturally lead to the incorporation of DNN's in Q-Learning. This has lead to the
+development of the Deep Q-Learning Agent, which has been shown to be able to learn optimal
+policies in a number of different domains, such as the Atari 2600 game environment \cite{RefWorks:mnih2015human-level}.
+Beyond this, Deep Reinforcement Learning has shown promising results in a number
+of different aplications, including robot control and computer vision \citep{RefWorks:wang2024deep}.
+In the context of Ad personalization, DRL has also be applied to online reccomender systems
+such as News article reccomendation \citep{RefWorks:zheng2018drn:} and video
+reccomendation on Youtube \citep{RefWorks:chen2019top-k}. In both papers,
+the authors show that the DRL agent is able to learn an optimal content reccomendation
+policy on the basis of user engagement data. This reveals that there is potential
+for applying these methods to the problem of Ad personlization, thereby creating a 
+truely adaptive marketing platform.
 
-\subsubsection{Reasearch Question and Contributions}
+\subsubsection{Research Question and Contributions}
 
-In this report, I aim to construct a Deep Reinforcement Learning model for Ad personalization that is able to adapt to the changeing user preferences
-and advertisment characteristics available on the platform. In chapter~\ref{chap:background}, I begin by providing a background to the problem
-of Click-Through Rate prediction in the context of Ad personalization, and explore the unique challenges posed by the typically sparse multi-value
-categorical datasets that are common in the Ad marketplace. I then proceed to review the literature on Deep Learning models for CTR prediction, highlighting
-the different techniques that each framework uses to capture the key feature interactions in the data. I also review the literature on Deep Reinforcement
-Learning and its applications across different domains. In chapter \ref{chap:deep-ctr-model-evaluation}, I evaluate the performance of different
+In this report, I aim to construct a Ad serving system that is truely adaptive and 
+personalized to the changing user preferences and advertisment charateristics. In order
+to achieve this goal, I will first need to find a suitable Deep Learning Model arcitecture
+for CTR prediction, and then incorporating this model as the Q-function approximator in
+a Deep Q-Learning algorithm. The key contributions that I make in this report are as follows:
+
+\begin{itemize}
+\item I evaluate the performance of five popular Deep Learning models for CTR prediction on three well-known benchmark datasets, Criteo \citep{RefWorks:tien2014display}, KDD12 \citep{RefWorks:aden2012kdd} and Avazu \citep{RefWorks:wang2014click-through}.
+\item I construct a novel Deep Reinforcement Learning Frame for Ad personalization, and as a proof-of-concept and evaluate its performance using the KDD12 dataset.
+\end {itemize}
+
+\subsubsection{Structure of the Report}
+
+In chapter~\ref{chap:background}, I begin by providing a background introducing the problem
+of Click-Through Rate prediction in the context of Ad personalization, and explore the unique challenges posed 
+by the typically sparse multi-value categorical datasets that are common in the Ad marketplace. I then 
+proceed to review the literature on Deep Learning models for CTR prediction, highlighting
+the different techniques that each framework uses to capture the key feature interactions in the data. 
+I also review the literature on Deep Reinforcement
+Learning, specifically the DRN algorithm introduced by \cite{RefWorks:zheng2018drn:}, which can be analogously
+applied to the Ad personalization context. In chapter \ref{chap:deep-ctr-model-evaluation}, I evaluate the performance of different
 Deep Learning models for CTR prediction on three well-known benchmark datasets, Criteo \citep{RefWorks:tien2014display}, KDD12 \citep{RefWorks:aden2012kdd} 
 and Avazu \citep{RefWorks:wang2014click-through}. In chapter~\ref{chap:deep-rl-for-ad-personalization}, I construct a Deep Reinforcement Learning model for Ad personalization and evaluate its performance
 on the same benchmark datasets. Finally, in chapter~\ref{chap:discussion}, I discuss the results of the experiments and provide some concluding remarks.
-
-\subsubsection{Structure of the Report}
 
 \chapter{Background}
 \label{chap:background}
 
 \section{Deep CTR Prediction}
 
-In their respective surveys on the use of Deep Learning methods for CTR prediction, \cite{RefWorks:gu2021ad} and \cite{RefWorks:zhang2021deep} outline the 
-problem of CTR prediction as one that essentially boils down to a binary (click/no-click) classification problem utilizing user/ad-view event level 
-online session records. The goal of CTR prediction is to predict the probability of a user clicking on an advertisment given the information available
-about the user, advertisment and the context in which the advertisement is shown. Suppose that $\mathbf{x} \in \mathbb{R}^n$
-is a vector of features that describes the user, ad and platform for a given instance, and
-$y \in \{0, 1\}$ is the binary label indicating whether the user clicked on the ad or not. The goal of CTR prediction is to learn a function
-$f: \mathbb{R}^n \rightarrow (0,1)$ such that:
+\subsection{Problem Formulation and Ad Marketplace Data}
+
+In their respective surveys on the use of Deep Learning methods for CTR prediction, \cite{RefWorks:gu2021ad} 
+and \cite{RefWorks:zhang2021deep} outline the problem of CTR prediction as one that essentially boils down to
+a binary (click/no-click) classification problem utilizing user/ad-view event level online session records. 
+The goal of CTR prediction is to train a function $f$ that takes in a set of ad marketplace 
+features $\mathbf{x} \in \mathbb{R}^n$, and maps these to a probability that the user 
+will click on the ad in that given context. In other words, $f: \mathbb{R}^n \rightarrow (0,1)$ such that:
 
 $$
 f(\mathbf{x}) = \mathbb{P}(y = 1 | \mathbf{x}) = \mathbb{P}(\text{click}| \mathbf{x})
 $$
 
-In other words, for a given set of features $\mathbf{x}$, the model should output the probability that the user will click on the ad.
-A defining characteristic for this type of data is that many of the features are multi-value categories with a high degree of of cardinality \citep{RefWorks:he2017neural}. 
-This in turn means that the ad marketplace datasets used for CTR predictions can be extremely sparse, which increases the difficulty of the classification problem at 
+where $y$ is the binary click label. An instance of the ad marketplace features $\mathbf{x}$ is typically
+recorded at a user/ad impression event level and typically consists of
+
+\begin{itemize}
+\item \textbf{User Features:} Features that describe the user, such as User ID, demographic information,
+metrics related to the user's past interactions with the platform, etc.
+\item \textbf{Ad Features:} Features that describe the ad, such as Ad ID, Advertiser ID and Ad Category.
+\item \textbf{Contextual Features:} Features that describe the context in which the ad is being shown, such as
+the time of day, the position of the ad on the page and the site on which the ad is being shown.
+\end{itemize}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{../figures/kdd12_snapshot.png}
+\caption{Snapshot of the KDD12 dataset \cite{RefWorks:aden2012kdd}}
+\label{fig:kdd12-snapshot}
+\end{figure}
+
+Figure~\ref{fig:kdd12-snapshot} shows a snapshot of the KDD12 dataset, which is a typical example of 
+the type of data that is used for CTR prediction.
+
+\subsection{Shallow vs Deep Learning Models}
+
+A defining characteristic for this type of data is that many of the features are multi-value categories with 
+a high degree of of cardinality \citep{RefWorks:he2017neural}. This in turn means that the ad marketplace datasets used for CTR predictions can be extremely sparse, which increases the difficulty of the classification problem at 
 hand \citep{RefWorks:gu2021ad}.
 
 A key requirement for CTR modelling is therefore working out which of the many sparse features and feature 
@@ -140,12 +197,7 @@ feature interation modelling, a number of Feature Interaction Operator layers ha
 capture the key combinations of features. These layers are then typically incorporated with a supplimentary Deep 
 Neural Network in a single or dual tower architecture, as shown in Figure~\ref{fig:dnn_architecture}.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{../figures/single_dual_dnn.png}
-\caption{Deep Neural Network Architecture for CTR prediction. Image taken from \cite{RefWorks:zhang2021deep}}
-\label{fig:dnn_architecture}
-\end{figure}
+\subsection{Feature Interaction Operator Layers}
 
 Feature Interaction Operators can be categorized as either Product Operators, Convolutional Operators or 
 Attention Operators. Product Operators such as the Product-based Neural Network (PNN) \citep{RefWorks:qu2016product-based}, 
@@ -159,7 +211,31 @@ Finally, Attention Operators such as Attentional Factorization Machines (AFM) \c
 utilize the attention mechanism to enable different feature interactions to contribute differently to the 
 prediction.
 
+\subsubsection{Product Operators}
+
+\subsubsection{Convolutional Operators}
+
+\subsubsection{Attention Operators}
+
+\subsection{Single vs Dual Tower Architectures}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../figures/single_dual_dnn.png}
+\caption{Deep Neural Network Architecture for CTR prediction. Image taken from \cite{RefWorks:zhang2021deep}}
+\label{fig:dnn_architecture}
+\end{figure}
+
+
+
 \section{Deep Reinforcement Learning}
+
+\subsection{Reinforcement Learning Basics: Markov Decision Processes and Dynamic Programming}
+
+\subsection{Q-Learning and Deep Q-Learning}
+
+\subsection{DRN: Deep Reinforcement Learning for News Recommendation}
 
 In their survey, \citep{RefWorks:wang2024deep} describe how deep reinforcement learning combines 
 the aforementioned feature extraction capabilities of DNN’s with the decision-making 
@@ -342,9 +418,13 @@ The architecture of the AutoInt model is shown in Figure~\ref{fig:autoint}.
 \label{fig:autoint}
 \end{figure}
 
-\section{Benchmark Datasets and Exploratory Data Analysis}
+\section{Experiment Setup}
 
-\section{Model Evaluation}
+\subsection{Datasets and Preprocessing}
+
+\subsection{Evaluation Metrics}
+
+\subsection{Hyperparameter Selection}
 
 \section{Deep CTR Model Results}
 
@@ -353,9 +433,25 @@ The architecture of the AutoInt model is shown in Figure~\ref{fig:autoint}.
 
 \section{DeepCTR-RL Framework}
 
+\subsection{Model Framework}
+
+\subsection{Feature types}
+
+\subsection{Double Deep Q-Learning Network}
+
+\subsection{Exploration}
+
+\subsection{Experience Replay}
+
 \section{Experiment Setup}
 
-\section{Results}
+\subsection{Dataset and Preprocessing}
+
+\subsection{Evaluation Metrics}
+
+\subsection{Hyperparameter Selection}
+
+\section{Deep CTR-RL Results}
 
 \chapter{Discussion}
 \label{chap:discussion}
