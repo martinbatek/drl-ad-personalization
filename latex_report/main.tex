@@ -144,6 +144,7 @@ on the same benchmark datasets. Finally, in chapter~\ref{chap:discussion}, I dis
 \section{Deep CTR Prediction}
 
 \subsection{Problem Formulation and Ad Marketplace Data}
+\label{sec:problem-formulation-data}
 
 In their respective surveys on the use of Deep Learning methods for CTR prediction, \cite{RefWorks:gu2021ad} 
 and \cite{RefWorks:zhang2021deep} outline the problem of CTR prediction as one that essentially boils down to
@@ -153,6 +154,7 @@ features $\mathbf{x} \in \mathbb{R}^n$, and maps these to a probability that the
 will click on the ad in that given context. In other words, $f: \mathbb{R}^n \rightarrow (0,1)$ such that:
 
 \begin{equation}
+\label{eqn:ctr-classifier}
 f(\mathbf{x}) = \mathbb{P}(y = 1 | \mathbf{x}) = \mathbb{P}(\text{click}| \mathbf{x})
 \end{equation}
 
@@ -250,14 +252,47 @@ in more detail in the following section.
 
 \subsection{Shallow vs Deep Learning Models}
 
-We begin with the simplest CTR prediction model, the Logistic Regression model. The LR model
-is composed by modelling the \emph{Log-odds} of a positive binary label as a linear combination
+The earliest examples of CTR classification models incorporated classical ``shallow'' 
+(single layer) statistical regression methods. The most basic example of this was 
+the Logistic Regression model, as implemented by \cite{RefWorks:richardson2007predicting} on
+advistisment data from the Microsoft Search engine. The LR model
+is composed by modelling the \emph{log-odds} (also referred to as the \emph{logit}) 
+of a positive binary label as a linear combination
 of all of the respective feature values:
 
 \begin{equation}
 \label{eqn:lr-logit}
-\log \left(\frac{\mathbb{P}(y=1|\mathbf{x})}{1 - \mathbb{P}(y=1|\mathbf{x})}\right) = \theta_0 + \sum_{j=1}^{\tilde{n}}\theta_j \tilde{x}_j
+\log \left(\frac{p(y)}{1 - p(y)}\right) = \theta_0 + \sum_{j=1}^{\tilde{n}}\theta_j \tilde{x}_j
 \end{equation}
+
+Equation~\ref{eqn:lr-logit} can be expressed in terms of $p(y)$, in order to
+recover the same formulation as in equation~\ref{eqn:ctr-classifier}:
+
+\begin{equation}
+    \label{eqn:lr-model}
+    p(y) = \frac{1}{1 + e^{- \theta_0 - \sum \theta_j \tilde{x}_j}}
+    = f_{\Theta}^{LR}(\tilde{\mathbf{x}})
+\end{equation}
+
+where $f_{\Theta}^{LR}: \mathbb{R}^n \Rightarrow [0,1]$ represents the Logistic regression
+model parametized by $\Theta = (\theta_0, \ldots, \theta_{\tilde{n}})$. The benefits of the LR
+model are that due to its simplicity and low number of parameters, it is relatively easy to
+train in computational terms and also relatively easy to deploy \citep{RefWorks:zhang2021deep}.
+Howevever, the formulation in equation~\ref{eqn:lr-logit} reveals that the LR model only
+accounts for the individual feature values as they are, and none of the \emph{feature interactions}.
+As outlined in section~\ref{sec:problem-formulation-data}, the categorical features tend to have a
+high cardinality, resulting in highly sparse feature embeddings. Many of the of the important patterns
+for CTR prediction are therefore likely to be expressed in terms of \emph{combinations of features}
+rather then the individual feature values themselves. For example, a user's tendancy to
+click on a given advertisment is likely to by influenced by the \emph{combination} of the category
+of good or service the given advertisment is trying to sell (e.g. premium fashion retail, travel, electronics et. cetera)
+and the demographic/socio-economic category that the given user falls into (e.g. university student, young professional, retiree).
+These features combinations (and the corresponding combination of respective field values 
+in the preprocessed feature vector $\tilde{\mathbf{x}}$) are commonly referred to in
+the literature as \emph{cross-features} \citep{RefWorks:zhang2023memonet:} or more commonly
+\emph{feature interactions} \citep{RefWorks:cheng2016wide,RefWorks:xiao2017attentional,RefWorks:song2019autoint}.
+
+
 
 \subsection{Feature Interaction Operator Layers}
 
@@ -549,9 +584,12 @@ Conclusion goes here.
         Symbol & Definition \\
       \hline
         $\mathbf{x}$& Feature vector, before pre-processing\\
+        $n$ & the number of features in $\mathbf{x}$\\
         $x_i$& The $i$-th feature in $\mathbf{x}$\\
         $\mathbf{x_i}^{OH}$ & One-hot encoded vector representation of categorical feature $i$\\
         $\mathbf{e}_i$ & Embedded vector representation of categorical feature $i$ \\
+        $z_i$ & Mean and variance standardized value for feature $i$ from $\mathbf{x}$\\
+        $\tilde{\mathbf{x}}$ & $\mathbf{x}$ after catigorical embedding and numerical standardization.\\
     \hline
     \end{tabular}
 \end{table}
