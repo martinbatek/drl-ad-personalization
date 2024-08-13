@@ -151,16 +151,21 @@ and \cite{RefWorks:zhang2021deep} outline the problem of CTR prediction as one t
 a binary (click/no-click) classification problem utilizing user/ad-view event level online session records. 
 The goal of CTR prediction is to train a function $f$ that takes in a set of ad marketplace 
 features $\mathbf{x} \in \mathbb{R}^n$, and maps these to a probability that the user 
-will click on the ad in that given context. In other words, $f: \mathbb{R}^n \rightarrow (0,1)$ such that:
+will click on the ad in that given context. In other words, $f_{\Theta}: \mathbb{R}^n \rightarrow \mathbb{R}$ such that:
 
 \begin{equation}
 \label{eqn:ctr-classifier}
-f(\mathbf{x}) = \mathbb{P}(y = 1 | \mathbf{x}) = \mathbb{P}(\text{click}| \mathbf{x})
+\mathbb{P}(\text{click}| \mathbf{x})
+= \mathbb{P}(y = 1 | \mathbf{x})
+= \sigma(f_{\Theta}(\mathbf{x}))
 \end{equation}
 
-where $y$ is the binary click label. To ease the notation for the rest of the report,
+where $y$ is the binary click label, $\Theta$ represents the parameter vector for $f$ and
+$\sigma(x)=(1 + e^{-x})^{-1}$ is the sigmoid function. To ease the notation for the rest of the report,
 we will use the shorthand $p(y) = \mathbb{P}(y=1 | \mathbf{x})$ formulations in the following
-sections. An instance of the ad marketplace features $\mathbf{x}$ is typically
+sections. 
+
+An instance of the ad marketplace features $\mathbf{x}$ is typically
 recorded at a user/ad impression event level and typically consists of
 
 \begin{itemize}
@@ -254,32 +259,23 @@ in more detail in the following section.
 
 The earliest examples of CTR classification models incorporated classical ``shallow'' 
 (single layer) statistical regression methods. The most basic example of this was 
-the Logistic Regression model, as implemented by \cite{RefWorks:richardson2007predicting} on
+the \textbf{Logistic Regression} model, as implemented by \cite{RefWorks:richardson2007predicting} on
 advistisment data from the Microsoft Search engine. The LR model
 is composed by modelling the \emph{log-odds} (also referred to as the \emph{logit}) 
 of a positive binary label as a linear combination
 of all of the respective feature values:
 
 \begin{equation}
-\label{eqn:lr-logit}
-\log \left(\frac{p(y)}{1 - p(y)}\right) = \theta_0 + \sum_{j=1}^{\tilde{n}}\theta_j \tilde{x}_j
+\label{eqn:lr-model}
+f_{\Theta}^{LR}(\tilde{\mathbf{x}}) = \theta_0 + \sum_{j=1}^{\tilde{n}}\theta_j \tilde{x}_j
 \end{equation}
 
-Equation~\ref{eqn:lr-logit} can be expressed in terms of $p(y)$, in order to
-recover the same formulation as in equation~\ref{eqn:ctr-classifier}:
-
-\begin{equation}
-    \label{eqn:lr-model}
-    p(y) = \frac{1}{1 + e^{- \theta_0 - \sum \theta_j \tilde{x}_j}}
-    = f_{\Theta}^{LR}(\tilde{\mathbf{x}})
-\end{equation}
-
-where $f_{\Theta}^{LR}: \mathbb{R}^n \Rightarrow [0,1]$ represents the Logistic regression
+where $f_{\Theta}^{LR}: \mathbb{R}^n \rightarrow \mathbb{R}$ represents the Logistic regression
 model parametized by $\Theta = (\theta_0, \ldots, \theta_{\tilde{n}})$. The benefits of the LR
 model are that due to its simplicity and low number of parameters, it is relatively easy to
 train in computational terms and also relatively easy to deploy \citep{RefWorks:zhang2021deep}.
-Howevever, the formulation in equation~\ref{eqn:lr-logit} reveals that the LR model only
-accounts for the individual feature values as they are, and none of the \emph{feature interactions}.
+Howevever, the formulation in equation~\ref{eqn:lr-model} reveals that the LR model does not explicitly 
+account for \emph{feature interactions}.
 As outlined in section~\ref{sec:problem-formulation-data}, the categorical features tend to have a
 high cardinality, resulting in highly sparse feature embeddings. Many of the of the important patterns
 for CTR prediction are therefore likely to be expressed in terms of \emph{combinations of features}
@@ -292,7 +288,93 @@ in the preprocessed feature vector $\tilde{\mathbf{x}}$) are commonly referred t
 the literature as \emph{cross-features} \citep{RefWorks:zhang2023memonet:} or more commonly
 \emph{feature interactions} \citep{RefWorks:cheng2016wide,RefWorks:xiao2017attentional,RefWorks:song2019autoint}.
 
+Whilst it is possible to incorporate feature interactions in an LR model through feature
+engineering, this quickly becomes infeasible for large sparse datasets. A number of techniques
+have been developed to automate the necessary feature engineering steps for this, either by
+implicitly assigning a weight to all second order feature interactions \citep{RefWorks:chang2010training}
+or by utilizing Gradient Boosted Decision Trees to pick out the key interactions \citep{RefWorks:cheng2014gradient}.
+Unfortunately, the prior still tends to exhibit poor performance with sparse data, 
+whereas the fact that the Gradient Boosting algorithm for the latter is difficult to paralellize
+makes this solution difficult to scale in many applications in practice \citep{RefWorks:zhang2021deep}.
 
+\textbf{Factorization Machines} first proposed by \cite{RefWorks:rendle2010factorization} can 
+be thought of as an extension of the Logistic Regression framework in equation~\ref{eqn:lr-model}
+with additional terms that explicitly account for the interactions between different features.
+Its relative simplicity and computational scalability has made it a widely popular framework
+for CTR modelling \citep{RefWorks:gu2021ad}. 
+A 2-way (maximum feature interaction degree of 2) Factorization Machine model is formulated as:
+
+\begin{equation}
+\label{eqn:fm-2way}
+f_{\Theta}^{FM^2}(\tilde{\mathbf{x}}) = \theta_0 + \sum_{j=1}^{\tilde{n}} \theta_{j} \tilde{x}_j
++ \sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} \langle \mathbf{v}_j , \mathbf{v}_k \rangle \tilde{x}_j \tilde{x}_k
+\end{equation}
+
+where $\langle \cdot , \cdot \rangle$ represents the inner product between two vectors, the final
+interaction term above is parametized by $\mathbf{V} \in \mathbb{R}^{\tilde{n} \times L}$. Each
+row $\mathbf{v}_j$ of $\mathbf{V}$ represents the $j$-th feature in $\tilde{\mathbf{x}}$ in terms
+of $L$ latent factors. The factorization matrix $\mathbf{V}$ is typically fitted by optimizing
+the binary cross-entropy loss function by means of Stochastic Gradient Descent. It is 
+intutive to see that $\mathbf{V}$ will be fitted such that if the interaction
+between feature $j$ and $k$ have a positive impact on $p(y)$, then $j$-th and 
+$k$-th rows of $\mathbf{V}$ will have positive inner products (and vice versa) \citep{RefWorks:zhang2021deep}.
+
+\cite{RefWorks:rendle2010factorization} shows that although direct evaluation
+of equation~\ref{eqn:fm-2way} would appear to have a complexity of $O(L \tilde{n}^2)$, the 2-way
+FM model in fact scales linearly in $\tilde{n}$ and $L$:
+
+\begin{lemma}
+\label{lemma:fm-linearity}
+The model equation of a 2-way factorization machine (eq.~\ref{eqn:fm-2way}) can
+be computed in linear time $O(L\tilde{n})$.
+\end{lemma}
+
+\begin{proof}
+\label{prf:fm-linearity}
+
+Due to the factorization of the pairwise interactions, there is no model
+parameter that directly depends on two features $(j,k)$. This means that
+pairwise interactions can be reformulated as such
+
+\begin{align*}
+    &\sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} \langle \mathbf{v}_j , \mathbf{v}_k \rangle \tilde{x}_j \tilde{x}_k \\
+    &= \sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} 
+    \sum_{l=1}^{L}v_{j,l} v_{k,l}\tilde{x}_j \tilde{x}_k \\
+    &= \frac{1}{2} \left( \sum_{j=1}^{\tilde{n}} \sum_{k=1}^{\tilde{n}}
+    \sum_{l=1}^{L} v_{j,l} v_{k,l} \tilde{x}_j \tilde{x}_k -
+    \sum_{j=1}^{\tilde{n}} \sum_{l=1}^{L}v_{j,l} v_{j,l} \tilde{x}_j \tilde{x}_j \right)\\
+    &=\frac{1}{2}\sum_{l=1}^{L} \left( \sum_{j=1}^{\tilde{n}}v_{j,l} \tilde{x}_j
+    \sum_{k=1}^{\tilde{n}} v_{k,l} \tilde{x}_k - \sum_{j=1}^{\tilde{n}}
+    v_{j,l}^2 \tilde{x}_j^2 \right)\\
+    &= \frac{1}{2}\sum_{l=1}^{L} \left( \left(\sum_{j=1}^{\tilde{n}}v_{j,l} \tilde{x}_j\right)^2
+    - \sum_{j=1}^{\tilde{n}} v_{j,l}^2 \tilde{x}_j^2 \right)
+\end{align*}
+
+The complexity of the final line above is $O(L\tilde{n})$, and hence the FM formulation
+as per equation~\ref{eqn:fm-2way} scales linearly in $L$ and $\tilde{n}$.
+\end{proof}
+
+This quality greatly simplifies the computational complexity of scaling the FM model to larger
+datasets with a more sparse categorical features. Morever, the Factorization Machine framework
+can be generalized to degree $R$ (i.e. up to any limit of feature interation order) as follows:
+
+\begin{multline}
+\label{eqn:fm-rway}
+f_{\Theta}^{FM^R} = \theta_0 + \sum_{j=1}^{\tilde{n}} \theta_{j} \tilde{x}_{j}
++ \sum_{r=1}^{R} \sum_{j_1=1}^{\tilde{n}} \cdots \sum_{j_r = j_{r-1} + 1}^{\tilde{n}}
+\left( \prod_{k=1}^{r} \tilde{x}_{j_k} \right)
+\left( \sum_{l = 1}^{L_r} \prod_{k=1}^{r} v_{j_k, l}^{(r)}\right)
+\end{multline}
+
+The FM framework therefore provides an intuitive and computationally scalable method to
+account for key feature interactions without the need of extensive feature engineering. Extensions
+and improvements to FM have been proposed, most notably in the form of
+the Field-Aware Factorization Machine (FFM) framework by \cite{RefWorks:juan2016field-aware},
+which only acounts for intereactions between features of different fields 
+(in otherwords, it ignores the interaction between $\tilde{x}_j$ and $\tilde{x}_k$ if
+both are componets of embedding vector $mathbf{e}_i$ for some categorical feature $x_i$)
+as well as Gradient Boosted Factorization Machines \citep{RefWorks:cheng2014gradient}, 
+which again aims to augment the FM framework by means of the Gradient Boosting algorithm.
 
 \subsection{Feature Interaction Operator Layers}
 
@@ -574,14 +656,30 @@ Conclusion goes here.
 %
 \chapter{Appendix}
 
+\section{Abbreviations and Acronyms}
+\label{app:acronyms}
+
+\begin{table}[ht]
+    %\centering
+    \begin{tabular}{|l|l|}
+      \hline
+        \textbf{Term} & \textbf{Definition} \\
+      \hline
+        LR& Logistic Regression\\
+        FM & Factorization Machine\\ 
+    \hline
+    \end{tabular}
+\end{table}
+
+
 \section{Notation}
 \label{app:notation}
 
 \begin{table}[ht]
     %\centering
-    \begin{tabular}{|l|r|}
+    \begin{tabular}{|l|l|}
       \hline
-        Symbol & Definition \\
+        \textbf{Symbol} & \textbf{Definition} \\
       \hline
         $\mathbf{x}$& Feature vector, before pre-processing\\
         $n$ & the number of features in $\mathbf{x}$\\
@@ -590,6 +688,8 @@ Conclusion goes here.
         $\mathbf{e}_i$ & Embedded vector representation of categorical feature $i$ \\
         $z_i$ & Mean and variance standardized value for feature $i$ from $\mathbf{x}$\\
         $\tilde{\mathbf{x}}$ & $\mathbf{x}$ after catigorical embedding and numerical standardization.\\
+        $f$ & Pre-sigmoid classification function\\
+        $\Theta$ & Parameter vector for $f$ \\
     \hline
     \end{tabular}
 \end{table}
