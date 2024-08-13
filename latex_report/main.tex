@@ -156,7 +156,9 @@ will click on the ad in that given context. In other words, $f: \mathbb{R}^n \ri
 f(\mathbf{x}) = \mathbb{P}(y = 1 | \mathbf{x}) = \mathbb{P}(\text{click}| \mathbf{x})
 \end{equation}
 
-where $y$ is the binary click label. An instance of the ad marketplace features $\mathbf{x}$ is typically
+where $y$ is the binary click label. To ease the notation for the rest of the report,
+we will use the shorthand $p(y) = \mathbb{P}(y=1 | \mathbf{x})$ formulations in the following
+sections. An instance of the ad marketplace features $\mathbf{x}$ is typically
 recorded at a user/ad impression event level and typically consists of
 
 \begin{itemize}
@@ -179,14 +181,18 @@ the type of data that is used for CTR prediction.
 
 A defining characteristic for this type of data is that many of the features are multi-value categories with 
 a high degree of of cardinality \citep{RefWorks:he2017neural}. In order to user categorical data
-in a classifier model, it is common practice to encode the these categorical features
-as multidimensional vectors. Let $\mathbf{x_i}^{OH}$ be the one-hot encoded vector
+in a classifier model, it is common practice to embed the these categorical features
+as multidimensional vectors. While the dimensionality of these embeddings can vary amongt the different
+sparse categorical features, for the sake of simplicity of notation, below we assume that all sparse categorical feature
+embeddings have the same dimensionality, $D$. Let $\mathbf{x_i}^{OH}$ be the one-hot encoded vector
 representation of the categiorical feature $x_i$. Then the \emph{embedded} feature vector
 $\mathbf{e}_i$ for categorical feature $x_i$ is given by:
 
 \begin{equation}
+\label{eqn:cat-embedding}
 \begin{split}
 \mathbf{e}_i &= \mathbf{W}_i \mathbf{x}_i^{OH}\\
+&= \left[\mathbf{w}_{1}^{i}, \ldots, \mathbf{w}_{m_i}^{i} \right] \mathbf{x}_i^{OH} \\
 &= \begin{bmatrix}
 w_{11}^i & \cdots & w_{1 m_i}^i\\
 \vdots & \ddots & \\
@@ -203,7 +209,37 @@ w_{D 1}^i & \cdots & w_{D m_i}^i
 \end{equation}
 
 where $\mathbf{W}_i$ is the embedding matrix for feature $x_i$, whose dimensions are determined
-by the chosen embedding dimension $D$ and the cardinality of the feature, $m_i$.
+by the chosen embedding dimension $D$ and the cardinality of the feature, $m_i$. Assuming
+that value of $x_i$ is equal to the $k$-th value in the one-hot encoding mapping, and that therefore
+the $k$-th value in $\mathbf{x}_i^{OH}$ is equal to one, Equation~\ref{eqn:cat-embedding} then simplifies
+to
+
+\begin{equation}
+    \mathbf{e}_i = \left[e_{i 1}, \ldots, e_{i, D} \right]^{\intercal}
+    = \left[w_{1 k}^{i}, w_{2 k}^{i}, \ldots , w_{D k}^{i}\right]^{\intercal} = \mathbf{w}_{k}^{i}
+\end{equation}
+
+which is the $k$-th column of the embedding matrix $W_i$, otherwise referred to as the $k$-th
+embedding vector \citep{RefWorks:hancock2020survey}. The processed data $\tilde{\mathbf{x}}$ that then gets fed into the model is 
+then composed of a concatenation of all sparse feature embeddigs $\mathbf{e}_i$ and standardized
+dense numerical feature values
+$z_i = (x_i - \bar{x_i})/\sqrt{Var(x_i)}$:
+
+\begin{equation}
+    \begin{split}
+    \tilde{\mathbf{x}} &= \left[ \mathbf{e}_1^{\intercal}, \dots , \mathbf{e}_s^{\intercal}, z_{s+1}, \dots , z_{s+d} \right]\\
+    &= \left[e_{1, 1}, \ldots, e_{1 ,D}, e_{2, 1}, \ldots , e_{s, D}, z_{s+1}, \ldots, z_{s+d}\right]\\
+    &= \left[ \tilde{x}_1, \ldots, \tilde{x}_{\tilde{n}}\right]
+    \end{split}
+\end{equation}
+
+where $s$ and $d$ are the number of \emph{sparse} categorical features and \emph{dense}
+numerical features respectively in $\mathbf{x}$, and $\tilde{n} = D\cdot s + d$
+is the resulting dimensionality of $\tilde{\mathbf{x}}$. Again, to ease the notation in the
+remainder of the report, we will assume that the prepocessing steps described above
+are applied to the data, and all formulaic expressions of the models in the following
+section with be expressed in terms of $\tilde{\mathbf{x}} = \{\tilde{x}_j\}_{j=1}^{\tilde{n}}$.
+
 The problem posed by high cardinality is that when $m_i$ is large, the high
 sparsity of the one-hot encoded vector $x_i^{OH}$ can make in extremely difficult
 for a model to learn the key \emph{implicit} features and patterns present in the
@@ -214,20 +250,14 @@ in more detail in the following section.
 
 \subsection{Shallow vs Deep Learning Models}
 
+We begin with the simplest CTR prediction model, the Logistic Regression model. The LR model
+is composed by modelling the \emph{Log-odds} of a positive binary label as a linear combination
+of all of the respective feature values:
 
-A key requirement for CTR modelling is therefore working out which of the many sparse features and feature 
-interactions (combinations of two or more features) are significant for determining the correct prediction 
-\citep{RefWorks:gu2021ad}. Factorization Machines \citep{RefWorks:rendle2010factorization} and Field-aware Factorization Machines \citep{RefWorks:juan2016field-aware}
-were popularized shallow modelling methods that explicitly account for first order interactions between features. 
-However, these techniques do not capture higher order interactions (combinations of three or more features) and 
-have thus been known to perform poorly in scenarios with highly sparse data \citep{RefWorks:zhang2021deep}. Since 2015 the 
-research cummunity has been increasingly turning to Deep Learning techniques to enhance prior CTR prediction 
-techniques (such as in the case of DeepFM \citep{RefWorks:guo2017deepfm:}), as well as to develop novel approaches. Neural based 
-network models excel at simulataneoulsy extracting high-order and low-order feature interations virtue to the use 
-of pooling layers, multiple hidden layers and activation units \cite{RefWorks:gu2021ad}. Due the aforementioned importance of 
-feature interation modelling, a number of Feature Interaction Operator layers have been developed to explicitly 
-capture the key combinations of features. These layers are then typically incorporated with a supplimentary Deep 
-Neural Network in a single or dual tower architecture, as shown in Figure~\ref{fig:dnn_architecture}.
+\begin{equation}
+\label{eqn:lr-logit}
+\log \left(\frac{\mathbb{P}(y=1|\mathbf{x})}{1 - \mathbb{P}(y=1|\mathbf{x})}\right) = \theta_0 + \sum_{j=1}^{\tilde{n}}\theta_j \tilde{x}_j
+\end{equation}
 
 \subsection{Feature Interaction Operator Layers}
 
