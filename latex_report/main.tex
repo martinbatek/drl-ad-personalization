@@ -152,9 +152,9 @@ The goal of CTR prediction is to train a function $f$ that takes in a set of ad 
 features $\mathbf{x} \in \mathbb{R}^n$, and maps these to a probability that the user 
 will click on the ad in that given context. In other words, $f: \mathbb{R}^n \rightarrow (0,1)$ such that:
 
-$$
+\begin{equation}
 f(\mathbf{x}) = \mathbb{P}(y = 1 | \mathbf{x}) = \mathbb{P}(\text{click}| \mathbf{x})
-$$
+\end{equation}
 
 where $y$ is the binary click label. An instance of the ad marketplace features $\mathbf{x}$ is typically
 recorded at a user/ad impression event level and typically consists of
@@ -177,11 +177,43 @@ the time of day, the position of the ad on the page and the site on which the ad
 Figure~\ref{fig:kdd12-snapshot} shows a snapshot of the KDD12 dataset, which is a typical example of 
 the type of data that is used for CTR prediction.
 
+A defining characteristic for this type of data is that many of the features are multi-value categories with 
+a high degree of of cardinality \citep{RefWorks:he2017neural}. In order to user categorical data
+in a classifier model, it is common practice to encode the these categorical features
+as multidimensional vectors. Let $\mathbf{x_i}^{OH}$ be the one-hot encoded vector
+representation of the categiorical feature $x_i$. Then the \emph{embedded} feature vector
+$\mathbf{e}_i$ for categorical feature $x_i$ is given by:
+
+\begin{equation}
+\begin{split}
+\mathbf{e}_i &= \mathbf{W}_i \mathbf{x}_i^{OH}\\
+&= \begin{bmatrix}
+w_{11}^i & \cdots & w_{1 m_i}^i\\
+\vdots & \ddots & \\
+w_{D 1}^i & \cdots & w_{D m_i}^i
+\end{bmatrix}
+\begin{bmatrix}
+    0 \\
+    \vdots \\
+    1 \\
+    0\\
+    \vdots
+\end{bmatrix}
+\end{split}
+\end{equation}
+
+where $\mathbf{W}_i$ is the embedding matrix for feature $x_i$, whose dimensions are determined
+by the chosen embedding dimension $D$ and the cardinality of the feature, $m_i$.
+The problem posed by high cardinality is that when $m_i$ is large, the high
+sparsity of the one-hot encoded vector $x_i^{OH}$ can make in extremely difficult
+for a model to learn the key \emph{implicit} features and patterns present in the
+data \citep{RefWorks:gu2021ad}. This is indeed the key challenge in building an
+accurate CTR prediction model, and is a key motivating factor as to why Deep Neural
+networks have out performed the classical shallow counterparts. This transition will be examined
+in more detail in the following section.
+
 \subsection{Shallow vs Deep Learning Models}
 
-A defining characteristic for this type of data is that many of the features are multi-value categories with 
-a high degree of of cardinality \citep{RefWorks:he2017neural}. This in turn means that the ad marketplace datasets used for CTR predictions can be extremely sparse, which increases the difficulty of the classification problem at 
-hand \citep{RefWorks:gu2021ad}.
 
 A key requirement for CTR modelling is therefore working out which of the many sparse features and feature 
 interactions (combinations of two or more features) are significant for determining the correct prediction 
@@ -473,11 +505,26 @@ Conclusion goes here.
 \renewcommand*{\thepage}{A\arabic{page}}
 
 %% Appendix goes here
-%\appendix
+\appendix
 %
-%\chapter{Appendix title}
-%
-%Appendix goes here.
+\chapter{Appendix}
+
+\section{Notation}
+\label{app:notation}
+
+\begin{table}[ht]
+    %\centering
+    \begin{tabular}{|l|r|}
+      \hline
+        Symbol & Definition \\
+      \hline
+        $\mathbf{x}$& Feature vector, before pre-processing\\
+        $x_i$& The $i$-th feature in $\mathbf{x}$\\
+        $\mathbf{x_i}^{OH}$ & One-hot encoded vector representation of categorical feature $i$\\
+        $\mathbf{e}_i$ & Embedded vector representation of categorical feature $i$ \\
+    \hline
+    \end{tabular}
+\end{table}
 
 
 %%References part of appendices
