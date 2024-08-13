@@ -376,6 +376,24 @@ both are componets of embedding vector $mathbf{e}_i$ for some categorical featur
 as well as Gradient Boosted Factorization Machines \citep{RefWorks:cheng2014gradient}, 
 which again aims to augment the FM framework by means of the Gradient Boosting algorithm.
 
+Despite the advantages of the FM framework, a setback of the formulation in equation~\ref{eqn:fm-rway}
+is that the framework grows highly compex and overparametized for higher values of $R$.
+As a consequence, only the 2-way FM framework as per equation~\ref{eqn:fm-2way} tends to be
+implemented in practice, meaning that in FM alone is feasably insufficient for capturing
+feature interactions of order $>>2$ \citep{RefWorks:guo2017deepfm:}. Deep Neural Networks
+present a powerful alternative for addressing this shortcoming. Neural networks benefit from
+being universal function approximators \citep{RefWorks:cybenko1989approximation} and from the
+fact that neural network batch training is paralelizable by means of GPU accelerated computation.
+This has lead to the successfull application of Deep Learning algorithms across multiple fields
+such as Natural Language Processing and Image classification 
+\citep{RefWorks:he2016deep,RefWorks:krizhevsky2017imagenet,RefWorks:lecun1998gradient-based}. 
+These factors and successes showed that DNN's have the potential to extract informative
+feature representations from highly sparse and abstract data, and as a consequence,
+the application of DNN's in CTR prediction started recieving attention in the mid-2010's.
+
+The Multilayer Perceptron (MLP) \label{ref:mlp} is the most elementary type of Deep Neural Network
+\citep{RefWorks:webster2024week}. In general, a MLP with $L$ hidden layers is formulated as such
+
 \subsection{Feature Interaction Operator Layers}
 
 Feature Interaction Operators can be categorized as either Product Operators, Convolutional Operators or 
@@ -661,12 +679,15 @@ Conclusion goes here.
 
 \begin{table}[ht]
     %\centering
-    \begin{tabular}{|l|l|}
+    \begin{tabular}{|l|l|l|}
       \hline
-        \textbf{Term} & \textbf{Definition} \\
+        \textbf{Term} & \textbf{Definition} & \textbf{Reference} \\
       \hline
-        LR& Logistic Regression\\
-        FM & Factorization Machine\\ 
+        LR& Logistic Regression & \\
+        FM & Factorization Machine & \\
+        FFM & Field-Aware Factorization Machine & \\
+        DNN & Deep Neural Network & \\
+        MLP & Multilayer Perceptron & \ref{ref:mlp} \\
     \hline
     \end{tabular}
 \end{table}
@@ -677,19 +698,19 @@ Conclusion goes here.
 
 \begin{table}[ht]
     %\centering
-    \begin{tabular}{|l|l|}
+    \begin{tabular}{|l|l|l|}
       \hline
-        \textbf{Symbol} & \textbf{Definition} \\
+        \textbf{Symbol} & \textbf{Definition} & \textbf{Reference} \\
       \hline
-        $\mathbf{x}$& Feature vector, before pre-processing\\
-        $n$ & the number of features in $\mathbf{x}$\\
-        $x_i$& The $i$-th feature in $\mathbf{x}$\\
-        $\mathbf{x_i}^{OH}$ & One-hot encoded vector representation of categorical feature $i$\\
-        $\mathbf{e}_i$ & Embedded vector representation of categorical feature $i$ \\
-        $z_i$ & Mean and variance standardized value for feature $i$ from $\mathbf{x}$\\
-        $\tilde{\mathbf{x}}$ & $\mathbf{x}$ after catigorical embedding and numerical standardization.\\
-        $f$ & Pre-sigmoid classification function\\
-        $\Theta$ & Parameter vector for $f$ \\
+        $\mathbf{x}$& Feature vector, before pre-processing &\\
+        $n$ & the number of features in $\mathbf{x}$ &\\
+        $x_i$& The $i$-th feature in $\mathbf{x}$ &\\
+        $\mathbf{x_i}^{OH}$ & One-hot encoded vector representation of categorical feature $i$ &\\
+        $\mathbf{e}_i$ & Embedded vector representation of categorical feature $i$ & \\
+        $z_i$ & Mean and variance standardized value for feature $i$ from $\mathbf{x}$ &\\
+        $\tilde{\mathbf{x}}$ & $\mathbf{x}$ after catigorical embedding and numerical standardization. &\\
+        $f$ & Pre-sigmoid classification function &\\
+        $\Theta$ & Parameter vector for $f$ & \\
     \hline
     \end{tabular}
 \end{table}
