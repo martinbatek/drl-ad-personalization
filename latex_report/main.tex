@@ -385,7 +385,7 @@ which again aims to augment the FM framework by means of the Gradient Boosting a
 Despite the advantages of the FM framework, a setback of the formulation in equation~\ref{eqn:fm-rway}
 is that the framework grows highly compex and overparametized for higher values of $R$.
 As a consequence, only the 2-way FM framework as per equation~\ref{eqn:fm-2way} tends to be
-implemented in practice, meaning that in FM alone is feasably insufficient for capturing
+implemented in practice, meaning that in FM alone is practically insufficient for capturing
 feature interactions of order $>>2$ \citep{RefWorks:guo2017deepfm:}. Deep Neural Networks
 present a powerful alternative for addressing this shortcoming. Neural networks benefit from
 being universal function approximators \citep{RefWorks:cybenko1989approximation} and from the
@@ -407,8 +407,8 @@ The \textbf{Multilayer Perceptron} (MLP) \label{ref:mlp} is the most elementary 
 \hat{y} &= \phi_{out} \left( \mathbf{w}^{(L)} \mathbf{h}^{(L)} + b^{(L)} \right)
 \end{align}
 
-where $\mathbf{W}^{(k)} \in \mathbb{R}^{n_{l+1} \times n_l } $, $\mathbf{b}^{(k)} \in \mathbf{R}^{n_{l+1}}$,
-$\mathbf{h}^{(l)} \in \mathbb{n_l}$, $n_0 = \tilde{n}$, $n_l$ is the number of hidden
+where $\mathbf{W}^{(k)} \in \mathbb{R}^{n_{l+1} \times n_l } $, $\mathbf{b}^{(k)} \in \mathbb{R}^{n_{l+1}}$,
+$\mathbf{h}^{(l)} \in \mathbb{R}^{n_l}$, $n_0 = \tilde{n}$, $n_l$ is the number of hidden
 units in layer $l$ and $\phi_{l}$ is the activation function for layer $l$, 
 When rearranged in the form of equation~\ref{eqn:ctr-classifier}, the above becomes:
 
@@ -442,9 +442,113 @@ as the ML in the model architecture \citep{RefWorks:zhang2021deep}.
 
 \subsection{Single vs Dual Tower Architectures}
 
-\subsection{MLP Enhanced CTR models}
+Before moving on to DNN enhanced CTR models in section~\ref{sec:mlp-enhanced-models}
+it is worth briefly discussing the difference between \textbf{Single-Tower}
+models and \textbf{Dual-Tower} architecture models. Single Towel models place
+all layers successively in the architecture, and can generally be formulated
+as in equation~\ref{eqn:mlp-2}. Since all feature inputs are passed through
+the same set of successive affine transformations and activations, Single Tower
+models are usually able to capture higher order feature interactions, but the signal
+from the low-order interactions tend to be lost \citep{RefWorks:zhang2021deep}.
+The FNN \citep{RefWorks:zhang2016deep}, FGCNN
+\citep{RefWorks:liu2019feature} and PNN \citep{RefWorks:qu2016product-based} models covered in the subsections 
+\ref{sec:mlp-enhanced-models} and \ref{sec:feature-operator-models}
+are examples of Single Tower models.
+
+In order to avoid diluting the signal from the lower order feature interactions, many architectures
+adopt a Dual Tower architecture, as shown on the right-hand side of
+Figure~\ref{fig:single-dual-models}. A separate \textbf{Feature Interaction Layer}
+is placed paralelly to the DNN, and the final output is composed of a weighted sum
+of the feature interaction and DNN outputs. With this architecture, the feature interaction
+layer is usually dedicated to capturing the important lower order feature interaction signals,
+whereas the DNN acts as a \emph{residual network} for capturing any meaningful signals that may
+be missing. As a result, Dual Tower networks tend to benefit form better training stability and
+better performance \citep{RefWorks:zhang2021deep}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/single_dual_dnn.png}
+    \caption{Single vs Dual Architecture Networks. Source: \citep{RefWorks:zhang2021deep}}
+    \label{fig:single-dual-models}
+\end{figure}
+
+\subsection{DNN Enhanced CTR models}
+\label{sec:mlp-enhanced-models}
 
 \subsubsection{Factorization-machine Supported Neural Networks}
+
+One of the earliest example of the use of Deep Neural Networks being used to enhance existing
+CTR modeling methods is the \textbf{Factorization-machine Supported Neural Network} (FNN)
+\citep{RefWorks:zhang2016deep}. The FNN model is a Single Tower model that works by pretraining
+a 2-way Factorization Machine model as in equation~\ref{eqn:fm-2way} on the concatenated
+one-hot encoded categorical feature vectors, and then using the feature interaction vectors and
+weights as the embedding matrix.
+
+Below we start with the concatenated one-hot encoded categorical feature vector:
+\begin{align*}
+    \dot{\mathbf{x}} &= \left[\mathbf{x}_1^{OH}, \ldots, \mathbf{x}_n^{OH} \right]\\
+    f_{\Theta}^{FM^2} &= \theta_0 + \sum_{j=1}^{\dot{n}} \theta_j \dot{x}_j +
+    \sum_{j=1}^{\dot{n}} \sum_{k=j+1}^{\dot{n}}
+    \langle \mathbf{v}_j, \mathbf{v}_k \rangle \dot{x}_j \dot{x}_k
+\end{align*}
+
+Using the weights
+and biases from $\Theta = (\theta_0, \theta_1, \ldots , \theta_{\dot{n}}, \mathbf{v}_1, \ldots, \mathbf{v}_{\dot{n}})$,
+the preprocessed MLP input is calculated as follows:
+
+\begin{equation*}
+\tilde{\mathbf{x}} = \left[\theta_0, \mathbf{e}_1^{\intercal}, \mathbf{e}_2^{\intercal}, \ldots, \mathbf{e}_s^{\intercal}\right]
+\end{equation*}
+
+where each embedding vector $\mathbf{e}_i$ is defined as the concatination of
+the weight ($\theta_i$) and FM interaction vector ($\mathbf{v}_i$) corresponding to feature
+$i$ in $\dot{\mathbf{x}}$:
+\begin{equation*}
+    \mathbf{e}_i = \left[\theta_i, \mathbf{v}_i^{\intercal}\right]
+\end{equation*}
+
+The above can alternatively also be recovered from equation~\ref{eqn:cat-embedding} by
+setting the embedding matrix $\mathbf{B}_i$ to a $(F+1) \times C_i$ matrix with the following
+values
+
+\begin{equation*}
+\mathbf{B}_i = \begin{bmatrix}
+    b_{1,1}^i & \cdots & b_{1 ,C_i}^i\\
+    \vdots & \ddots & \\
+    b_{F+1, 1}^i & \cdots & b_{F+1, C_i}^i
+    \end{bmatrix}
+= \begin{bmatrix}
+    \theta_i & \cdots & \theta_i\\
+    v_{1}^1 & \cdots & v_{C_i}^1 \\
+    \vdots & \ddots & \\
+    v_{1}^{F}& \cdots & v_{C_i}^{F}
+    \end{bmatrix}
+\end{equation*}
+
+Figure~\ref{fig:fnn} portrays the structure of this model as it was presented in the original
+paper by \cite{RefWorks:zhang2016deep}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/fnn.png}
+    \caption{FNN model architecture. Source: \citep{RefWorks:zhang2016deep}}
+    \label{fig:fnn}
+\end{figure}
+
+By incorporating the FM model feature interaction vectors in the embedding layer
+before the DNN, the FNN model is about to leverage the FM model's strength in
+interaction identification. Simaltaneously, the FNN model leverages an MLP network
+to capture the higher order interaction signals much more efficiently than would
+have been feasibly possible when relying ownly on FM. Because of this, comprehensive
+experiments carried out by \cite{RefWorks:zhang2016deep} confirmed that FNN
+has superior CTR estimation performance than both LR and FM.
+
+However \cite{RefWorks:guo2017deepfm:} and \cite{RefWorks:zhang2021deep} find that
+due to its Single Tower architecture, lower-order feature interaction signals tend
+to be lost in the network. \cite{RefWorks:guo2017deepfm:} further found that
+the FM pretraining step described above represents a significant overhead in
+terms of training efficiency. In the next subsections, we will see how the Wide \& Deep
+and DeepFM models look to solve for these issues.
 
 \subsubsection{Wide and Deep}
 
@@ -486,11 +590,14 @@ Consequentially of equation~\ref{eqn:wdl-cross-product}, the Wide Component \emp
 the key feature interations that are defined by the specific \emph{cross-product transformations}
 ($\upsilon_{k}(\tilde{\mathbf{x}})$) \citep{RefWorks:cheng2016wide}. Meanwhile, the Deep Component captures any residual
 signals that may not have been explicitly included in the manually defined cross-product transformations
-\citep{RefWorks:zhang2021deep}.
+\citep{RefWorks:zhang2021deep}. In this sense, the W\&D model overcomes the
+shortcomings of the FNN model, by having dedicated pathways in the archtecture
+for higher and lower order feature interactions.
 
 \subsubsection{DeepFM}
 
 \subsection{Feature Interaction Operator Models}
+\label{sec:feature-operator-models}
 
 \subsubsection{Product Operators - Product Based Neural Network}
 
