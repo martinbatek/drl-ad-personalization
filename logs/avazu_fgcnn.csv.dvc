@@ -1,0 +1,5 @@
+outs:
+- md5: 2d1fdbe93f03107b20bcc42a9d535c25
+  size: 2184
+  hash: md5
+  path: avazu_fgcnn.csv
