@@ -255,7 +255,9 @@ accurate CTR prediction model, and is a key motivating factor as to why Deep Neu
 networks have out performed the classical shallow counterparts. This transition will be examined
 in more detail in the following section.
 
-\subsection{Shallow vs Deep Learning Models}
+\subsection{Shallow CTR Models}
+
+\subsubsection{Logistic Regression}
 
 The earliest examples of CTR classification models incorporated classical ``shallow'' 
 (single layer) statistical regression methods. The most basic example of this was 
@@ -296,6 +298,8 @@ or by utilizing Gradient Boosted Decision Trees to pick out the key interactions
 Unfortunately, the prior still tends to exhibit poor performance with sparse data, 
 whereas the fact that the Gradient Boosting algorithm for the latter is difficult to paralellize
 makes this solution difficult to scale in many applications in practice \citep{RefWorks:zhang2021deep}.
+
+\subsubsection{Factorization Machines}
 
 \textbf{Factorization Machines} first proposed by \cite{RefWorks:rendle2010factorization} can 
 be thought of as an extension of the Logistic Regression framework in equation~\ref{eqn:lr-model}
@@ -376,6 +380,8 @@ both are componets of embedding vector $mathbf{e}_i$ for some categorical featur
 as well as Gradient Boosted Factorization Machines \citep{RefWorks:cheng2014gradient}, 
 which again aims to augment the FM framework by means of the Gradient Boosting algorithm.
 
+\subsection{Introducing MLP's in CTR prediction}
+
 Despite the advantages of the FM framework, a setback of the formulation in equation~\ref{eqn:fm-rway}
 is that the framework grows highly compex and overparametized for higher values of $R$.
 As a consequence, only the 2-way FM framework as per equation~\ref{eqn:fm-2way} tends to be
@@ -432,33 +438,65 @@ possible to calculate the appropriate weight ($\mathbf{W}_l$) and bias ($\mathbf
 in order capture the relevant high-order feature patterns in the data. As such, many CTR
 modelling frameworks have been developed that use Deep Learning techniques to build upon and
 imporved the previously discussed classical methods by incorporating Deep Neural Networks such
-as the ML in the model architecture \citep{RefWorks:zhang2021deep}. The example of this is the 
-so-called \textbf{Wide and Deep} model developed by \cite{RefWorks:cheng2016wide}:
-
-
-
-\subsection{Feature Interaction Operator Layers}
-
-Feature Interaction Operators can be categorized as either Product Operators, Convolutional Operators or 
-Attention Operators. Product Operators such as the Product-based Neural Network (PNN) \citep{RefWorks:qu2016product-based}, 
-Neural Factorization Machines (NFM) \citep{RefWorks:he2017neural}, Deep and Cross Network \citep{RefWorks:wang2017deep} and 
-Gated Deep Cross Network (GDCN) \citep{RefWorks:wang2023deeper} introduce a product layer between the categorical 
-feature embedding layer and the rest of the neural network in order to explicitly model the important feature 
-interactions. Convolutional Operators such as the Convolutional Click Prediction Model (CCPM) \citep{RefWorks:liu2015convolutional} 
-utilized convolution, pooling and non-linear activation in order to calculate arbitrary-order interactions. 
-Finally, Attention Operators such as Attentional Factorization Machines (AFM) \citep{RefWorks:xiao2017attentional}, AutoInt 
-\cite{RefWorks:song2019autoint} and Interpretable CTR prediction model with Hierarchical Attention (InterHAt) \citep{RefWorks:li2020interpretable}
-utilize the attention mechanism to enable different feature interactions to contribute differently to the 
-prediction.
-
-\subsubsection{Product Operators}
-
-\subsubsection{Convolutional Operators}
-
-\subsubsection{Attention Operators}
+as the ML in the model architecture \citep{RefWorks:zhang2021deep}.
 
 \subsection{Single vs Dual Tower Architectures}
 
+\subsection{MLP Enhanced CTR models}
+
+\subsubsection{Factorization-machine Supported Neural Networks}
+
+\subsubsection{Wide and Deep}
+
+The 
+so-called \textbf{Wide and Deep} (W\&D) model was developed by \cite{RefWorks:cheng2016wide}:
+
+\begin{equation}
+    \label{eqn:wdl}
+    f_{\Theta}^{W\&D} = \theta_0 + \sum_{k=1}^{\hat{n}} \theta_k \hat{\mathbf{x}}_k
+    + f_{\Phi}^{MLP}(\tilde{\mathbf{x}})
+\end{equation}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width = 0.8\textwidth]{../figures/wdl.png}
+\caption{Wide and Deep Model, as illustrated in \citep{RefWorks:shen2017deepctr:}}
+\label{fig:wdl}
+\end{figure}
+
+Figure~\ref{fig:wdl} reveals that the W\&D model is composed with a Dual-Tower Architecture,
+with a Deep Component and a Wide Component (shown on the left and right hand sides of Figure~\ref{fig:wdl}
+respectively). The Deep Component is composed of a MLP with multiple hidden layers, each
+with the Rectified Linear Unit (ReLU) activation function. The Wide Component is formulated
+by the first two terms in equation~\ref{eqn:wdl}, and is composed of a simple linear transformation
+of the input features. The key aspect of the Wide Component to take note of is that the 
+linear transformation is not simply applied to the preprocessed features $\tilde{x}$,
+but instead to these concatinated with a set of cross-product transformed features. In
+other words:
+
+\begin{equation}
+\label{eqn:wdl-cross-product}
+\hat{\mathbf{x}} = [\tilde{\mathbf{x}}, \upsilon_1({\tilde{\mathbf{x}}}),\ldots , \upsilon_P({\tilde{\mathbf{x}}})]
+\end{equation}
+
+Where $\upsilon_k({\tilde{\mathbf{x}}}) = \prod_{j=1}^{\tilde{n}}\tilde{x}_j^{c_{kj}}$
+and $c_{kj} \in \{ 0, 1 \}$.
+
+Consequentially of equation~\ref{eqn:wdl-cross-product}, the Wide Component \emph{memorizes}
+the key feature interations that are defined by the specific \emph{cross-product transformations}
+($\upsilon_{k}(\tilde{\mathbf{x}})$) \citep{RefWorks:cheng2016wide}. Meanwhile, the Deep Component captures any residual
+signals that may not have been explicitly included in the manually defined cross-product transformations
+\citep{RefWorks:zhang2021deep}.
+
+\subsubsection{DeepFM}
+
+\subsection{Feature Interaction Operator Models}
+
+\subsubsection{Product Operators - Product Based Neural Network}
+
+\subsubsection{Convolutional Operators - Feature Generation Convolutional Neural Network}
+
+\subsubsection{Attention Operators - AutoInt}
 
 \begin{figure}[h]
 \centering
