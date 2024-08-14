@@ -1,0 +1,5 @@
+outs:
+- md5: 2a7f60ab3baeefd56bbc1f95fad5b77d
+  size: 2476
+  hash: md5
+  path: criteo_fgcnn.csv

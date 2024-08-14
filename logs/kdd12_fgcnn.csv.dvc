@@ -1,0 +1,5 @@
+outs:
+- md5: 80d4140cf13f7af2f6782a1c44ed23db
+  size: 1924
+  hash: md5
+  path: kdd12_fgcnn.csv

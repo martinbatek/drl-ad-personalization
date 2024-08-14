@@ -38,3 +38,6 @@
 /shape_diamond.csv
 /shape_increasing.csv
 /final_rl_model.csv
+/avazu_fgcnn.csv
+/kdd12_fgcnn.csv
+/criteo_fgcnn.csv
