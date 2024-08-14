@@ -198,12 +198,12 @@ $\mathbf{e}_i$ for categorical feature $x_i$ is given by:
 \begin{equation}
 \label{eqn:cat-embedding}
 \begin{split}
-\mathbf{e}_i &= \mathbf{W}_i \mathbf{x}_i^{OH}\\
-&= \left[\mathbf{w}_{1}^{i}, \ldots, \mathbf{w}_{m_i}^{i} \right] \mathbf{x}_i^{OH} \\
+\mathbf{e}_i &= \mathbf{B}_i \mathbf{x}_i^{OH}\\
+&= \left[\mathbf{b}_{1}^{i}, \ldots, \mathbf{b}_{m_i}^{i} \right] \mathbf{x}_i^{OH} \\
 &= \begin{bmatrix}
-w_{11}^i & \cdots & w_{1 m_i}^i\\
+b_{1,1}^i & \cdots & b_{1 ,C_i}^i\\
 \vdots & \ddots & \\
-w_{D 1}^i & \cdots & w_{D m_i}^i
+b_{D, 1}^i & \cdots & b_{D, C_i}^i
 \end{bmatrix}
 \begin{bmatrix}
     0 \\
@@ -215,18 +215,18 @@ w_{D 1}^i & \cdots & w_{D m_i}^i
 \end{split}
 \end{equation}
 
-where $\mathbf{W}_i$ is the embedding matrix for feature $x_i$, whose dimensions are determined
-by the chosen embedding dimension $D$ and the cardinality of the feature, $m_i$. Assuming
+where $\mathbf{B}_i$ is the embedding matrix for feature $x_i$, whose dimensions are determined
+by the chosen embedding dimension $D$ and the cardinality of the feature, $C_i$. Assuming
 that value of $x_i$ is equal to the $k$-th value in the one-hot encoding mapping, and that therefore
 the $k$-th value in $\mathbf{x}_i^{OH}$ is equal to one, Equation~\ref{eqn:cat-embedding} then simplifies
 to
 
 \begin{equation}
     \mathbf{e}_i = \left[e_{i 1}, \ldots, e_{i, D} \right]^{\intercal}
-    = \left[w_{1 k}^{i}, w_{2 k}^{i}, \ldots , w_{D k}^{i}\right]^{\intercal} = \mathbf{w}_{k}^{i}
+    = \left[b_{1 k}^{i}, b_{2 k}^{i}, \ldots , b_{D k}^{i}\right]^{\intercal} = \mathbf{b}_{k}^{i}
 \end{equation}
 
-which is the $k$-th column of the embedding matrix $W_i$, otherwise referred to as the $k$-th
+which is the $k$-th column of the embedding matrix $\mathbf{B}_i$, otherwise referred to as the $k$-th
 embedding vector \citep{RefWorks:hancock2020survey}. The processed data $\tilde{\mathbf{x}}$ that then gets fed into the model is 
 then composed of a concatenation of all sparse feature embeddigs $\mathbf{e}_i$ and standardized
 dense numerical feature values
@@ -311,17 +311,17 @@ f_{\Theta}^{FM^2}(\tilde{\mathbf{x}}) = \theta_0 + \sum_{j=1}^{\tilde{n}} \theta
 \end{equation}
 
 where $\langle \cdot , \cdot \rangle$ represents the inner product between two vectors, the final
-interaction term above is parametized by $\mathbf{V} \in \mathbb{R}^{\tilde{n} \times L}$. Each
+interaction term above is parametized by $\mathbf{V} \in \mathbb{R}^{\tilde{n} \times F}$. Each
 row $\mathbf{v}_j$ of $\mathbf{V}$ represents the $j$-th feature in $\tilde{\mathbf{x}}$ in terms
-of $L$ latent factors. The factorization matrix $\mathbf{V}$ is typically fitted by optimizing
+of $F$ latent factors. The factorization matrix $\mathbf{V}$ is typically fitted by optimizing
 the binary cross-entropy loss function by means of Stochastic Gradient Descent. It is 
 intutive to see that $\mathbf{V}$ will be fitted such that if the interaction
 between feature $j$ and $k$ have a positive impact on $p(y)$, then $j$-th and 
 $k$-th rows of $\mathbf{V}$ will have positive inner products (and vice versa) \citep{RefWorks:zhang2021deep}.
 
 \cite{RefWorks:rendle2010factorization} shows that although direct evaluation
-of equation~\ref{eqn:fm-2way} would appear to have a complexity of $O(L \tilde{n}^2)$, the 2-way
-FM model in fact scales linearly in $\tilde{n}$ and $L$:
+of equation~\ref{eqn:fm-2way} would appear to have a complexity of $O(F \tilde{n}^2)$, the 2-way
+FM model in fact scales linearly in $\tilde{n}$ and $F$:
 
 \begin{lemma}
 \label{lemma:fm-linearity}
@@ -339,15 +339,15 @@ pairwise interactions can be reformulated as such
 \begin{align*}
     &\sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} \langle \mathbf{v}_j , \mathbf{v}_k \rangle \tilde{x}_j \tilde{x}_k \\
     &= \sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} 
-    \sum_{l=1}^{L}v_{j,l} v_{k,l}\tilde{x}_j \tilde{x}_k \\
+    \sum_{f=1}^{F}v_{j,f} v_{k,f}\tilde{x}_j \tilde{x}_k \\
     &= \frac{1}{2} \left( \sum_{j=1}^{\tilde{n}} \sum_{k=1}^{\tilde{n}}
-    \sum_{l=1}^{L} v_{j,l} v_{k,l} \tilde{x}_j \tilde{x}_k -
-    \sum_{j=1}^{\tilde{n}} \sum_{l=1}^{L}v_{j,l} v_{j,l} \tilde{x}_j \tilde{x}_j \right)\\
-    &=\frac{1}{2}\sum_{l=1}^{L} \left( \sum_{j=1}^{\tilde{n}}v_{j,l} \tilde{x}_j
-    \sum_{k=1}^{\tilde{n}} v_{k,l} \tilde{x}_k - \sum_{j=1}^{\tilde{n}}
-    v_{j,l}^2 \tilde{x}_j^2 \right)\\
-    &= \frac{1}{2}\sum_{l=1}^{L} \left( \left(\sum_{j=1}^{\tilde{n}}v_{j,l} \tilde{x}_j\right)^2
-    - \sum_{j=1}^{\tilde{n}} v_{j,l}^2 \tilde{x}_j^2 \right)
+    \sum_{f=1}^{F} v_{j,f} v_{k,f} \tilde{x}_j \tilde{x}_k -
+    \sum_{j=1}^{\tilde{n}} \sum_{f=1}^{F}v_{j,f} v_{j,f} \tilde{x}_j \tilde{x}_j \right)\\
+    &=\frac{1}{2}\sum_{f=1}^{F} \left( \sum_{j=1}^{\tilde{n}}v_{j,f} \tilde{x}_j
+    \sum_{k=1}^{\tilde{n}} v_{k,f} \tilde{x}_k - \sum_{j=1}^{\tilde{n}}
+    v_{j,f}^2 \tilde{x}_j^2 \right)\\
+    &= \frac{1}{2}\sum_{f=1}^{F} \left( \left(\sum_{j=1}^{\tilde{n}}v_{j,f} \tilde{x}_j\right)^2
+    - \sum_{j=1}^{\tilde{n}} v_{j,f}^2 \tilde{x}_j^2 \right)
 \end{align*}
 
 The complexity of the final line above is $O(L\tilde{n})$, and hence the FM formulation
@@ -363,7 +363,7 @@ can be generalized to degree $R$ (i.e. up to any limit of feature interation ord
 f_{\Theta}^{FM^R} = \theta_0 + \sum_{j=1}^{\tilde{n}} \theta_{j} \tilde{x}_{j}
 + \sum_{r=1}^{R} \sum_{j_1=1}^{\tilde{n}} \cdots \sum_{j_r = j_{r-1} + 1}^{\tilde{n}}
 \left( \prod_{k=1}^{r} \tilde{x}_{j_k} \right)
-\left( \sum_{l = 1}^{L_r} \prod_{k=1}^{r} v_{j_k, l}^{(r)}\right)
+\left( \sum_{f = 1}^{F_r} \prod_{k=1}^{r} v_{j_k, f}^{(r)}\right)
 \end{multline}
 
 The FM framework therefore provides an intuitive and computationally scalable method to
@@ -391,8 +391,51 @@ These factors and successes showed that DNN's have the potential to extract info
 feature representations from highly sparse and abstract data, and as a consequence,
 the application of DNN's in CTR prediction started recieving attention in the mid-2010's.
 
-The Multilayer Perceptron (MLP) \label{ref:mlp} is the most elementary type of Deep Neural Network
-\citep{RefWorks:webster2024week}. In general, a MLP with $L$ hidden layers is formulated as such
+The \textbf{Multilayer Perceptron} (MLP) \label{ref:mlp} is the most elementary type of Deep Neural Network
+\citep{RefWorks:webster2024week}. In general, a MLP with $L$ hidden layers is formulated as such:
+
+\begin{align}
+\label{eqn:mlp}
+\mathbf{h}^{(0)} &:= \tilde{\mathbf{x}} \\
+\mathbf{h}^{(l)} &= \phi_{l} \left( \mathbf{W}^{(l-1)} + \mathbf{b}^{(l-1)} \right), l = 1, \ldots, L \\
+\hat{y} &= \phi_{out} \left( \mathbf{w}^{(L)} \mathbf{h}^{(L)} + b^{(L)} \right)
+\end{align}
+
+where $\mathbf{W}^{(k)} \in \mathbb{R}^{n_{l+1} \times n_l } $, $\mathbf{b}^{(k)} \in \mathbf{R}^{n_{l+1}}$,
+$\mathbf{h}^{(l)} \in \mathbb{n_l}$, $n_0 = \tilde{n}$, $n_l$ is the number of hidden
+units in layer $l$ and $\phi_{l}$ is the activation function for layer $l$, 
+When rearranged in the form of equation~\ref{eqn:ctr-classifier}, the above becomes:
+
+\begin{equation}
+\label{eqn:mlp-2}
+f_{\Theta}^{MLP}(\tilde{\mathbf{x}}) = \psi_{out} \left( \psi_{L} \left( \cdots \psi_{1} \left( 
+    \tilde{\mathbf{x}} \right) \cdots \right) \right)
+\end{equation}
+
+where each function $\psi_{l}$ represents the affine transformation and element-wise activation
+operation for layer $l$. MLPs can be thought of as an acyclic graph, as displayed in
+Figure~\ref{fig:mlp}. The data $\tilde{\mathbf{x}}$ first gets fed through the
+\emph{input layer}, then gets processed by multiple \emph{hidden layers} that include
+a series of affine transfromations followed by activation functions, before the final
+result is produced by the \emph{output layer}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/ann_two_hidden_layers.png}
+    \caption{Multilayer Perceptron with two hidden layer. Taken from \citep{RefWorks:webster2024week}}
+    \label{fig:mlp}
+\end{figure}
+
+Figure~\ref{fig:mlp} demonstrates the potential that DNN's have for modelling higher order feature
+interactions. By training the network by means of Stochastic Gradient Descent, it should be
+possible to calculate the appropriate weight ($\mathbf{W}_l$) and bias ($\mathbf{b}_l$) parameters
+in order capture the relevant high-order feature patterns in the data. As such, many CTR
+modelling frameworks have been developed that use Deep Learning techniques to build upon and
+imporved the previously discussed classical methods by incorporating Deep Neural Networks such
+as the ML in the model architecture \citep{RefWorks:zhang2021deep}. The example of this is the 
+so-called \textbf{Wide and Deep} model developed by \cite{RefWorks:cheng2016wide}:
+
+
 
 \subsection{Feature Interaction Operator Layers}
 
