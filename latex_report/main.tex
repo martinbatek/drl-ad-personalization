@@ -256,7 +256,7 @@ networks have out performed the classical shallow counterparts. This transition 
 in more detail in the following section.
 
 \subsection{Shallow CTR Models}
-\ref{sec:shallow-models}
+\label{sec:shallow-models}
 
 \subsubsection{Logistic Regression}
 
@@ -331,7 +331,7 @@ FM model in fact scales linearly in $\tilde{n}$ and $F$:
 \begin{lemma}
 \label{lemma:fm-linearity}
 The model equation of a 2-way factorization machine (eq.~\ref{eqn:fm-2way}) can
-be computed in linear time $O(L\tilde{n})$.
+be computed in linear time $O(F\tilde{n})$.
 \end{lemma}
 
 \begin{proof}
@@ -355,8 +355,8 @@ pairwise interactions can be reformulated as such
     - \sum_{j=1}^{\tilde{n}} v_{j,f}^2 \tilde{x}_j^2 \right)
 \end{align*}
 
-The complexity of the final line above is $O(L\tilde{n})$, and hence the FM formulation
-as per equation~\ref{eqn:fm-2way} scales linearly in $L$ and $\tilde{n}$.
+The complexity of the final line above is $O(F\tilde{n})$, and hence the FM formulation
+as per equation~\ref{eqn:fm-2way} scales linearly in $F$ and $\tilde{n}$.
 \end{proof}
 
 This quality greatly simplifies the computational complexity of scaling the FM model to larger
@@ -386,11 +386,11 @@ which again aims to augment the FM framework by means of the Gradient Boosting a
 Despite the advantages of the FM framework, a setback of the formulation in equation~\ref{eqn:fm-rway}
 is that the framework grows highly compex and overparametized for higher values of $R$.
 As a consequence, only the 2-way FM framework as per equation~\ref{eqn:fm-2way} tends to be
-implemented in practice, meaning that in FM alone is practically insufficient for capturing
+implemented in practice, meaning that the FM model alone is practically insufficient for capturing
 feature interactions of order $>>2$ \citep{RefWorks:guo2017deepfm:}. Deep Neural Networks
 present a powerful alternative for addressing this shortcoming. Neural networks benefit from
 being universal function approximators \citep{RefWorks:cybenko1989approximation} and from the
-fact that neural network batch training is paralelizable by means of GPU accelerated computation.
+fact that neural network batch training is paralellizable by means of GPU accelerated computation.
 This has lead to the successfull application of Deep Learning algorithms across multiple fields
 such as Natural Language Processing and Image classification 
 \citep{RefWorks:he2016deep,RefWorks:krizhevsky2017imagenet,RefWorks:lecun1998gradient-based}. 
@@ -537,8 +537,8 @@ paper by \cite{RefWorks:zhang2016deep}.
 \end{figure}
 
 By incorporating the FM model feature interaction vectors in the embedding layer
-before the DNN, the FNN model is about to leverage the FM model's strength in
-interaction identification. Simaltaneously, the FNN model leverages an MLP network
+before the DNN, the FNN model is able to leverage the FM model's strength in
+interaction identification. The FNN model then leverages a MLP network
 to capture the higher order interaction signals much more efficiently than would
 have been feasibly possible when relying ownly on FM. Because of this, comprehensive
 experiments carried out by \cite{RefWorks:zhang2016deep} confirmed that FNN
@@ -549,12 +549,11 @@ due to its Single Tower architecture, lower-order feature interaction signals te
 to be lost in the network. \cite{RefWorks:guo2017deepfm:} further found that
 the FM pretraining step described above represents a significant overhead in
 terms of training efficiency. In the next subsections, we will see how the Wide \& Deep
-and DeepFM models look to solve for these issues.
+and DeepFM models aim to solve for these issues.
 
 \subsubsection{Wide and Deep}
 
-The 
-so-called \textbf{Wide and Deep} (W\&D) model was developed by \cite{RefWorks:cheng2016wide}:
+The \textbf{Wide and Deep} (W\&D) model was developed by \cite{RefWorks:cheng2016wide}.
 
 \begin{equation}
     \label{eqn:wdl}
@@ -574,7 +573,7 @@ with a Deep Component and a Wide Component (shown on the left and right hand sid
 respectively). The Deep Component is composed of a MLP with multiple hidden layers, each
 with the Rectified Linear Unit (ReLU) activation function. The Wide Component is formulated
 by the first two terms in equation~\ref{eqn:wdl}, and is composed of a simple linear transformation
-of the input features. The key aspect of the Wide Component to take note of is that the 
+of the input features. The key aspect of the Wide Component is the fact that the 
 linear transformation is not simply applied to the preprocessed features $\tilde{x}$,
 but instead to these concatinated with a set of cross-product transformed features. In
 other words:
@@ -597,7 +596,7 @@ for higher and lower order feature interactions. However, the downside
 of W\&D is the fact that the feature interactions in the Wide component
 need to be manually incorporated by defining the cross-product transformation
 functions $\{\upsilon_k(x)\}_{k=1}^{P}$. This means that there is a significant
-feature engineering component that would be necessary for this model. 
+feature engineering component that would be necessary to use this model effectively. 
 
 \subsubsection{DeepFM}
 
@@ -665,9 +664,107 @@ the latent embedding space, especially in comparison to the Product based Neural
 \subsection{Feature Interaction Operator Models}
 \label{sec:feature-operator-models}
 
-\subsubsection{Product Operators - Product Based Neural Network}
+MLPs have been proven to be universal function approximators, meaning that any function can be
+can be sufficiently approximated with a larger enough MLP \citep{RefWorks:hornik1989multilayer,RefWorks:cybenko1989approximation,RefWorks:hornik1990universal}.
+However, \cite{RefWorks:shalev-shwartz2017failures} found that for complex problems where the true target function
+is actually a larger set of uncorrelated solution functions, Deep Neural Networks suffer from
+an \emph{insensitive gradient issue} during gradient descent optimization. \cite{RefWorks:shalev-shwartz2017failures}
+show that when the target function is a set of uncorrelated functions, the variance of the gradient
+with respect to the target decreases linearly with respect to the number of functions that make up the target.
+The decrease in this variance has the effect of decreasing the correlation between the gratient
+and the target, causing the optimization of the DNN to fail. \cite{RefWorks:qu2018product-based}
+argues that since the target function for the CTR classification task typically consists of a
+set of uncorrilated if-then classifiers on the basis sparse categorical features, the insensitive
+gradient issue is likely to be prevalent in cases where MLPs are relied upon directly
+to detect the key feature interactions in sparse CTR classification data.
 
-\subsubsection{Convolutional Operators - Feature Generation Convolutional Neural Network}
+The above justifies the design of specific layers and architectures that explicitly detect important
+feature interactions in the data. In this section, we discuss \textbf{Feature Interaction Operators},
+which are deep learning layers that were developed specifically to assist the DNN in its capacity
+to learn higher feature interactions \citep{RefWorks:zhang2021deep}. The three different type of Feature Interaction
+Operators that are discussed in this section are Product Operators, Convolutional Operators
+and Attention Operators.
+
+\subsubsection{Product Operators models}
+
+\textbf{Product Operator} networks are neural networks that include layers with inner or outer
+product operations in order to explicitly model feature interactions \citep{RefWorks:zhang2021deep}.
+The \textbf{Product-bassed Neural Network} (PNN) introduced the concept of product operator models
+as it includes a product layer between the embedding layer and the MLP in order to model second
+order feature interactions in the data. All of this is arranged as a Single Tower architecture, as shown
+in Figure~\ref{fig:pnn}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/pnn.png}
+    \caption{Product-based Neural Network. Source: \citep{RefWorks:qu2016product-based}.}
+    \label{fig:pnn}
+\end{figure}
+
+The key defining component of the PNN is the \emph{Product Layer}. Each embedding field $\mathbf{e}_i$
+in the preceding embedding layer is pair-wisely connected to each of the other fields and a ``1''
+constant signal. The output of the product signal can then be broken out into two parts:
+
+\begin{itemize}
+    \item Virtue to the constant ``1'' signal, the first part is simply a vector $\mathbf{z}$ that consists of a concatenation
+    of all of the field embeddings. In other words $\mathbf{z} = \tilde{\mathbf{x}}$.
+    \item A second-order interaction vector, $\mathbf{p} = \{p_{i,j}\}\text{ where } i,j = 1, \ldots, n$, where each element
+    $p_{i,j} = g(\mathbf{e}_i, \mathbf{e}_j)$ defines a pairwise field interaction.
+\end{itemize}
+
+In their initial paper, \cite{RefWorks:qu2016product-based} proposed two variants of the PNN model, the Inner Product Based Neural Network
+and the Outer Product Based Neural Network, differentiated by whether $g$ is the Inner or Outer
+product operation respectively. The $\mathbf{z}$ and $\mathbf{p}$ vectors are then both
+projected to $\mathbb{R}^{D^1}$ space (the input dimension of the MLP network) by meant
+of trainable weight matrices, $W_z$ and $W_p$. The input to the MLP network is then the
+sum of the two resulting vectors and a bias vector $\mathbf{b}_1$. The formulation
+for the PNN network is summarized in equation~\ref{eqn:pnn}.
+
+\begin{equation}\label{eqn:pnn}
+    f_{\Theta}^{PNN}(\tilde{\mathbf{x}}) = f_{\Phi}^{MLP}(W_z \tilde{\mathbf{x}} + W_p \{g(\mathbf{e}_i, \mathbf{e}_j)\}_{i,j=1}^{n} + \mathbf{b}_1)
+\end{equation}
+
+The inclusion of the product layer in the PNN model automatically incorporates second order field-wise
+interactions as inputs to the MLP by means of inner and outer products, thereby partially alleviating
+the previously mentioned insensitive gradient issue. \cite{RefWorks:qu2016product-based} found that
+as a result of this, the PNN models outperformed LR, FM, FNN and the CCPM models in terms of Log Loss
+and AUC. However, a major disadvantage of the product layer operations is the computational time complexity,
+which increases quadratically with the number of fields and the embedding dimension. In order to alleviate
+this, \cite{RefWorks:qu2016product-based} implement simplified versions of the inner and outer product
+computations (in which some neurons are eliminated in the inner product, and the result for the outer product
+is compressed for all fields at once), but even then the PNN models are still tend to be less computational
+than its peers. Furthermore, since the PNN model leverages a Single Tower architecture it suffers from the
+same issue as the FNN model wherein the lower order interactions are ignored.
+
+\subsubsection{Convolutional Operators}
+
+\textbf{Convolutional Operator Models} use the convolution operation to extract key local-global
+features from the categorical field embeddings. The earliest and most well known example of a
+Convolutional Operator model is the \textbf{Convolutional Click Prediction Model} (CCPM)
+developed by \cite{RefWorks:liu2015convolutional}. The overall architecture of this model
+was shown in the original paper as in Figure~\ref{fig:ccpm}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/ccpm}
+    \caption{Convolution Click Prediction Model architecture. Source: \citep{RefWorks:liu2015convolutional}.}
+    \label{fig:ccpm}
+\end{figure}
+
+The input to the CCPM model consists of a $s \times D$ dimensional matrix of stacked categorical
+feature empeddigs, as shown on the left-hand side of Figure~\ref{fig:ccpm}. Per the standard
+architecture discussed in \citep{RefWorks:liu2015convolutional}, this matrix is then passed through
+a series of Convolutional and Pooling layers. The final prediction is calculated in the final
+fully connected (Dense) layer shown on the right-hand side of Figure~\ref{fig:ccpm}. The number
+of maximum features that the intermediate pooling layers take is flexible to account for the
+flexible input matrix length.
+
+\cite{RefWorks:liu2015convolutional} show that the CCPM model outperforms the LR, FM and RNN models
+in terms of Log Loss/Binary Cross-Entropy. However, a common critisizm of the CCPM model is that
+due to the equivariance property of the Convolution operations, the degree to which it is able to capture
+important feature interactions in the data is highly dependant on how the features are ordered in the
+input matrix \cite{RefWorks:zhang2021deep,RefWorks:qu2018product-based,RefWorks:gu2021ad}. Convolutions
+by their extract feature maps in the local neighbourhood of each variable, but fail to do so globally.
 
 \subsubsection{Attention Operators - AutoInt}
 
