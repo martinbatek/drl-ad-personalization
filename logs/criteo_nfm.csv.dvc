@@ -1,0 +1,5 @@
+outs:
+- md5: 602341089c2af6dc3b5ec3dc2b14231f
+  size: 2242
+  hash: md5
+  path: criteo_nfm.csv
