@@ -1,0 +1,5 @@
+outs:
+- md5: 85a0d32f366be15067b0e5b37d09ee51
+  size: 2393
+  hash: md5
+  path: kdd12_dcn.csv
