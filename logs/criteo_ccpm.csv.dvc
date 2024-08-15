@@ -1,0 +1,5 @@
+outs:
+- md5: 857d40edb96127a9a89dd87893f5f225
+  size: 2240
+  hash: md5
+  path: criteo_ccpm.csv

@@ -1,0 +1,5 @@
+outs:
+- md5: 426869dc7cbfbb1879580df4540fd538
+  size: 2800
+  hash: md5
+  path: kdd12_ccpm.csv

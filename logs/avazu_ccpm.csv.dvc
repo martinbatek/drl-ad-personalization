@@ -1,0 +1,5 @@
+outs:
+- md5: bcff4eb322b84111ee57598c47b4d1c8
+  size: 2773
+  hash: md5
+  path: avazu_ccpm.csv

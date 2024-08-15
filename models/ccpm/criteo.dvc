@@ -1,0 +1,6 @@
+outs:
+- md5: a70e35439954b850a4596af6b13f3322.dir
+  size: 49061037
+  nfiles: 3
+  hash: md5
+  path: criteo
