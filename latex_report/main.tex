@@ -664,7 +664,25 @@ the latent embedding space, especially in comparison to the Product based Neural
 \subsection{Feature Interaction Operator Models}
 \label{sec:feature-operator-models}
 
-\cite{RefWorks:rendle2020neural}
+MLPs have been proven to be universal function approximators, meaning that any function can be
+can be sufficiently approximated with a larger enough MLP \citep{RefWorks:hornik1989multilayer,RefWorks:cybenko1989approximation,RefWorks:hornik1990universal}.
+However, \cite{RefWorks:shalev-shwartz2017failures} found that for complex problems where the hypothesis
+space involves a larger set of uncorrelated solution functions, Deep Neural Networks suffer from
+an \emph{insensitive gradient issue} during gradient descent optimization. \cite{RefWorks:shalev-shwartz2017failures}
+show that when the target function is a set of uncorrelated functions, the variance of the gradient
+with respect to the target decreases linearly with respect to the number of functions that make up the target.
+The decrease in this variance has the effect of decreasing the correlation between the gratient
+and the target, causing the optimization of the DNN to fail. \cite{RefWorks:qu2018product-based}
+argues that since the target function for the CTR classification task typically consists of a
+set of uncorrilated if-then classifiers on the basis sparse categorical features, the insensitive
+gradient issue is likely to be prevalent in cases where MLPs are used as CTR classifiers directly.
+
+The above justifies the design of specific layers and architectures that explicitly detect important
+feature interactions in the data. In this section, we discuss \textbf{Feature Interaction Operators},
+which are deep learning layers that were developed specifically to assist the DNN in its capacity
+to learn higher feature interactions \citep{RefWorks:zhang2021deep}. The three different type of Feature Interaction
+Operators that are discussed in this section are Product Operators, Convolutional Operators
+and Attention Operators.
 
 \subsubsection{Product Operators - Product Based Neural Network}
 
