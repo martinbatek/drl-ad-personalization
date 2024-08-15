@@ -1,0 +1,5 @@
+outs:
+- md5: c67e3d76649a6e031155b94cfa7ca5d0
+  size: 2972
+  hash: md5
+  path: avazu_nfm.csv

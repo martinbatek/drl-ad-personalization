@@ -41,3 +41,12 @@
 /avazu_fgcnn.csv
 /kdd12_fgcnn.csv
 /criteo_fgcnn.csv
+/avazu_nfm.csv
+/kdd12_nfm.csv
+/criteo_nfm.csv
+/avazu_dcn.csv
+/criteo_dcn.csv
+/kdd12_dcn.csv
+/avazu_ccpm.csv
+/criteo_ccpm.csv
+/kdd12_ccpm.csv

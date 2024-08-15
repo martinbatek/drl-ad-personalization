@@ -1,0 +1,5 @@
+outs:
+- md5: 55e665cd2cd18b61022f37e778e0bc33
+  size: 3660
+  hash: md5
+  path: avazu_dcn.csv
