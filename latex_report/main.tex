@@ -256,7 +256,7 @@ networks have out performed the classical shallow counterparts. This transition 
 in more detail in the following section.
 
 \subsection{Shallow CTR Models}
-\ref{sec:shallow-models}
+\label{sec:shallow-models}
 
 \subsubsection{Logistic Regression}
 
@@ -331,7 +331,7 @@ FM model in fact scales linearly in $\tilde{n}$ and $F$:
 \begin{lemma}
 \label{lemma:fm-linearity}
 The model equation of a 2-way factorization machine (eq.~\ref{eqn:fm-2way}) can
-be computed in linear time $O(L\tilde{n})$.
+be computed in linear time $O(F\tilde{n})$.
 \end{lemma}
 
 \begin{proof}
@@ -355,8 +355,8 @@ pairwise interactions can be reformulated as such
     - \sum_{j=1}^{\tilde{n}} v_{j,f}^2 \tilde{x}_j^2 \right)
 \end{align*}
 
-The complexity of the final line above is $O(L\tilde{n})$, and hence the FM formulation
-as per equation~\ref{eqn:fm-2way} scales linearly in $L$ and $\tilde{n}$.
+The complexity of the final line above is $O(F\tilde{n})$, and hence the FM formulation
+as per equation~\ref{eqn:fm-2way} scales linearly in $F$ and $\tilde{n}$.
 \end{proof}
 
 This quality greatly simplifies the computational complexity of scaling the FM model to larger
@@ -386,11 +386,11 @@ which again aims to augment the FM framework by means of the Gradient Boosting a
 Despite the advantages of the FM framework, a setback of the formulation in equation~\ref{eqn:fm-rway}
 is that the framework grows highly compex and overparametized for higher values of $R$.
 As a consequence, only the 2-way FM framework as per equation~\ref{eqn:fm-2way} tends to be
-implemented in practice, meaning that in FM alone is practically insufficient for capturing
+implemented in practice, meaning that the FM model alone is practically insufficient for capturing
 feature interactions of order $>>2$ \citep{RefWorks:guo2017deepfm:}. Deep Neural Networks
 present a powerful alternative for addressing this shortcoming. Neural networks benefit from
 being universal function approximators \citep{RefWorks:cybenko1989approximation} and from the
-fact that neural network batch training is paralelizable by means of GPU accelerated computation.
+fact that neural network batch training is paralellizable by means of GPU accelerated computation.
 This has lead to the successfull application of Deep Learning algorithms across multiple fields
 such as Natural Language Processing and Image classification 
 \citep{RefWorks:he2016deep,RefWorks:krizhevsky2017imagenet,RefWorks:lecun1998gradient-based}. 
@@ -537,8 +537,8 @@ paper by \cite{RefWorks:zhang2016deep}.
 \end{figure}
 
 By incorporating the FM model feature interaction vectors in the embedding layer
-before the DNN, the FNN model is about to leverage the FM model's strength in
-interaction identification. Simaltaneously, the FNN model leverages an MLP network
+before the DNN, the FNN model is able to leverage the FM model's strength in
+interaction identification. The FNN model then leverages a MLP network
 to capture the higher order interaction signals much more efficiently than would
 have been feasibly possible when relying ownly on FM. Because of this, comprehensive
 experiments carried out by \cite{RefWorks:zhang2016deep} confirmed that FNN
@@ -549,12 +549,11 @@ due to its Single Tower architecture, lower-order feature interaction signals te
 to be lost in the network. \cite{RefWorks:guo2017deepfm:} further found that
 the FM pretraining step described above represents a significant overhead in
 terms of training efficiency. In the next subsections, we will see how the Wide \& Deep
-and DeepFM models look to solve for these issues.
+and DeepFM models aim to solve for these issues.
 
 \subsubsection{Wide and Deep}
 
-The 
-so-called \textbf{Wide and Deep} (W\&D) model was developed by \cite{RefWorks:cheng2016wide}:
+The \textbf{Wide and Deep} (W\&D) model was developed by \cite{RefWorks:cheng2016wide}.
 
 \begin{equation}
     \label{eqn:wdl}
@@ -574,7 +573,7 @@ with a Deep Component and a Wide Component (shown on the left and right hand sid
 respectively). The Deep Component is composed of a MLP with multiple hidden layers, each
 with the Rectified Linear Unit (ReLU) activation function. The Wide Component is formulated
 by the first two terms in equation~\ref{eqn:wdl}, and is composed of a simple linear transformation
-of the input features. The key aspect of the Wide Component to take note of is that the 
+of the input features. The key aspect of the Wide Component is the fact that the 
 linear transformation is not simply applied to the preprocessed features $\tilde{x}$,
 but instead to these concatinated with a set of cross-product transformed features. In
 other words:
@@ -597,7 +596,7 @@ for higher and lower order feature interactions. However, the downside
 of W\&D is the fact that the feature interactions in the Wide component
 need to be manually incorporated by defining the cross-product transformation
 functions $\{\upsilon_k(x)\}_{k=1}^{P}$. This means that there is a significant
-feature engineering component that would be necessary for this model. 
+feature engineering component that would be necessary to use this model effectively. 
 
 \subsubsection{DeepFM}
 
@@ -664,6 +663,8 @@ the latent embedding space, especially in comparison to the Product based Neural
 
 \subsection{Feature Interaction Operator Models}
 \label{sec:feature-operator-models}
+
+\cite{RefWorks:rendle2020neural}
 
 \subsubsection{Product Operators - Product Based Neural Network}
 
