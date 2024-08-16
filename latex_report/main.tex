@@ -754,19 +754,75 @@ was shown in the original paper as in Figure~\ref{fig:ccpm}.
 The input to the CCPM model consists of a $s \times D$ dimensional matrix of stacked categorical
 feature empeddigs, as shown on the left-hand side of Figure~\ref{fig:ccpm}. Per the standard
 architecture discussed in \citep{RefWorks:liu2015convolutional}, this matrix is then passed through
-a series of Convolutional and Pooling layers. The final prediction is calculated in the final
-fully connected (Dense) layer shown on the right-hand side of Figure~\ref{fig:ccpm}. The number
+a series of Convolutional and Pooling layers. The number
 of maximum features that the intermediate pooling layers take is flexible to account for the
-flexible input matrix length.
+flexible input matrix length. The final prediction is calculated by passing the final
+pooling result through a MLP, shown on the right-hand side of Figure~\ref{fig:ccpm} in green.
+This makes the CCPM model a Single Tower architecture model that can be roughly summarized
+as per equation~\ref{eqn:ccpm}.
+
+\begin{equation}\label{eqn:ccpm}
+    f_{\Theta}^{CCPM}(\tilde{\mathbf{x}}) = f_{\Phi}^{MLP}(f_{\Omega}^{Conv}(\tilde{\mathbf{x}}))
+\end{equation}
+
+where $f_{\Omega}^{Conv}$ represents the series of convolutions and pooling layers described above.
 
 \cite{RefWorks:liu2015convolutional} show that the CCPM model outperforms the LR, FM and RNN models
 in terms of Log Loss/Binary Cross-Entropy. However, a common critisizm of the CCPM model is that
 due to the equivariance property of the Convolution operations, the degree to which it is able to capture
 important feature interactions in the data is highly dependant on how the features are ordered in the
-input matrix \cite{RefWorks:zhang2021deep,RefWorks:qu2018product-based,RefWorks:gu2021ad}. Convolutions
-by their extract feature maps in the local neighbourhood of each variable, but fail to do so globally.
+input matrix \citep{RefWorks:zhang2021deep,RefWorks:qu2018product-based,RefWorks:gu2021ad}. Convolutions
+by nature extract feature maps in the local neighbourhood of each variable, but fail to do so globally.
+The \textbf{Feature Generation by Convolutional Neural Network} model proposed by \cite{RefWorks:liu2019feature}.
+The architecture for the FGCNN model is shown in Figure~\ref{fig:fgcnn}
 
-\subsubsection{Attention Operators - AutoInt}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/fgcnn.png}
+    \caption{FGCNN model architecture with Feature Generation Component. Source: \citep{RefWorks:liu2019feature}}
+    \label{fig:fgcnn}
+\end{figure}
+
+The main body of the FGCNN model consists Deep Classifier that is essentially an Inner Product
+Neural Network, which was discussed above \citep{RefWorks:qu2018product-based}. The inputs
+to the Deep Classifier consist of the input feature embeddings ($\tilde{\mathbf{x}}$), concatenated
+with a set of new features that are created in the Feature Generation component of the model. This
+Feature Generation component represents the primary innovation of the FGCNN model, and is visualized
+at the top of Figure~\ref{fig:fgcnn}. As with CCPM, the Feature Generation component is composed of
+a searies of two dimensional convolutional and max pooling layers, and takes the input feature
+embedding matrix as an input. However, in order to solve for the input order dependancy issue
+prevailent with CCPM, the resulting feature maps are first passed through a fully connected \emph{recombination layer}
+that models non-adjacent interactions.
+
+\subsubsection{Attention Operators}
+
+\textbf{Attention Operator Models} aim to utilize the attention mechanism for identifying
+the key feature interactions in the data. The \textbf{Autotomatic Feature Interaction Learning} (AutoInt) 
+model proposed by \cite{RefWorks:song2019autoint} makes use of a multi-head self attention
+network to model the important feature interactions in the data. The initial 
+paper separates the model into three parts: an embedding layer, an interaction layer 
+and an output layer. The embedding layer aims to project each sparse multi-value
+categorical a and dense numerical feature into a lower dimensional space, as per the below:
+
+$$
+\mathbf{e_i} = \frac{1}{q} \mathbf{V_i x_i}
+$$
+
+where $\mathbf{V_i}$ is the embedding matrix for the $i$-th field, $x_i$ is a multi-hot vector, and $q$ 
+is the number of non-zero values in $x_i$. The interaction layer employs the multi-head
+mechanism to determine which higher order feature interaction are meaningful in the data. This not only
+improves the efficiency of model traning, but it also improves the model's explainability. Lastly,
+the output layer is a fully connected layer that takes in the concatinated output 
+of the interaction layer, and applies the sigmoid activation function to produce the final prediction.
+The architecture of the AutoInt model is shown in Figure\ref{fig:autoint}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/autoint.png}
+    \caption{The Automatic Feature Interaction Learning model architecture. Source: \citep{RefWorks:song2019autoint}}
+    \label{fig:autoint}
+\end{figure}
+
 
 \section{Deep Reinforcement Learning}
 
