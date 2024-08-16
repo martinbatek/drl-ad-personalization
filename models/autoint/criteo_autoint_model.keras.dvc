@@ -1,5 +1,0 @@
-outs:
-- md5: 854e552285244b560e9eae32c2ebcd22
-  size: 61280500
-  hash: md5
-  path: criteo_autoint_model.keras
