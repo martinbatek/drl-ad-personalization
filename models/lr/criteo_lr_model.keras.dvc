@@ -1,5 +1,0 @@
-outs:
-- md5: 029f80632de18e3d5251cca11b60d4f5
-  size: 14208
-  hash: md5
-  path: criteo_lr_model.keras

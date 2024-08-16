@@ -1,5 +1,0 @@
-outs:
-- md5: 41b5980466724e013c348e55fbb4594f
-  size: 35316252
-  hash: md5
-  path: avazu_dfm_model.keras
