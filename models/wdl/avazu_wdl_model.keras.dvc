@@ -1,5 +1,0 @@
-outs:
-- md5: 9ef16b76e1b76b6d6093945098a2e685
-  size: 35313428
-  hash: md5
-  path: avazu_wdl_model.keras

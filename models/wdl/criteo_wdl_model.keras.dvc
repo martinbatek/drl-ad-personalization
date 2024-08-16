@@ -1,5 +1,0 @@
-outs:
-- md5: af000867a4a6505947fd24f86d33abb9
-  size: 61207512
-  hash: md5
-  path: criteo_wdl_model.keras

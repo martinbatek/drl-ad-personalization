@@ -1,5 +1,5 @@
 outs:
-- md5: b439347259f232a6fa928256b1a5172e
-  size: 2789
+- md5: 54622029d6f11899f045c64a1856b9a3
+  size: 1578
   hash: md5
   path: neuron_count_500.csv
