@@ -25,6 +25,10 @@
 \RequirePackage{amsfonts}
 \RequirePackage{amsthm}
 
+% Algorithms
+\RequirePackage{algpseudocode}
+\RequirePackage{algorithm}
+
 % for bold symbols, e.g. bold Greek symbols, use the bm package
 %\usepackage{bm} 
 

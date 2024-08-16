@@ -834,12 +834,118 @@ models are being applied in the case of Deep Q-Learning. Finally, we introduce t
 Learning News reccomendation (DRN) algorithm \citep{RefWorks:zheng2018drn:}, a Q-learning algorithm
 which we have repurposed for ad recommendation.
 
-\subsection{Reinforcement Learning Basics: Markov Decision Processes and Dynamic Programming}
+\subsection{Reinforcement Learning Basics}
+
+\subsubsection{Markov Decision Process and Bellman Optimality Equations}
 
 In the case of many online systems and applications where there is a series of interactions between
 users and the system, it is often desirable to find the optimal set of content to display to the
 users in order to maximize their engagement as time goes on. This problem can be framed as a
-\textbf{Markov Decision Process}
+\textbf{Markov Decision Process}. Definition~\ref{def:mdp} was taken from \citep{pike-burke2024LearnigAgents}:
+
+\begin{definition}\label{def:mdp}
+    An episodic \textbf{Markov decision process} (MDP) is defined by tuple $\mathcal{M}
+    (\mathcal{S},\mathcal{A}, H,\nu, \{P_{h}\}_{h=1}^{H},\{r_{h}\}_{h=1}^{H})$ where:
+    \begin{itemize}
+        \item $\mathcal{S}$ is the state space of finite cardinality.
+        \item $\mathcal{A}$ is the finite set of actions.
+        \item $H \in \mathbb{N}$ is the horizon of the problem.
+        \item $\nu$ is the initial state distribution.
+        \item $\{P_{h}\}_{h=1}^{H}$ is the collection of transition functions where
+        $P_h: \mathcal{S} \times \mathcal{A} \rightarrow \Delta(\mathcal{S})$
+        where $\Delta(\mathcal{S})$ is the set of probability distributions over
+        $\mathcal{S}$. When action $a \in \mathcal{A}$ is taken from state $s \in \mathcal{S}$
+        at stage $h$, $P_h(s^\prime | s, a)$ gives the probability of transitioning to state
+        $s^\prime \in \mathcal{S}$ for all $s^\prime \in \mathcal{S}$.
+        \item $\{r_{h}\}_{h=1}^{H}$ is the collection of reward functions, $r_h : \mathcal{S} \times \mathcal{A} \rightarrow [0,1]$
+        where $r_h(s,a)$ gives the reward from taking action $a \in \mathcal{A}$ from state $s \in \mathcal{S}$
+        at stage $h \in \{1, \ldots, H\}$.
+    \end{itemize}
+\end{definition}
+
+The aim of \textbf{Reinforcement Learning} is to interact with the MDP process environment in such a way
+that allows the agent to learn the \emph{optimal policy} - i.e. the state-stage $\rightarrow$ action mapping
+that maximizes the \emph{value} over the longer term. We refine some of these terms with more definitions
+from \citep{pike-burke2024LearnigAgents} below:
+
+\begin{definition}\label{def:policy}
+    A \textbf{policy} $\pi = \{\pi_h\}_{h=1}^{H}$ is a sequence of mappings $\pi_h : \mathcal{S}
+    \rightarrow \mathcal{A}$ for any $s \in \mathcal{S}, a \in \mathcal{A}$.
+\end{definition}
+
+\begin{definition}\label{def:policy-value}
+    the \textbf{value} of a policy $\pi$ from state $s \in \mathcal{S}$ in stage
+    $h \in \{1, \ldots, H\}$ is given by:
+    \begin{equation}\label{eqn:value-function}
+        V_h^{\pi} = \mathbb{E} \left[ \sum_{l = h}^{H} r_l (s_l, a_l) \Bigm| s_h = s, a_l = \pi(s_l), s_{l+1} \sim P_l(\cdot | s_l, a_l)\right]
+    \end{equation}
+\end{definition}
+
+The \emph{optimal policy} $\pi^*$ is then the one with the highest value, i.e.:
+\[
+\pi_h^*(s) = \arg\max_{\pi \in \Pi} V_h^{\pi}(s)
+\]
+for any $s \in \mathcal{S}$ and any $h \in \{1,\ldots, H\}$. In order to optimize for the
+policy that maximizes the expected value, we would need to consider the expected
+value of taking a specific action $a$ at specific stage $h$ and state $s$, for some given policy $\pi$. This is given
+by the \textbf{Q-function}, defined below in definition~\ref{def:q-function}.
+
+\begin{definition}\label{def:q-function}
+    The \textbf{Q-function} associated with taking action $a \in \mathcal{A}$ from state
+    $s \in \mathcal{S}$ at stage $h \in \{1, \ldots, H\}$ under some given policy $\pi$ is given by
+    \begin{equation}\label{eqn:q-function}
+        Q_h^{\pi}(s,a) = \mathbb{E} \left[ \sum_{l = h}^{H} r_l (s_l, a_l) \Bigm| s_h = s, 
+        a_h = a, a_l = \pi(s_l), s_{l+1} \sim P_l(\cdot | s_l, a_l)\right]
+    \end{equation}
+\end{definition}
+
+The relationship between the value function $V$ and the state action value function $Q$ is
+summarized in the $\textbf{Bellman equations}$. For any policy $\pi$ and for all $h, s, a$:
+
+\begin{align*}
+    V_{h}^{\pi}(s) &= Q_{h}^{\pi}(s, \pi_{h}(s))\\
+    Q_{h}^{\pi}(s,a) &= r_h(s,a) + \sum_{s^\prime \in \mathcal{S}} P_h (s^\prime | s, a)V_{h+1}^{\pi}(s^\prime)\\
+    V_{H+1}^{\pi}(s) &= 0
+\end{align*}
+
+The above leads to the key equations that underpin Reinforcement Learning - the \textbf{Bellman Optimality equations}.
+
+\begin{proposition}\label{prop:bellman-optimality}
+    If $V^*$ satisfies the Bellman Optimality Equations, then for all $h, a, s$:
+    \begin{align*}
+        V_h^*(s) &= \max_{a \in \mathcal{A}}Q_{h}^*(s,a)\\
+        Q_h^*(s,a) &= r_h(s,a) + \sum_{s^\prime \in \mathcal{S}} P_h (s^\prime | s, a)V_{h+1}^*(s^\prime)\\
+        V_{H+1}^*(s) = 0
+    \end{align*}
+    The above implies that the optimal policy $\pi^*$ is given by:
+    \[
+    \pi_h^*(x) = \arg\max_{a \in \mathcal{A}} Q_h^*(s,a)
+    \]
+\end{proposition}
+
+In other words, the optimal policy is found by maximizing the $Q$-function at each stage and
+state.
+
+\subsubsection{Dynamic Programming and UCBRL and Thompson Sampling RL}
+
+When the transition probabilities $P_h(s^\prime|s,a)$ and reward function
+$r_h(s,a)$ are known, it is then possible to find the optimal policy by first calculating the
+value of the $Q$ function at stage of the episode (which will simply be $r_H(s,a)$), and then working
+back to find $Q_h^*(s,a)$ for each stage. This is known as the \emph{Dynamic Programming} or 
+the \emph{Backward Recursion} algorithm. The steps involved are described in algorithm~\ref{alg:dynammic-programming}.
+
+\begin{algorithm}
+    \caption{Dynammic Programming algorithm}\label{alg:dynammic-programming}
+    \begin{algorithmic}[1]
+        \Require $P_h(s^\prime|s,a)$ and $r_h(s,a)$ are known
+        \State Set $V_{H+1}^*(s) = 0$ for all $s \in \mathcal{S}$
+        \For{$h = H, \ldots, 1$}
+            \State Calculate $Q_h^*(s,a) = r_h(s,a) + \sum_{s^\prime \in \mathcal{S}}P_h(s^\prime |s,a) V_{h+1}^*(s^\prime)$
+            \State Set $\pi_h^*(s) = \arg\max_{a \in \mathcal{A}} Q_h^*(s,a)$
+            \State Define $V_h^*(s) = \max_{a \in \mathcal{A}}Q_h^*(s,a) = Q_h^*(s, \pi_h^*(s))$
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
 
 \subsection{Q-Learning and Deep Q-Learning}
 
