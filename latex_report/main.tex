@@ -1012,7 +1012,98 @@ set to $\hat{Q}_{h}(s,a) = H$ for all $s \in \mathcal{S}, a \in \mathcal{A}$.
 In each stage, the algorithm proceeds by choosing the action that maximizes the
 $\hat{Q}_{h}(s,a)$, and observing the reward received $r_h(s,a)$ and the
 resulting state $s^\prime$. Before the next stage, the $\hat{Q}_{h}(s,a)$
-estimate is then updated to reflect the actual results observed.
+estimate is then updated to reflect the actual results observed. The steps
+for the basic Q-learning algorithm are shown in Algorithm~\ref{alg:basic-q-learning}
+
+\begin{algorithm}
+    \caption{Basic Q-Learning Algorithm. Source: \citep{pike-burke2024LearnigAgents}}\label{alg:basic-q-learning}
+    \begin{algorithmic}[1]
+        \State \textbf{Initialization:} $\hat{Q}_{h,0}(s,a) = H$ for all $s \in \mathcal{S}, a \in \mathcal{A}, h \in \{1, \ldots, H\}$
+        \For{episode $t = 1, \ldots, K$}
+            \State Observe $s_{1,t}$
+            \For{Stage $h = 1, \ldots, H$}
+                \State Select action $a_{h,t} = \arg\max_{a \in \mathcal{A}}\hat{Q}_{h,t}(s_{h,t},a)$
+                and update $N_{h,t}(s_{h,t}, a_{h,t})$
+                \State Observe $s_{h+1, t}$ and $r_{h,t}(s_{h,t}, a_{h,t})$
+                \For{All $(s, a, s^\prime)$ values}
+                    \If{$(s, a, s^\prime) = (s_{h,t}, a_{h,t}, s_{h+1, t})$}
+                        \State Update $\hat{Q}_{h,t+1}(s,a) = (1- \alpha_{h,t})\hat{Q}_{h,t}(s,a) + \alpha_{h,t}(r_{h,t}(s, a) + \gamma \arg\max_{a^\prime \in \mathcal{A}}\hat{Q}_{h,t}(s^\prime,a^\prime))$
+                    \Else
+                        \State Set $\hat{Q}_{h,t+1}(s,a) = \hat{Q}_{h,t}(s,a)$
+                    \EndIf
+                    \EndFor
+                \EndFor
+            \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+The advantage of the Q-learning algorithm is that the estimates for unobserved
+values remains the same, there is no additional computation that needs to take place.
+We only need to store $H \times |\mathcal{S}| \times |\mathcal{A}|$ unique estimates
+for $\hat{Q}(s,a)$, as opposed to $H \times |\mathcal{S}| \times |\mathcal{A}| \times |\mathcal{S}|$
+transition probabilities, which significantly lowers the memory requirement \citep{pike-burke2024LearnigAgents}.
+Note that in Algorithm~\ref{alg:basic-q-learning} the $\alpha_{h,t}$ parameter represents an
+\emph{update step size} parameter, which usually depends inversely on $N_{h,t}(s_{h,t}, a_{h,t})$.
+
+While the basic Deep Q-Learning algorithm significantly decreases the computational requirement
+by removing the need to store the transition probability model, keeping track of Q-function values
+may still be prohibitive in the case where the state and action spaces are probibitively sparse,
+as is the case in the Ad personalization domain. All of the aforementioned algorithms are designed
+for discrete state and action spaces with relatively small cardinalities, and the performance of these
+algorithms deteriorates for increased number of state-action combinations that need to be accounted for \citep{pike-burke2024LearnigAgents}.
+For sparse enviroments, it is therefore desirable to find a suitable \emph{function approximator} $f_{\Theta}: \mathbb{R}^n \rightarrow \mathbb{R}$ for the
+Q-function that can estimate the value of the of a state-action pair on the basis of a set of input
+action-state features $\mathbf{x} \in \mathbb{R}^n$ and a set of learned parameters $\Theta$. This
+means that rather than having to store $\hat{Q}(s,a)$ values for every state-action combination,
+we will only have to store the function parameters $\Theta$, and assume that $\hat{Q}(s,a) = f_{\Theta}(\mathbf{x})$,
+thereby changing the memory requirement from $H \times |\mathcal{S}| \times |\mathcal{A}|$ to simply
+$|\Theta|$.
+
+\cite{RefWorks:jin2020provably} provide a method for deriving the Q-function approximator
+$f_{\Theta}$ by means of linear approximation. Let $\phi$ represent a feature L2 normalization 
+such that $\forall \mathbf{x} \in \mathbf{X}, ||\phi(\mathbf{x})||_2 \leq 1$. \cite{RefWorks:jin2020provably}
+showed that for any policy $\pi$, there exists a set of vectors $w_h^{\pi}$ such that
+\begin{equation}\label{eqn:linear-approx-rl}
+    Q_h^{\pi}(s,a) = \phi(\mathbf{x})^{\intercal} w_h^{\pi}
+\end{equation}
+
+Equation~\ref{eqn:linear-approx-rl} then essentially reduces the problem of finding the
+finding the optimal policy approximator $f_{\Theta} \approx Q_h^*(s,a)$ problem to one
+that can be solved using gradient descent with respective to the function parameters
+$\Theta = w_h$.
+
+Although linear approximation may be sufficient for simple tasks, it is still however
+likely that in a lot of practical applications, assuming that the realtionship between
+the state-action features and the expected rewards is linear may be too simplistic. The
+linear Q-function approximator in the form of equation~\ref{eqn:linear-approx-rl} may not
+be expressive enough for the problem at hand \citep{pike-burke2024LearnigAgents}. For these
+cases, \cite{RefWorks:mnih2015human-level} proposed the Deep Q-Learning algorithm in which
+which the Q-function is approximated using a Deep Neural Network called a \emph{Deep Q-Network}.
+The full Deep Q-Learning algorithm is shown in Algorithm~\ref{alg:deep-q-learning}.
+
+\begin{algorithm}
+    \caption{Deep Q-Learning with Experience Replay. Source: \citep{RefWorks:mnih2015human-level}}
+    \label{alg:deep-q-learning}
+    \begin{algorithmic}[1]
+        \State \textbf{Initialize:} Replay memory $\mathbf{D}$ to capacity $\mathbf{N}$.
+        \State \textbf{Initialize:} Q-function approximator $f_{\theta}$ with random weights $\Theta$.
+        \State \textbf{Initialize:} Set target action-value function $\hat{f}_{\hat{\Theta}}$ with $\hat{\Theta} = \Theta$
+        \For{Episode $t=1,\ldots, K$}
+            \State Initialize state sequence $s_1$ and preprocess the sequence $\phi_1 = \phi(s_1)$
+            \For{Stage $h=1,\ldots,H$}
+                \State with probability $\epsilon$ select a random action $a_h$,
+                otherwise select action $a_h = \arg\max_{a \in \mathcal{A}} f_{\Theta}(\phi_h, a)$
+                \State Execute action $a_h$ and observe reward $r_h(s_h, a_h)$ and the next state $s_{h+1}$
+                \State Proprocess the features of the next state $\phi_{h+1} = \phi(s_{h+1})$
+                \State Store the transition $(\phi_{h}, a_h, r_h, \phi_{h+1})$ in $\mathbf{D}$
+                \State Sample a random set of transitions $(\phi_{j}, a_j, r_j, \phi_{j+1})$
+                \State Set $y_j = \begin{cases} r_j, & \text{if } j=H\\ r_j + \gamma \max_{a} \hat{f}_{\hat{\Theta}}(\phi_{j+1},a), & \text{otherwise} \end{cases}$
+                \State Perform gradient descent step on $L(\Theta) = \left(y_j - f_{\Theta}(\phi_j,a_j)\right)^2$ with respect to $\Theta$
+                \State Every $C$ steps reset the target action-value function $\hat{f} = f$ by setting weights $\hat{\Theta} = \Theta$
+            \EndFor
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
 
 \subsection{DRN: Deep Reinforcement Learning for News Recommendation}
 
