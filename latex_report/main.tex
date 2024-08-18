@@ -863,6 +863,13 @@ users in order to maximize their engagement as time goes on. This problem can be
     \end{itemize}
 \end{definition}
 
+To relate the above to the Ad marketplace context, we can adopt the language introduced in
+section~\ref{sec:problem-formulation-data}. Namely, the state space $\mathcal{S}$ is comprised
+of the set of all available \textbf{User} and \textbf{Contextual} features in the ad marketplace
+data, the action space $\mathcal{A}$ is made up of the set of available advertisments with the
+associated \textbf{advertisment} features and the reward would be the binary click label
+for each instance.
+
 The aim of \textbf{Reinforcement Learning} is to interact with the MDP process environment in such a way
 that allows the agent to learn the \emph{optimal policy} - i.e. the state-stage $\rightarrow$ action mapping
 that maximizes the \emph{value} over the longer term. We refine some of these terms with more definitions
@@ -877,10 +884,11 @@ from \citep{pike-burke2024LearnigAgents} below:
     the \textbf{value} of a policy $\pi$ from state $s \in \mathcal{S}$ in stage
     $h \in \{1, \ldots, H\}$ is given by:
     \begin{equation}\label{eqn:value-function}
-        V_h^{\pi} = \mathbb{E} \left[ \sum_{l = h}^{H} r_l (s_l, a_l) \Bigm| s_h = s, a_l = \pi(s_l), s_{l+1} \sim P_l(\cdot | s_l, a_l)\right]
+        V_h^{\pi} = \mathbb{E} \left[ \sum_{l = h}^{H} \gamma^{l-h} r_l (s_l, a_l) \Bigm| s_h = s, a_l = \pi(s_l), s_{l+1} \sim P_l(\cdot | s_l, a_l)\right]
     \end{equation}
 \end{definition}
 
+Where $\gamma$ represents a chosen \emph{discount factor} for potential rewards received in the future. 
 The \emph{optimal policy} $\pi^*$ is then the one with the highest value, i.e.:
 \[
 \pi_h^*(s) = \arg\max_{\pi \in \Pi} V_h^{\pi}(s)
@@ -894,7 +902,7 @@ by the \textbf{Q-function}, defined below in definition~\ref{def:q-function}.
     The \textbf{Q-function} associated with taking action $a \in \mathcal{A}$ from state
     $s \in \mathcal{S}$ at stage $h \in \{1, \ldots, H\}$ under some given policy $\pi$ is given by
     \begin{equation}\label{eqn:q-function}
-        Q_h^{\pi}(s,a) = \mathbb{E} \left[ \sum_{l = h}^{H} r_l (s_l, a_l) \Bigm| s_h = s, 
+        Q_h^{\pi}(s,a) = \mathbb{E} \left[ \sum_{l = h}^{H} \gamma^{l-h} r_l (s_l, a_l) \Bigm| s_h = s, 
         a_h = a, a_l = \pi(s_l), s_{l+1} \sim P_l(\cdot | s_l, a_l)\right]
     \end{equation}
 \end{definition}
@@ -904,7 +912,7 @@ summarized in the $\textbf{Bellman equations}$. For any policy $\pi$ and for all
 
 \begin{align*}
     V_{h}^{\pi}(s) &= Q_{h}^{\pi}(s, \pi_{h}(s))\\
-    Q_{h}^{\pi}(s,a) &= r_h(s,a) + \sum_{s^\prime \in \mathcal{S}} P_h (s^\prime | s, a)V_{h+1}^{\pi}(s^\prime)\\
+    Q_{h}^{\pi}(s,a) &= r_h(s,a) + \gamma \sum_{s^\prime \in \mathcal{S}} P_h (s^\prime | s, a)V_{h+1}^{\pi}(s^\prime)\\
     V_{H+1}^{\pi}(s) &= 0
 \end{align*}
 
@@ -914,7 +922,7 @@ The above leads to the key equations that underpin Reinforcement Learning - the 
     If $V^*$ satisfies the Bellman Optimality Equations, then for all $h, a, s$:
     \begin{align*}
         V_h^*(s) &= \max_{a \in \mathcal{A}}Q_{h}^*(s,a)\\
-        Q_h^*(s,a) &= r_h(s,a) + \sum_{s^\prime \in \mathcal{S}} P_h (s^\prime | s, a)V_{h+1}^*(s^\prime)\\
+        Q_h^*(s,a) &= r_h(s,a) + \gamma \sum_{s^\prime \in \mathcal{S}} P_h (s^\prime | s, a)V_{h+1}^*(s^\prime)\\
         V_{H+1}^*(s) = 0
     \end{align*}
     The above implies that the optimal policy $\pi^*$ is given by:
@@ -926,7 +934,7 @@ The above leads to the key equations that underpin Reinforcement Learning - the 
 In other words, the optimal policy is found by maximizing the $Q$-function at each stage and
 state.
 
-\subsubsection{Dynamic Programming and UCBRL and Thompson Sampling RL}
+\subsubsection{Dynamic Programming, UCBRL and Thompson Sampling RL}
 
 When the transition probabilities $P_h(s^\prime|s,a)$ and reward function
 $r_h(s,a)$ are known, it is then possible to find the optimal policy by first calculating the
@@ -940,14 +948,71 @@ the \emph{Backward Recursion} algorithm. The steps involved are described in alg
         \Require $P_h(s^\prime|s,a)$ and $r_h(s,a)$ are known
         \State Set $V_{H+1}^*(s) = 0$ for all $s \in \mathcal{S}$
         \For{$h = H, \ldots, 1$}
-            \State Calculate $Q_h^*(s,a) = r_h(s,a) + \sum_{s^\prime \in \mathcal{S}}P_h(s^\prime |s,a) V_{h+1}^*(s^\prime)$
+            \State Calculate $Q_h^*(s,a) = r_h(s,a) + \gamma \sum_{s^\prime \in \mathcal{S}}P_h(s^\prime |s,a) V_{h+1}^*(s^\prime)$
             \State Set $\pi_h^*(s) = \arg\max_{a \in \mathcal{A}} Q_h^*(s,a)$
             \State Define $V_h^*(s) = \max_{a \in \mathcal{A}}Q_h^*(s,a) = Q_h^*(s, \pi_h^*(s))$
         \EndFor
     \end{algorithmic}
 \end{algorithm}
 
+Of course in practice, we more often than not do not know the transition probabilities and
+reward function of the environment. A possible method for proceeding in this case in by executing a Reinforcement Learning
+algorithm that chooses actions in such a way that simultaneously allows for the collection of sufficient
+datapoints for estimating the reward function and transition probabilities, while also minimizing
+the long term cumulative \emph{regret} as much as possible.
+
+\begin{definition}\label{def:regret}
+Let $K$ be the total number of episodes, $\pi^*$ be the optimal policy and $\pi_t$ be
+the policy chosen for episode $t$. The the cumulative regret over $K$ episodes is given by
+\begin{equation}
+    \mathcal{R}_T = \sum_{t=1}^K \mathbb{E}\left[ V_1^{\pi^*}(s_{1,t}) - V_1^{\pi_t}(s_{1,t})\right]
+\end{equation}
+\end{definition}
+
+Two algorithms for doing this are the Upper Confidence Bound for Reinforcement Learning (UCBRL)
+\citep{RefWorks:auer2008near-optimal} and the Thompson Sampling algorthm for Reinforcement
+Learning \citep{RefWorks:pike-burke2024optimism/thompson}. UCBRL works by calculating the
+empirical mean transition probabilities as:
+
+\[
+\hat{P}_{h,t}(s^\prime|s,a) = \frac{N_{h,t}(s,a,s^\prime)}{\max \left( N_{h,t}(s,a),1\right)}
+\]
+
+Where $N_{h,t}(s,a,s^\prime)$ represents the number of times until episode $t$ that taking action
+$a$ from state $s$ resulted in a transition to state $s^\prime$, and $N_{h,t}(s,a)$ is the number
+of times upt to episode $t$ that action $a$ was taken from state $s$. The result from \cite{RefWorks:weissman2003inequalities}
+is then used to establish confidence bounds on the transition probabilities, which is then used to
+calculate the $Q$-value of each action-state pair to some minimum degree of confidence.
+
+Meanwhile, the Thompson RL algorithm \citep{RefWorks:pike-burke2024optimism/thompson} proceeds by
+taking a Bayesian approach and sampling a transition distribution from a Dirichelet distribution, which is the conjugate prior distribution
+for a categorical distribution. It then establishes a policy calculating the $Q$-function values
+with this transition distribution, and acts accordingly for the episode. Finally, it then revises the
+Dirichelet distribution by posterior update before the next episode.
+
+Both of the methods above are sufficient in cases where the state and action spaces are finite
+and relatively small. However, a major drawback with both of these algorithms is that they both
+require the state transtition model to be approximated and stored. This poses a serious practical
+issue in the case of Ad personalization, since as we have covered in section\ref{sec:problem-formulation-data},
+Ad marketplace data tends to be extremely sparse once encoded. This means that in order to fully
+calculate the transition probabilities, one would need to account for a vast number to state-action-transition
+tuples, which is likely to be computationally infeasible. In the next section, we explore $Q$-learning,
+a subdomain of Reinforcement Learning that aims to learn the $Q$-function directly, and is therefore 
+\emph{model free}.
+
 \subsection{Q-Learning and Deep Q-Learning}
+
+Q-learning was pioneered by \cite{RefWorks:watkins1989learning} as a model-free, and therefore
+computationally efficient method for solving RL problems that have a sparse state
+and action space. The basic Q-learning algorithm works by maintaining an estimate
+of the Q-function for every state-action pair, and selecting a policy that
+ise greedy with respect to this estimate \citep{pike-burke2024LearnigAgents}.
+The Q-function estimate $\hat{Q}(s,a)$ is usually initialized with its value
+set to $\hat{Q}_{h}(s,a) = H$ for all $s \in \mathcal{S}, a \in \mathcal{A}$.
+In each stage, the algorithm proceeds by choosing the action that maximizes the
+$\hat{Q}_{h}(s,a)$, and observing the reward received $r_h(s,a)$ and the
+resulting state $s^\prime$. Before the next stage, the $\hat{Q}_{h}(s,a)$
+estimate is then updated to reflect the actual results observed.
 
 \subsection{DRN: Deep Reinforcement Learning for News Recommendation}
 
@@ -975,7 +1040,7 @@ lifetime.
 \chapter{Deep CTR model Evaluation}
 \label{chap:deep-ctr-model-evaluation}
 
-\section{Model Selection Methodology}
+\section{Models and Model selection Methodology}
 
 As explained above, I will explore a number of deep learning models. I selected five popular models on the basis of the following criteria
 
