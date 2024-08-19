@@ -1105,21 +1105,27 @@ The full Deep Q-Learning algorithm is shown in Algorithm~\ref{alg:deep-q-learnin
     \end{algorithmic}
 \end{algorithm}
 
+In the original paper, the Deep Q-learning Network (DQN) algorithm was initially proposed to find the optimal
+playing policies for 49 of the classic Atari 2600 games, where a given state would be represented by the game's
+pixel values, the set of actions were possible joystick movements and button presses and the rewards were the number
+of points accumalated throughout the game. \cite{RefWorks:mnih2015human-level} due to the highly sequential nature of
+the state-action-reward data, using newly observed data to directly update the Q-function DNN approximator
+would result in significant instabilities due to autocorrelation of inputs \citep{RefWorks:mnih2015human-level}.
+It is for this reason that the following modifications made in algorithm~\ref{alg:deep-q-learning} over and above
+basic Q-Learning:
+
+\begin{itemize}
+    \item In order to minimize the risk posed by the sequential dependancies in the newly observed data, Deep Q-Learing
+    model is trained by means of \emph{experience replay.} Every new observation is stored in memory $\mathbf{D}$. In order
+    to fit the model, a sample of \emph{experience observations}  $(\phi_{j}, a_j, r_j, \phi_{j+1})$ is sampled from $\mathbf{D}$
+    uniformly at random, and is then used to train the model by means of gradient descent.
+    \item Using the same model for selection and calculating the gradient descent targets ($y_j$) tends to lead to further model instability as the $y_j$ values are overestimated \citep{RefWorks:mnih2015human-level}.
+    To prevent this, a separate \emph{target model} $\hat{f}$ is used to calculate the $y_j$ values.
+\end{itemize}
+
 \subsection{DRN: Deep Reinforcement Learning for News Recommendation}
 
-In their survey, \citep{RefWorks:wang2024deep} describe how deep reinforcement learning combines 
-the aforementioned feature extraction capabilities of DNN’s with the decision-making 
-capability of reinforcement learning, which aims to learn an optimal state-action policy 
-which maximizes the expected reward gained in a given environment. In the context of 
-recommendation systems, a significant amount of research has been dedicated to formulating 
-the recommendation problem as a Contextual Multi-Armed Bandit (MAB) problem setting, where 
-the context consists of user, site and item features \citep{RefWorks:bouneffouf2012contextual-bandit,RefWorks:li2010contextual-bandit,RefWorks:zeng2016online}. 
-However, a shortcoming for the MAB approach 
-is that it does not explicitly model the future expected reward for the policy, which may 
-be detrimental in the longer term \citep{RefWorks:zheng2018drn:}. Markov Decision Process (MDP) models 
-solve for this issue by modelling the state-action progression as a Markov Process, allowing 
-for the stochastic valuation of the future potential rewards for a given recommendation 
-policy \citep{RefWorks:lu2016partially,RefWorks:mahmood2007learning}. DRN \citep{RefWorks:zheng2018drn:} is a MDP framework 
+DRN \citep{RefWorks:zheng2018drn:} is a MDP framework 
 that leverages a Deep Neural Network to approximate the expected total user response for 
 each recommendation at each state. The two major advantages of DRN are firstly that it is 
 composed on the basis of a continuous state and action representation, meaning that it can 
