@@ -841,7 +841,8 @@ which we have repurposed for ad recommendation.
 In the case of many online systems and applications where there is a series of interactions between
 users and the system, it is often desirable to find the optimal set of content to display to the
 users in order to maximize their engagement as time goes on. This problem can be framed as a
-\textbf{Markov Decision Process}. Definition~\ref{def:mdp} was taken from \citep{pike-burke2024LearnigAgents}:
+\textbf{Markov Decision Process}. Definition~\ref{def:mdp} was taken from \citep{pike-burke2024LearnigAgents}
+have been chosen for evaluation:
 
 \begin{definition}\label{def:mdp}
     An episodic \textbf{Markov decision process} (MDP) is defined by tuple $\mathcal{M}
@@ -1137,35 +1138,58 @@ lifetime.
 \chapter{Deep CTR model Evaluation}
 \label{chap:deep-ctr-model-evaluation}
 
-\section{Models and Model selection Methodology}
+As explained in the preceeding introduction, chapter~\ref{chap:deep-ctr-model-evaluation} is
+dedicated for evaluating a range of different click prediction models. The intention is then to
+incorporate the best model candidate in a Deep Reinforcement Learning framework for Ad personalization
+in chapter~\ref{chap:deep-rl-for-ad-personalization}. In chapter~\ref{chap:deep-ctr-model-evaluation},
+we first proceed by explaining the model selection criterea and listing the candidate models in section~\ref{sec:model-selection}.
+We then describe the Experiment Setup for the model evaluations in section~\ref{sec:experiment-setup}, including
+data preprocessing, evaluation metrics and hyperparameter selection. Finally, we conclude the chapter
+by presenting the results from the experiments in section~\ref{sec:model-results}, in which the \textbf{Deep and Cross Network} (DCN) architecture \citep{RefWorks:wang2017deep}
+was revealed to have the highest predictive accuracy on our chosen datasets.
 
-As explained above, I will explore a number of deep learning models. I selected five popular models on the basis of the following criteria
+\section{Models and Model selection Criteria}
+\label{sec:model-selection}
+
+DeepCTR classification is an extremely active field of research, with many
+different model architectures being explored by different authors. It is because of this
+reason that it is practically impossible to evaluate all models within the scope
+of this project. For the purposes of this paper, the scope of models has therefore
+been narrowed down using the following model selection criteria:
 
 \begin{itemize}
 \item Competitive predition accuracy in the KDD12, Criteo and Avazu datasets as published on Papers with Code.
 \item Ideally, I was looking for a representitive set of models for each model type as discussed in (Zhang et. al. 2021). Therefore I was looking for models that employed Product Interaction Opetators, Attention Operators and Factorization Machines as a basis.
-\item The code for the model has to be accessible and intuitive to use.
+\item The code for the model has to be accessible and intuitive to use. To implement the experiments
+in this chapter, I made use of the DeepCTR Python package \citep{RefWorks:shen2017deepctr:}.
 \end{itemize}
 
-On the basis of the above critea, I have chosen the following models to explore:
+On the basis of the above critea, the following models from chapter~\ref{chap:background} have been selected for the scope of this paper:
 
 \begin{itemize}
-\item Factorization Supported Neural Networks
-\item Product Based Neural Networks
-\item Wide and Deep
-\item DeepFM
-\item Automatic Feature Interaction (AutoInt)
+\item Factorization Supported Neural Networks (FNN) \citep{RefWorks:zhang2016deep}
+\item Product Based Neural Networks (PNN) \citep{RefWorks:qu2016product-based}
+\item Neural Factorization Machines (NFM) \citep{RefWorks:he2017neural}
+\item Deep and Cross Network (DCN) \citep{RefWorks:wang2017deep}
+\item Wide and Deep (W\&D) \citep{RefWorks:cheng2016wide}
+\item DeepFM (DFM) \citep{RefWorks:guo2017deepfm:}
+\item Automatic Feature Interaction (AutoInt) \citep{RefWorks:song2019autoint}
+\item Convolutional Click Prediction Model (CCPM) \citep{RefWorks:liu2015convolutional}
+\item Feature Generation by Convolutional Neural Network (FGCNN) \citep{RefWorks:liu2019feature}
 \end{itemize}
 
 \section{Experiment Setup}
+\label{sec:experiment-setup}
 
 \subsection{Datasets and Preprocessing}
+
 
 \subsection{Evaluation Metrics}
 
 \subsection{Hyperparameter Selection}
 
 \section{Deep CTR Model Results}
+\label{sec:model-results}
 
 \chapter{Deep Reinforcement Learning for Ad Personalization}
 \label{chap:deep-rl-for-ad-personalization}
