@@ -1183,6 +1183,99 @@ On the basis of the above critea, the following models from chapter~\ref{chap:ba
 
 \subsection{Datasets and Preprocessing}
 
+In order to evaluate and compare the predictive performance of each of the previously mentioned
+models, we perform experiments using three widely known real-world benchmark datasets for
+click-through rate prediction.
+
+\subsubsection{KDD12}
+
+The \textbf{KDD12} dataset was first released for the KDD12 cup 2012 competition
+\citep{RefWorks:aden2012kdd}, with the original task being to predict the 
+number of clicks for a given number of impressions. Each line represents 
+a training instance derived from the session logs for the advertizing 
+marketplace. In the context of this dataset, a ``session'' refers to an 
+interaction between a user and the search engine, containing the following 
+components; the user, a list of adverts returned by the search engine and 
+shown (impressed) to the user and zero or more adverts clicked on by the 
+user. Each line in the training set includes, Click and Impression counts, 
+Session features, User features and Ad features.
+
+\subsubsection{Avazu}
+
+The \textbf{Avazu} dataset was originally released in 2014 for a CTR prediction 
+Competition on Kaggle \citep{RefWorks:wang2014click-through}. The data is 
+composed of 11 days worth mobile ad marketplace data. Much like the KDD12 
+dataset above, this dataset contains features ranging from user activity 
+(clicks), user identification (device type, IP) to ad features.
+
+\subsubsection{Criteo}
+
+Finally, the \textbf{Criteo} dataset is another benchmark CTR prediction dataset 
+that was originally released on Kaggle for a CTR prediction compitition \citep{RefWorks:tien2014display}. 
+The original dataset is made up of 45 Million user's click activity, and 
+contains the click/no-click target along with 26 categorical feature 
+fields and 13 numerical feature fields. Unlike the other two datasets 
+however, the semintic significance of these fields is not given - they 
+are simply labelled as ``Categorical 1-26'' and ``Numerical 1-13'' 
+respectively.
+
+\subsubsection{Preprocessing}
+
+As a first step in preprocessing, each dataset was shuffled and split into training (80\%) and validation (20\%)
+sets. The size if the datasets (roughly 15GB for KDD2 alone) necessitated the use of Amazon Web Services'
+Data Wrangler Tool for shullfing and splitting, and this was done using a random seed of 42.
+
+We then proceeded to preprocess the categorical and numberical features. As previously
+discussed in chapter~\ref{chap:background}, ad platform categorical features tend to contain
+a lot of unique values per feature - i.e. they exhibit high cardinality.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/dataset_cardinalities.png}
+    \caption{Categorical feature cardinalities from subsets of each dataset}
+    \label{fig:cardinalities}
+\end{figure}
+
+A common remidy to the above issue is to \emph{bin} the categorical feature 
+values before one-hot encoding or embedding, according to some given 
+threshold \citep{RefWorks:song2019autoint}. This essentially means that for a 
+given threshold $t$, we retain only the values for the multi-value 
+categorical features that have more than $t$ occurances in the dataset. As recommended by
+\cite{RefWorks:song2019autoint}, the binning thresholds were set such that
+$t = {10,5,10}$ for Criteo, KDD12 and Avazu respectively. The categorical
+feature values were then label encoded as integers in descending order according
+to the appearance of each value in the dataset, with integer keys starting
+at $1$. In otherwords, the most frequent value mapped to $1$, the second most frequent
+to $2$, and so on. The $0$ key was reserved for either infrequent or unknown categorical
+feature values.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/numerical_boxplots.png}
+    \caption{Boxplots of numerical features in the datasets}
+    \label{fig:boxplots}
+\end{figure}
+
+Finally, an examinationation of the boxplots (see figure~\ref{fig:boxplots}) for the numerical features in
+each of the datasets reveals the presence of high varience numerical outliers,
+particularly in the case of the Criteo dataset. In order to ensure efficient
+training by means of gradient descent, these values needed to be normalized to unit
+variance and zero mean. In order words, for each numerical feature $x$,
+the following transformation was applied:
+
+$$
+z = \frac{x - \bar{x}}{\sigma}
+$$
+
+where $\bar{x}$ and $\sigma$ represents the mean and standard deviation of the
+the numerical feature in question. Furthermore, for the Criteo Dataset the following
+transformation was applied to the normalized values, as recommended by \cite{RefWorks:song2019autoint}
+
+\begin{equation*}
+\tilde{z} = \begin{cases} z & \text{ if } z \leq 2 \\
+    \log^{2}(z) & \text{ otherwise}
+\end{cases}
+\end{equation*}
 
 \subsection{Evaluation Metrics}
 
