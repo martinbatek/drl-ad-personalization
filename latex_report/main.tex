@@ -736,6 +736,37 @@ is compressed for all fields at once), but even then the PNN models are still te
 than its peers. Furthermore, since the PNN model leverages a Single Tower architecture it suffers from the
 same issue as the FNN model wherein the lower order interactions are ignored.
 
+The \textbf{Neural Factorization Machine} (NFM) model introduced by \cite{RefWorks:he2017neural} works
+on a similar principle to PNN, in that it also includes a product layer the architecture
+of its architecture. The NFM model calculates the pre-sigmoid prediction as
+in equation~\ref{eqn:nfm}:
+
+\begin{equation}
+    \label{eqn:nfm}
+    f_{\Theta}^{NFM}(\tilde{\mathbf{x}}) = w_0 + \sum_{j=1}^{\tilde{n}} \tilde{x}_j
+    + f_{\Phi}^{NFM-Deep}(\tilde{\mathbf{x}})
+\end{equation}
+
+The first two terms in equation~\ref{eqn:nfm} are simply composed of a
+bias parameter $w_0$, and a linear combination of the feature values
+in $\tilde{\mathbf{x}} = \left(\tilde{x}_1, \ldots, \tilde{x}_{\tilde{n}}\right)$.
+The last term in equation~\ref{eqn:nfm} represents the core component of the NFM
+model, and includes an architecture similar to that of the PNN model with
+an embedding layer, a unique type of product layer called a \emph{Bi-Interaction Layer}
+followed by a multi-layer MLP network. The architecture for $f_{\Phi}^{NFM-Deep}$
+is visualized in Figure~\ref{fig:nfm}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/nfm.png}
+    \caption{Neural Factorization Machines model excluding the first-order linear regression part. Source:\cite{RefWorks:he2017neural}}
+    \label{fig:nfm}
+\end{figure}
+
+Figure~\ref{fig:nfm} reveals that the structure of the network represented by $f_{\Phi}^{NFM-Deep}$
+is similar to that of PNN as shown in Figure~\ref{fig:pnn}. The key difference is
+that rather than using a Inner or Outper product layer, NFM instead uses a Bi-Interaction Layer
+that 
 \subsubsection{Convolutional Operators}
 
 \textbf{Convolutional Operator Models} use the convolution operation to extract key local-global
