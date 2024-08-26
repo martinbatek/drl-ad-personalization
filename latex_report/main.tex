@@ -1229,7 +1229,7 @@ include the results of two successive experiments:
 
 We first proceed by explaining the model selection criterea and listing the candidate models in section~\ref{sec:model-selection}.
 We then describe the Experiment Setup for the model evaluations in section~\ref{sec:experiment-setup}, including
-data preprocessing, evaluation metrics and hyperparameter selection. Finally, we conclude the chapter
+data preprocessing, evaluation metrics, optimization algorithms and hyperparameter selection. Finally, we conclude the chapter
 by presenting the results for the experiments above in section~\ref{sec:model-results}, in which the \textbf{Deep and Cross Network} (DCN) architecture \citep{RefWorks:wang2017deep}
 was revealed to have the highest predictive accuracy on our chosen datasets.
 
@@ -1272,6 +1272,13 @@ For comparison, we also evaluate the predictive performance of the following mod
 
 \section{Experiment Setup}
 \label{sec:experiment-setup}
+
+The full script for both experiments outlined above is contained in the iPython notebook
+\verb|ctr_model_testing.ipynb|, which is available on the Github Repository for this project \citep{Batek_Deep_Reinforcement_Leaning_2024}.
+All experiments were carried out using Tensorflow version 2.14 on AWS Sagemaker JupyterLab, utilizing a ml.g5.2x.large compute instance.
+Model implementations from the DeepCTR Python package \citep{RefWorks:shen2017deepctr:} were
+used where possible. For full Python environment specifications, please refer to the
+\verb|environment_gpu.yml| file on the aforementioned Github repository for this project.
 
 \subsection{Datasets and Preprocessing}
 
@@ -1371,6 +1378,7 @@ transformation was applied to the normalized values, as recommended by \cite{Ref
 \end{equation*}
 
 \subsection{Evaluation Metrics}
+\label{sec:evaluation-metrics}
 
 Predictive performance of each model was assessed in terms of the following five metrics:
 
@@ -1429,6 +1437,24 @@ Predictive performance of each model was assessed in terms of the following five
         \frac{ \sum_{k=1}^{K} \mathbb{I}_{y_k}(g_{t}(\hat{y}_k)) \cdot \mathbb{I}_{y_k}(1)}{\sum_{k=1}^{K}\mathbb{I}_{y_k}(1)}
     \]
 \end{itemize}
+
+\subsection{Optimization Algorithms}
+\label{sec:optimization-algorithms}
+
+In section~\ref{sec:evaluation-metrics} we have already stated that the primary loss function used in this report
+for model fitting is the Binary Crossentropy Loss function. For Logistic Regression (LR) and Factorization Machines (FM),
+the Stochastic Gradient Descent algorithm \citep{robbins1951stochastic} was used to optimize the model weights,
+as reccomended in the original papers \citep{RefWorks:richardson2007predicting,RefWorks:rendle2010factorization}.
+For the DNN models, we used the Adam Optimizer \citep{Kingma2014AdamAM}, a widely popular optimiztion algorithm
+for training Deep Neural Networks. In both cases, we set the learning parameter to $\eta = 0.001$, which the
+standard learning rate setting for the Keras Adam Optimizer implementation \citep{chollet2023keras}.
+
+In order to ensure that training times (and therefore training)
+remained within a reasonable range, all models were trained to a maximum of 15 epochs. In addition to this,
+the Keras EarlyStopping Callback was used with \verb|patience| parameter set to 5 epochs. This was done to
+further ensure that training time remained within a reasonable range, as well as in order to prevent
+model fitting.
+
 
 \subsection{Hyperparameter Selection}
 \label{sec:hyperparameter-selection}
