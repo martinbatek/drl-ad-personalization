@@ -1,7 +1,7 @@
 cff-version: 1.0.0
 message: "Please cite this project repository as below."
 authors:
-- family-names: "Bat\\v{e}k"
+- family-names: "Bat\v{e}k"
   given-names: "Martin"
 title: "Deep Reinforcement Leaning for Ad Personalization"
 version: 1.0.0
