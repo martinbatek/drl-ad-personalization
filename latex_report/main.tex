@@ -244,8 +244,10 @@ b_{D, 1}^i & \cdots & b_{D, C_i}^i
 \end{split}
 \end{equation}
 
-where $\mathbf{B}_i$ is the embedding matrix for feature $x_i$, whose dimensions are determined
-by the chosen embedding dimension $D$ and the cardinality of the feature, $C_i$. 
+where $\mathbf{B}_i \in \mathbb{R}^{D \times C_i}$ is the embedding matrix for feature $x_i$, whose dimensions are determined
+by the chosen embedding dimension $D$ and the cardinality of the feature, $C_i$. For numerical features
+in $\mathbf{x}$ the cardinality is $C_i = 1$, so the embedding operation in equation~\ref{eqn:cat-embedding}
+simply reduces to a scalar multiplication of feature value $x_i$ and embedding vector $\mathbf{b}_i \in \mathbb{R}^{D}$.
 The embedding matrix $\mathbf{B}_i$ can either be derived by common dimensionality
 reduction methods such as Singular Value Decomposition, Principle Component Analysis, and Non-Negative Matrix Facorization,
 or by including $\mathbf{B}_i$ in the set of trainable parameters in the gradient descent
@@ -255,12 +257,11 @@ then composed of a concatenation of all sparse feature embeddigs $\mathbf{e}_i$ 
 numerical feature values:
 
 \begin{equation}
-    \begin{split}
-    \dot{\mathbf{x}} &= \left[ \mathbf{e}_1^{\intercal}, \dots , \mathbf{e}_s^{\intercal}, z_{s+1}, \dots , z_{s+d} \right]
-    \end{split}
+    \dot{\mathbf{x}} = \left[ \mathbf{e}_1, \dots , \mathbf{e}_n\right]
+    \in \mathbb{R}^{\dot{n}}
 \end{equation}
 
-where $\dot{n} = D\cdot s + d$
+where $\dot{n} = D\cdot n$
 is the resulting dimensionality of $\dot{\mathbf{x}}$. However, it has been shown that
 even when using embeddings, constructing a model that learns the key informative patterns
 in highly sparse data still proves to be an extremely difficult task \citep{RefWorks:gu2021ad,RefWorks:zhang2021deep}.
@@ -601,7 +602,7 @@ respectively). The Deep Component is composed of a MLP with multiple hidden laye
 with the Rectified Linear Unit (ReLU) activation function. The Wide Component is formulated
 by the first two terms in equation~\ref{eqn:wdl}, and is composed of a simple linear transformation
 of the input features. The key aspect of the Wide Component is the fact that the 
-linear transformation is not simply applied to the preprocessed features $\tilde{x}$,
+linear transformation is not simply applied to the encoded features $\tilde{x}$,
 but instead to these concatinated with a set of cross-product transformed features. In
 other words:
 
@@ -734,7 +735,7 @@ constant signal. The output of the product signal can then be broken out into tw
 
 \begin{itemize}
     \item Virtue to the constant ``1'' signal, the first part is simply a vector $\mathbf{z}$ that consists of a concatenation
-    of all of the field embeddings. In other words $\mathbf{z} = \tilde{\mathbf{x}}$.
+    of all of the field embeddings. In other words $\mathbf{z} = \dot{\mathbf{x}}$.
     \item A second-order interaction vector, $\mathbf{p} = \{p_{i,j}\}\text{ where } i,j = 1, \ldots, n$, where each element
     $p_{i,j} = g(\mathbf{e}_i, \mathbf{e}_j)$ defines a pairwise field interaction.
 \end{itemize}
@@ -742,24 +743,24 @@ constant signal. The output of the product signal can then be broken out into tw
 In their initial paper, \cite{RefWorks:qu2016product-based} proposed two variants of the PNN model, the Inner Product Based Neural Network
 and the Outer Product Based Neural Network, differentiated by whether $g$ is the Inner or Outer
 product operation respectively. The $\mathbf{z}$ and $\mathbf{p}$ vectors are then both
-projected to $\mathbb{R}^{D^1}$ space (the input dimension of the MLP network) by meant
+projected to $\mathbb{R}^{D^1}$ space (the input dimension of the MLP network) by means
 of trainable weight matrices, $W_z$ and $W_p$. The input to the MLP network is then the
 sum of the two resulting vectors and a bias vector $\mathbf{b}_1$. The formulation
-for the PNN network is summarized in equation~\ref{eqn:pnn}.
+for the PNN network is summarized in terms of $\dot{\mathbf{x}}$ in equation~\ref{eqn:pnn}.
 
 \begin{equation}\label{eqn:pnn}
-    f_{\Theta}^{PNN}(\tilde{\mathbf{x}}) = f_{\Phi}^{MLP}(W_z \tilde{\mathbf{x}} + W_p \{g(\mathbf{e}_i, \mathbf{e}_j)\}_{i,j=1}^{n} + \mathbf{b}_1)
+    f_{\Theta}^{PNN}(\dot{\mathbf{x}}) = f_{\Phi}^{MLP}(W_z \dot{\mathbf{x}} + W_p \{g(\mathbf{e}_i, \mathbf{e}_j)\}_{i,j=1}^{n} + \mathbf{b}_1)
 \end{equation}
 
-The inclusion of the product layer in the PNN model automatically incorporates second order field-wise
-interactions as inputs to the MLP by means of inner and outer products, thereby partially alleviating
+The inclusion of the product layer (represented by the $g(\cdot, \cdot)$ function in equation~\ref{eqn:pnn}) in the PNN model automatically incorporates second order field-wise
+interactions as inputs to the MLP by means of inner or outer products, thereby partially alleviating
 the previously mentioned insensitive gradient issue. \cite{RefWorks:qu2016product-based} found that
 as a result of this, the PNN models outperformed LR, FM, FNN and the CCPM models in terms of Log Loss
 and AUC. However, a major disadvantage of the product layer operations is the computational time complexity,
 which increases quadratically with the number of fields and the embedding dimension. In order to alleviate
 this, \cite{RefWorks:qu2016product-based} implement simplified versions of the inner and outer product
 computations (in which some neurons are eliminated in the inner product, and the result for the outer product
-is compressed for all fields at once), but even then the PNN models are still tend to be less computational
+is compressed for all fields at once), but even then the PNN models are still tend to be less computationally efficient
 than its peers. Furthermore, since the PNN model leverages a Single Tower architecture it suffers from the
 same issue as the FNN model wherein the lower order interactions are ignored.
 
@@ -774,12 +775,14 @@ in equation~\ref{eqn:nfm}:
     + f_{\Phi}^{NFM-Deep}(\tilde{\mathbf{x}})
 \end{equation}
 
+Recall that here, $\tilde{\mathbf{x}}$ is a sparse vector composed of concatenated one-hot
+categorical feature fields, as well as the numerical features in $\mathbf{x}$.
 The first two terms in equation~\ref{eqn:nfm} are simply composed of a
 bias parameter $w_0$, and a linear combination of the feature values
 in $\tilde{\mathbf{x}} = \left(\tilde{x}_1, \ldots, \tilde{x}_{\tilde{n}}\right)$.
 The last term in equation~\ref{eqn:nfm} represents the core component of the NFM
 model, and includes an architecture similar to that of the PNN model with
-an embedding layer, a unique type of product layer called a \emph{Bi-Interaction Layer}
+an embedding layer, a unique type of product layer called a \emph{Bi-Interaction Pooling Layer}
 followed by a multi-layer MLP network. The architecture for $f_{\Phi}^{NFM-Deep}$
 is visualized in Figure~\ref{fig:nfm}.
 
@@ -790,10 +793,18 @@ is visualized in Figure~\ref{fig:nfm}.
     \label{fig:nfm}
 \end{figure}
 
-Figure~\ref{fig:nfm} reveals that the structure of the network represented by $f_{\Phi}^{NFM-Deep}$
-is similar to that of PNN as shown in Figure~\ref{fig:pnn}. The key difference is
-that rather than using a Inner or Outper product layer, NFM instead uses a Bi-Interaction Layer
-that 
+The \emph{Embedding Layer} in Figure~\ref{fig:nfm} is a fully connected layer that carries
+out the embedding operation described in equation~\ref{eqn:cat-embedding}. The \emph{Bi-Interaction Pooling}
+layer then takes the embedded feature vector $\dot{\mathbf{x}}$ produced by the embedding layer as
+input and combines all of the respective feature embeddings $\{\mathbf{e}_i\}_{i=1}^{n}$ into a single feature
+vector by the following operation:
+
+\begin{equation}
+    \sum_{i=1}^{n} \sum_{j=i+1}^{n} \mathbf{e}_i \odot \mathbf{e}_j
+\end{equation}
+
+where $\odot$ represents the element-wise product of two vectors.
+
 \subsubsection{Convolutional Operators}
 
 \textbf{Convolutional Operator Models} use the convolution operation to extract key local-global
