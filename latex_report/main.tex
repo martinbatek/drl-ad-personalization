@@ -158,9 +158,10 @@ will click on the ad in that given context. In other words, $f_{\Theta}: \mathbb
 \mathbb{P}(\text{click}| \mathbf{x})
 = \mathbb{P}(y = 1 | \mathbf{x})
 = \sigma(f_{\Theta}(\mathbf{x}))
+= \hat{y}
 \end{equation}
 
-where $y$ is the binary click label, $\Theta$ represents the parameter vector for $f$ and
+where $y$ is the binary click label, $\hat{y}$ is the predicted likelihood that $y=1$, $\Theta$ represents the parameter vector for $f$ and
 $\sigma(x)=(1 + e^{-x})^{-1}$ is the sigmoid function. To ease the notation for the rest of the report,
 we will use the shorthand $p(y) = \mathbb{P}(y=1 | \mathbf{x})$ formulations in the following
 sections. 
@@ -1210,11 +1211,26 @@ lifetime.
 As explained in the preceeding introduction, chapter~\ref{chap:deep-ctr-model-evaluation} is
 dedicated for evaluating a range of different click prediction models. The intention is then to
 incorporate the best model candidate in a Deep Reinforcement Learning framework for Ad personalization
-in chapter~\ref{chap:deep-rl-for-ad-personalization}. In chapter~\ref{chap:deep-ctr-model-evaluation},
-we first proceed by explaining the model selection criterea and listing the candidate models in section~\ref{sec:model-selection}.
+in chapter~\ref{chap:deep-rl-for-ad-personalization}. The contents of chapter~\ref{chap:deep-ctr-model-evaluation}
+include the results of two successive experiments:
+
+\begin{enumerate}
+    \item A \textbf{Comparitive Model Analysis}, whereby the predictive performance of a range of different CTR models
+    is measured using equivalent hyperparameter settings and the same benchmark CTR datasets.
+    \item[] \textbf{Research Question:} \emph{Which of the CTR prediction models in scope have the highest predicted performance
+    when measured using equivalent hyperparameter settings and using the same benchmark CTR prediction datasets?}
+    \item A \textbf{Hyperparameter Setting Analysis}, whereby we take the highest performing model from the previous
+    experiment above, and calculate and compare that model's predictive performance for different parameter settings. To
+    simplify the complexity of this task, each chosen parameter was set to to a finite set of values, and this was conducted
+    sequentially for the different parameters. This will be explained in more detial in section~\ref{sec:hyperparameter-selection}.
+    \item[] \textbf{Research Question:} \emph{What are the ideal hyperparameter values for the given CTR prediction model?}
+\end{enumerate}
+
+
+We first proceed by explaining the model selection criterea and listing the candidate models in section~\ref{sec:model-selection}.
 We then describe the Experiment Setup for the model evaluations in section~\ref{sec:experiment-setup}, including
 data preprocessing, evaluation metrics and hyperparameter selection. Finally, we conclude the chapter
-by presenting the results from the experiments in section~\ref{sec:model-results}, in which the \textbf{Deep and Cross Network} (DCN) architecture \citep{RefWorks:wang2017deep}
+by presenting the results for the experiments above in section~\ref{sec:model-results}, in which the \textbf{Deep and Cross Network} (DCN) architecture \citep{RefWorks:wang2017deep}
 was revealed to have the highest predictive accuracy on our chosen datasets.
 
 \section{Models and Model selection Criteria}
@@ -1227,7 +1243,7 @@ of this project. For the purposes of this paper, the scope of models has therefo
 been narrowed down using the following model selection criteria:
 
 \begin{itemize}
-\item Competitive predition accuracy in the KDD12, Criteo and Avazu datasets as published on Papers with Code.
+\item Competitive predition accuracy in the KDD12, Criteo and Avazu datasets as published on Papers with Code \citep{RefWorks:2024papers}.
 \item Ideally, I was looking for a representitive set of models for each model type as discussed in (Zhang et. al. 2021). Therefore I was looking for models that employed Product Interaction Opetators, Attention Operators and Factorization Machines as a basis.
 \item The code for the model has to be accessible and intuitive to use. To implement the experiments
 in this chapter, I made use of the DeepCTR Python package \citep{RefWorks:shen2017deepctr:}.
@@ -1247,6 +1263,13 @@ On the basis of the above critea, the following models from chapter~\ref{chap:ba
 \item Feature Generation by Convolutional Neural Network (FGCNN) \citep{RefWorks:liu2019feature}
 \end{itemize}
 
+For comparison, we also evaluate the predictive performance of the following models, as a Shallow model baseline:
+
+\begin{itemize}
+    \item Logistic Regression (LR) \citep{RefWorks:richardson2007predicting}
+    \item 2-way Factorization Machines (FM) \citep{RefWorks:rendle2010factorization}
+\end{itemize}
+
 \section{Experiment Setup}
 \label{sec:experiment-setup}
 
@@ -1260,7 +1283,8 @@ click-through rate prediction.
 
 The \textbf{KDD12} dataset was first released for the KDD12 cup 2012 competition
 \citep{RefWorks:aden2012kdd}, with the original task being to predict the 
-number of clicks for a given number of impressions. Each line represents 
+click through rate for a given number of impressions - i.e. the ratio of ad impressions
+that would ultimately result in a click. Each line represents 
 a training instance derived from the session logs for the advertizing 
 marketplace. In the context of this dataset, a ``session'' refers to an 
 interaction between a user and the search engine, containing the following 
@@ -1292,7 +1316,7 @@ respectively.
 
 As a first step in preprocessing, each dataset was shuffled and split into training (80\%) and validation (20\%)
 sets. The size if the datasets (roughly 15GB for KDD2 alone) necessitated the use of Amazon Web Services'
-Data Wrangler Tool for shullfing and splitting, and this was done using a random seed of 42.
+Data Wrangler Tool \citep{AWSDataWrangler} for shuffling and splitting, and this was done using a random seed of 42.
 
 We then proceeded to preprocess the categorical and numberical features. As previously
 discussed in chapter~\ref{chap:background}, ad platform categorical features tend to contain
@@ -1338,7 +1362,7 @@ $$
 
 where $\bar{x}$ and $\sigma$ represents the mean and standard deviation of the
 the numerical feature in question. Furthermore, for the Criteo Dataset the following
-transformation was applied to the normalized values, as recommended by \cite{RefWorks:song2019autoint}
+transformation was applied to the normalized values, as recommended by \cite{RefWorks:song2019autoint}:
 
 \begin{equation*}
 \tilde{z} = \begin{cases} z & \text{ if } z \leq 2 \\
@@ -1348,7 +1372,66 @@ transformation was applied to the normalized values, as recommended by \cite{Ref
 
 \subsection{Evaluation Metrics}
 
+Predictive performance of each model was assessed in terms of the following five metrics:
+
+\begin{itemize}
+    \item \textbf{Binary Cross Entropy Loss:} Also known as logarithmic loss. This metric
+    penalizes the model when the predicted log likelihood of a positive label $\hat{y} = \sigma(f_{\Theta}(\mathbf{x}))$ deviates from the
+    log likelihood that $y=1$ as suggested by the data. For $K$ feature-label observations, this Loss metric is calculated as:
+    \[
+    L^{\text{Cross-Entropy}}(\mathbf{x},y,\Theta) = - \sum_{k=1}^{K} \left[y \log \sigma(f_{\Theta}(\mathbf{x})) + (1-y)\log \left( 1 - \sigma(f_{\Theta}(\mathbf{x}))\right) \right]
+    \]
+    Binary Cross Entropy is commonly used as a loss metric in multiple binary classification models
+    \citep{RefWorks:zhang2021deep}, and has therefore been utilized as the primary loss function
+    for model training for all experiments in this report.
+
+    \item \textbf{AUC:} Area under ROC curve is another commonly used metric for binary classification,
+    and it has been validated as a good evaluation metric for the Click Through Rate prediction task
+    \citep{RefWorks:graepel2010web-scale}.
+
+    \item \textbf{Binary Accuracy:} Binary Accuracy measures the percentage of times that the predicted label
+    (with regards to the positive label likelihood prediction $\hat{y}$ and some likelihood threshold $t \in (0,1)$)
+    matches the actual label $y$ for a set of $K$ observations.
+
+    Let
+    \[
+    g_{t}(\hat{y}) =
+    \begin{cases}
+        1 & \text{ if } \hat{y} \geq t \\
+        0 & \text{ otherwise }
+    \end{cases}
+    \]
+
+    and let $\mathbb{I}$ be the indicator function where $\mathbb{I}_{a}(b)=1$ if $a=b$ and $\mathbb{I}_{a}(b)=0$ otherwise. Then
+
+    \[
+    M^{\text{Binary Accuracy}}(\mathbf{x},y,\Theta,t) = \frac{ \sum_{k=1}^{K} \mathbb{I}_{y_k}(g_{t}(\sigma(f_{\Theta}(\mathbf{x}_k))))}{K}
+    \]
+    Binary Accuracy is an intuitive metric to understand, since it simply shows how often the model is correct.
+    However, this can be misleading in cases where label imbalance is prevalent. For the experiments in this report,
+    we evaluate the models using Binary Accuracy with $t=0.5$.
+
+    \item \textbf{Precision:} Precision measures the ratio of observations with positive predicted labels
+    that in fact have positive labels in the data:
+    \[
+    M^{\text{Precision}}(\mathbf{x},y,\Theta,t) =
+    \frac{ \sum_{k=1}^{K} \mathbb{I}_{y_k}(g_{t}(\hat{y}_k)) \cdot \mathbb{I}_{1}(g_{t}(\hat{y}_k))}{\sum_{k=1}^{K}\mathbb{I}_{1}(g_{t}(\hat{y}_k))}
+    \]
+
+    In the context of Ad personalization, the Precision metric can be seen as an indicator of quality
+    of the set of Ads retreived for the user, from the perspective of that user's Ad preferences. Like
+    in the case of Binary Accuracy, we evaluate the models in this report using Precision with $t=0.5$
+    \item \textbf{Recall:} Recall measures the proportion of the data observations with true positive
+    labels that have positive predicted labels:
+
+    \[
+        M^{\text{Recall}}(\mathbf{x},y,\Theta,t) =
+        \frac{ \sum_{k=1}^{K} \mathbb{I}_{y_k}(g_{t}(\hat{y}_k)) \cdot \mathbb{I}_{y_k}(1)}{\sum_{k=1}^{K}\mathbb{I}_{y_k}(1)}
+    \]
+\end{itemize}
+
 \subsection{Hyperparameter Selection}
+\label{sec:hyperparameter-selection}
 
 \section{Deep CTR Model Results}
 \label{sec:model-results}
