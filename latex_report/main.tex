@@ -1416,7 +1416,8 @@ Predictive performance of each model was assessed in terms of the following five
     M^{\text{Binary Accuracy}}(\mathbf{x},y,\Theta,t) = \frac{ \sum_{k=1}^{K} \mathbb{I}_{y_k}(g_{t}(\sigma(f_{\Theta}(\mathbf{x}_k))))}{K}
     \]
     Binary Accuracy is an intuitive metric to understand, since it simply shows how often the model is correct.
-    However, this can be misleading in cases where label imbalance is prevalent. For the experiments in this report,
+    However, this can be misleading in cases where label imbalance is prevalent, and it therefore often prodent
+    to also refer to the Precision and Recall metrics. For the experiments in this report,
     we evaluate the models using Binary Accuracy with $t=0.5$.
 
     \item \textbf{Precision:} Precision measures the ratio of observations with positive predicted labels
@@ -1426,7 +1427,7 @@ Predictive performance of each model was assessed in terms of the following five
     \frac{ \sum_{k=1}^{K} \mathbb{I}_{y_k}(g_{t}(\hat{y}_k)) \cdot \mathbb{I}_{1}(g_{t}(\hat{y}_k))}{\sum_{k=1}^{K}\mathbb{I}_{1}(g_{t}(\hat{y}_k))}
     \]
 
-    In the context of Ad personalization, the Precision metric can be seen as an indicator of quality
+    Where $\hat{y}_k = \sigma(f_{\Theta}(\mathbf{x}))$. In the context of Ad personalization, the Precision metric can be seen as an indicator of quality
     of the set of Ads retreived for the user, from the perspective of that user's Ad preferences. Like
     in the case of Binary Accuracy, we evaluate the models in this report using Precision with $t=0.5$
     \item \textbf{Recall:} Recall measures the proportion of the data observations with true positive
@@ -1436,6 +1437,10 @@ Predictive performance of each model was assessed in terms of the following five
         M^{\text{Recall}}(\mathbf{x},y,\Theta,t) =
         \frac{ \sum_{k=1}^{K} \mathbb{I}_{y_k}(g_{t}(\hat{y}_k)) \cdot \mathbb{I}_{y_k}(1)}{\sum_{k=1}^{K}\mathbb{I}_{y_k}(1)}
     \]
+
+    The Recall Metric is relevant in the Ad personalization context, since it in essence reveals how good
+    the model is at finding Ads that the user will click on. Again, in this report we set the predicted
+    probability threshold $t$ to $0.5$.
 \end{itemize}
 
 \subsection{Optimization Algorithms}
