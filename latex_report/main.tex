@@ -1215,11 +1215,11 @@ in chapter~\ref{chap:deep-rl-for-ad-personalization}. The contents of chapter~\r
 include the results of two successive experiments:
 
 \begin{enumerate}
-    \item A \textbf{Comparitive Model Analysis}, whereby the predictive performance of a range of different CTR models
+    \item \label{exp:comparative-model-analysis} A \textbf{Comparitive Model Analysis}, whereby the predictive performance of a range of different CTR models
     is measured using equivalent hyperparameter settings and the same benchmark CTR datasets.
     \item[] \textbf{Research Question:} \emph{Which of the CTR prediction models in scope have the highest predicted performance
     when measured using equivalent hyperparameter settings and using the same benchmark CTR prediction datasets?}
-    \item A \textbf{Hyperparameter Setting Analysis}, whereby we take the highest performing model from the previous
+    \item \label{exp:hyperparameter-analysis} A \textbf{Hyperparameter Setting Analysis}, whereby we take the highest performing model from the previous
     experiment above, and calculate and compare that model's predictive performance for different parameter settings. To
     simplify the complexity of this task, each chosen parameter was set to to a finite set of values, and this was conducted
     sequentially for the different parameters. This will be explained in more detial in section~\ref{sec:hyperparameter-selection}.
@@ -1454,7 +1454,7 @@ For the DNN models, we used the Adam Optimizer \citep{Kingma2014AdamAM}, a widel
 for training Deep Neural Networks. In both cases, we set the learning parameter to $\eta = 0.001$, which the
 standard learning rate setting for the Keras Adam Optimizer implementation \citep{chollet2023keras}.
 
-In order to ensure that training times (and therefore training)
+In order to ensure that training times (and therefore training cost)
 remained within a reasonable range, all models were trained to a maximum of 15 epochs. In addition to this,
 the Keras EarlyStopping Callback was used with \verb|patience| parameter set to 5 epochs. This was done to
 further ensure that training time remained within a reasonable range, as well as in order to prevent
@@ -1463,6 +1463,66 @@ model fitting.
 
 \subsection{Hyperparameter Selection}
 \label{sec:hyperparameter-selection}
+
+As mentioned at the beginning of section~\ref{sec:experiment-setup}, the DeepCTR Python model developed
+by \cite{RefWorks:shen2017deepctr:} was leveraged to implement all the Deep CTR models listed in
+section~\ref{sec:model-selection}. The majority of the of the model classes in the DeepCTR package
+use the following hyperparameter inputs, which we have standardized for experiment~\ref{exp:comparative-model-analysis}:
+
+\begin{itemize}
+    \item \textbf{DNN Hidden Units:} This parameter controls the number of hidden layers and the number of neurons
+    in each hidden layer of the MLP component of the model. For experiment~\ref{exp:comparative-model-analysis},
+    this parameter was set to $[200,200,200]$ for all models - i.e. 3 layers, containing 200 neurons each.
+
+    \item \textbf{DNN Dropout Likelihood:} For every neuron in the MLP components in the model, the DNN Dropout
+    parameter controls the likelihood that the neuron is removed during training. \cite{RefWorks:srivastava2014dropout:}
+    found that introducing such randomness during training can greatly improve regularization. As recommended
+    by \cite{RefWorks:guo2017deepfm:}, this parameter was set to $0.6$ for both experiments.
+
+    \item \textbf{Embedding L2 Regularization:} The L2 regularization strength that was applied while fitting
+    the categorical feature embedding matrices ($B_i$). This was set to $0.005$ for both experiments.
+
+    \item \textbf{Linear L2 Regularization:} The L2 regularization strength that was applied in the
+    linear component of the model, such as the Wide component of the WDL model. 
+    For relevant models, this was set to $0.005$ for both experiments.
+
+    \item \textbf{DNN L2 Regularization:} The L2 regularization strength that was applied in the
+    MLP component of the model, such as the Deep component of the WDL model. 
+    For relevant models, this was set to $0.005$ for both experiments.
+
+    \item \textbf{DNN Batch Normalization:} This parameter controls whether the internal activation
+    values of the MLP component are normalized for every batch during training, so as to
+    promote training stability and introduce and additional regularization effect \citep{RefWorks:ioffe2015batch}. This
+    parameter was set to $True$ for all models and experiments. 
+\end{itemize}
+
+In experiment~\ref{exp:comparative-model-analysis}, all models were compiled and fitted with the
+standard hyperparameter settings mentioned above. In experiment~\ref{exp:hyperparameter-analysis},
+we took inspiration from \citep{RefWorks:guo2017deepfm:}, and explored the predictive accuracy of the
+best performing model from experiment~\ref{exp:comparative-model-analysis} for different
+\emph{DNN Hidden Unit} settings, namely exploring the following aspects:
+
+\begin{itemize}
+    \item \textbf{Neurons per layer:} Here we scored the model when using 100, 200, 300, 400
+    and 500 neurons per layer in the MLP component. Tests were carried out using 3 hidden layers.
+    \item \textbf{Number of layers:} Here we scored the model when using 2, 3, 4, 5 and 6 hidden layers in
+    the MLP component. Tests were carried out using 200 neurons per layer.
+    \item \textbf{DNN shape:} Her we compared the predictive performance when using the following
+    DNN hidden unit settings:
+    \begin{itemize}
+        \item \emph{Constant:} $[200,200,200]$
+        \item \emph{Increasing:} $[100,200,300]$
+        \item \emph{Decreasing:} $[300,200,100]$
+        \item \emph{Diamond:} $[150, 300, 150]$
+    \end{itemize}
+
+    The DNN Unit settings for each shape above were purposefully chosen so that the total number
+    of MLP component hidden layer neurons adds up to 600, as in experiment~\ref{exp:comparative-model-analysis}.
+\end{itemize}
+
+Since experiment~\ref{exp:comparative-model-analysis} revealed that the DCN model was the best performing
+candidate, we additionally elected to explore the performance of this model for different cross layer parameter
+values, namely $c \in \{2,3,4,5,6\}$.
 
 \section{Deep CTR Model Results}
 \label{sec:model-results}
