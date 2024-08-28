@@ -1236,16 +1236,33 @@ basic Q-Learning:
 \end{itemize}
 
 \subsection{DRN: Deep Reinforcement Learning for News Recommendation}
+\label{sec:drn}
 
 DRN \citep{RefWorks:zheng2018drn:} is a Deep Q-Learning framework 
 that has been adapted to do online news personalization. In this setting, the objective is for the
-agent to learn the ideal list of news articles to display to the user upon request, in order to maximize
-the long term engagement of all users with the news website. At each timestamp $t_i$, a \emph{user}
-opens the news website, thereby submitting a request for news article. At each of these points in time,
-there is a certain distinct set of news articles $I_i$ available on the website. The agents task is to
-choose a subset of these articles $L_i \subset I_i$ to show to the user at $t_i$. The aim of the DRN algorithm
-is 
+agent to learn a policy for choosing the ideal list of news articles to display to each user upon request, 
+in order to maximize
+the long term engagement of all users with the news website. In this context, the state space $\mathcal{S}$
+is defined by \emph{User features} (user's past click activity) and \emph{Contexutal Features} (time, week day,
+freshness of the news),  the action set $\mathcal{A}$ is defined by the features describing the
+news articles available at the time of the news request (headline, provider, ranking, entity name, category etc.)
+and the reward is a combination of user news article clicks, and a measure of user activeness on the site.
 
+In order to adapt to this news personalization context, the DRN algorithm introduces a few new components to the standard Deep Q-Network (DQN) algorithm introduced
+by \cite{RefWorks:mnih2015human-level}. Firstly, it defines the reward as a combination of \textbf{user clicks}
+and \textbf{user activeness}, as formulated in the equation below:
+\begin{equation}
+    r_{total} = r_{click} + \beta r_{active}
+\end{equation}
+
+\cite{RefWorks:zheng2018drn:} defines $r_{active}$ to take real values in $[0,1]$ according to how frequently
+the user has visited the news site recently before $t_i$. Specifically, $r_{active}$ is calculated using
+Survival Analysis \citep{ibrahim2001bayesian,jing2017neural}. Secondly rather than applying the
+$\epsilon$-greedy method for exploration, DRN uses the \textbf{Dueling Bandit Gradient Descent} algorithm.
+This algorithm proceeds by generating an \emph{explore network} $\tilde{Q}$ (a copy of the regular 
+\emph{exploit network} $Q$, with it's weights randomly perturbed) before each timestamp $t_i$, and
+then by randomly choosing either $Q$ or $\tilde{Q}$ to determine the next action. If $\tilde{Q}$
+outperforms $Q$ after a set number of actions, $\tilde{Q}$ is then adoped as the \emph{exploit network}.
 
 \begin{figure}[h]
     \centering
@@ -1253,6 +1270,28 @@ is
     \caption{DRN Framework. Source: \citep{RefWorks:zheng2018drn:}}
     \label{fig:drn}
 \end{figure}
+
+The Online Learning part of the DRN framework proceeds as follows, as per \citep{RefWorks:zheng2018drn:}:
+
+\begin{enumerate}
+    \item \textbf{Push:} At each timestamp $t_i$, a user $u$ browses to the news website, thereby
+    submitting a request for news articles. The agent $G$ takes account of the user and context
+    features, as well as the features for the set of currently available news candidates $I_i$.
+    The agent then selects the top $L$ candidantes. The list of $L$ candidates is compiled by mixing
+    items reccomended by the \emph{exploit Q-network} $Q$ and the \emph{explore network} $\tilde{Q}$.
+    The list is then shown to the user.
+    \item \textbf{Feedback:} The user will then provide feedback by either clicking or not clicking
+    on each of the $L$ news articles. This feedback is stored in memory $D$, along with updated user
+    activeness metrics for user $u$.
+    \item \textbf{Minor Update:} After each timestamp $t_i$, the agent collects the user's feedback,
+    and compares the relative CTR performance of news candidates recommended by $Q$ and $\hat{Q}$. 
+    If $\hat{Q}$ outperformed $Q$, then the weights of the explore network $W$ are updated to those
+    of the explore network $\tilde{W}$. Otherwise the weights of the exploit network remain unchanged.
+    \item \textbf{Major Update:} After a pre-defined time period $T_R$, the agent will use the feedback
+    data stored in $D$ to update the exploit network $Q$. The reward will be based on a compination
+    of user clicks and activeness, and $Q$ will be updated using the Experience Replay technique from
+    Algorithm~\ref{alg:deep-q-learning}.
+\end{enumerate}
 
 \chapter{Deep CTR model Evaluation}
 \label{chap:deep-ctr-model-evaluation}
