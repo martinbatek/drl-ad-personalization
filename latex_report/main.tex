@@ -822,9 +822,32 @@ key feature signals through the linear components of equation~\ref{eqn:nfm} \cit
 However, neither the PNN nor the NFM models guaruntee that each order of feature interaction
 will be modelled. The \textbf{Deep \& Cross Network} (DCN) devoloped by \cite{RefWorks:wang2017deep}
 applies feature crossing at each layer and efficiently learns predictive cross features to a hyperparametized
-bounded degree without requiring additional feature engineering.
+bounded degree without requiring additional feature engineering. The DCN model is has a Dual-Tower architecture
+comprised of a Cross Network and a Deep Network, as shown in Figure~\ref{fig:dcn}.
 
-\subsubsection{Convolutional Operators}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../figures/dcn.png}
+    \caption{Deep \& Cross Network model. Source: \citep{RefWorks:wang2017deep}}
+    \label{fig:dcn}
+\end{figure}
+
+The Cross Network and Deep Networks are both preceeded by an Embedding and Stacking layer, which produces
+a vector containing concatinated categorical feature embeddings $\mathbf{e}_i$ and normalized numberical
+feature embeddings $x_i$. The Deep Network consists of a standard Multilayer Perceptron component with
+ReLu activation. The Cross Network is composed of $L$ cross layers, where the output of each
+cross layer $\mathbf{x}_{l+1}$ is calculated as:
+
+\begin{equation}\label{eqn:cross-layer}
+    \mathbf{x}_{l+1} = \mathbf{x}_0 \mathbf{x}_l^{\intercal} \mathbf{w}_l + \mathbf{b}_l + \mathbf{x}_l
+\end{equation}
+
+where $\mathbf{x}_0$ is the output of the Embedding and Stacking layer and $\mathbf{w}_l$, $\mathbf{b}_l$
+are trainable weight and bias parameter vectors for each cross layer. \cite{RefWorks:wang2017deep}
+show linking crossing operations formulated by equation~\ref{eqn:cross-layer}, the output of of a
+$L$-layer Cross Network comprises explicitly of cross-feature terms of degrees 1 to $L+1$.
+
+\subsubsection{Convolutional Operator Models}
 
 \textbf{Convolutional Operator Models} use the convolution operation to extract key local-global
 features from the categorical field embeddings. The earliest and most well known example of a
@@ -882,7 +905,7 @@ embedding matrix as an input. However, in order to solve for the input order dep
 prevailent with CCPM, the resulting feature maps are first passed through a fully connected \emph{recombination layer}
 that models non-adjacent interactions.
 
-\subsubsection{Attention Operators}
+\subsubsection{Attention Operator Models}
 
 \textbf{Attention Operator Models} aim to utilize the attention mechanism for identifying
 the key feature interactions in the data. The \textbf{Autotomatic Feature Interaction Learning} (AutoInt) 
