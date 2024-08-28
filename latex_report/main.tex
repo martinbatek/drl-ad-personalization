@@ -1237,14 +1237,15 @@ basic Q-Learning:
 
 \subsection{DRN: Deep Reinforcement Learning for News Recommendation}
 
-DRN \citep{RefWorks:zheng2018drn:} is a MDP framework 
-that leverages a Deep Neural Network to approximate the expected total user response for 
-each recommendation at each state. The two major advantages of DRN are firstly that it is 
-composed on the basis of a continuous state and action representation, meaning that it can 
-be scaled to large and sparse datasets, and secondly that the proposed reward function 
-consists of both the immediate reward (user click) as well as the future expected reward 
-(long term user engagement), thereby allowing for better recommendations over a user’s 
-lifetime.
+DRN \citep{RefWorks:zheng2018drn:} is a Deep Q-Learning framework 
+that has been adapted to do online news personalization. In this setting, the objective is for the
+agent to learn the ideal list of news articles to display to the user upon request, in order to maximize
+the long term engagement of all users with the news website. At each timestamp $t_i$, a \emph{user}
+opens the news website, thereby submitting a request for news article. At each of these points in time,
+there is a certain distinct set of news articles $I_i$ available on the website. The agents task is to
+choose a subset of these articles $L_i \subset I_i$ to show to the user at $t_i$. The aim of the DRN algorithm
+is 
+
 
 \begin{figure}[h]
     \centering
