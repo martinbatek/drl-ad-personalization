@@ -1,5 +1,5 @@
 outs:
-- md5: d379e298ed29c03163a4655fbb244b96
+- md5: cd9484e982e47d9832110c5b49c2df51
   size: 2592
   hash: md5
   path: kdd12_pnn.csv
