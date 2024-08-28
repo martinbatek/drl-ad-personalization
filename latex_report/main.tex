@@ -731,7 +731,7 @@ in Figure~\ref{fig:pnn}.
 \end{figure}
 
 The key defining component of the PNN is the \emph{Product Layer}. Each embedding field $\mathbf{e}_i$
-in the preceding embedding layer is pair-wisely connected to each of the other fields and a ``1''
+in the preceding embedded layer is pair-wisely connected to each of the other fields and a ``1''
 constant signal. The output of the product signal can then be broken out into two parts:
 
 \begin{itemize}
@@ -750,10 +750,10 @@ sum of the two resulting vectors and a bias vector $\mathbf{b}_1$. The formulati
 for the PNN network is summarized in terms of $\dot{\mathbf{x}}$ in equation~\ref{eqn:pnn}.
 
 \begin{equation}\label{eqn:pnn}
-    f_{\Theta}^{PNN}(\dot{\mathbf{x}}) = f_{\Phi}^{MLP}(W_z \dot{\mathbf{x}} + W_p \{g(\mathbf{e}_i, \mathbf{e}_j)\}_{i,j=1}^{n} + \mathbf{b}_1)
+    f_{\Theta}^{PNN}(\dot{\mathbf{x}}) = f_{\Phi}^{MLP}(W_z \dot{\mathbf{x}} + W_p \mathbf{p} + \mathbf{b}_1)
 \end{equation}
 
-The inclusion of the product layer (represented by the $g(\cdot, \cdot)$ function in equation~\ref{eqn:pnn}) in the PNN model automatically incorporates second order field-wise
+The inclusion of the product layer in the PNN model automatically incorporates second order field-wise
 interactions as inputs to the MLP by means of inner or outer products, thereby partially alleviating
 the previously mentioned insensitive gradient issue. \cite{RefWorks:qu2016product-based} found that
 as a result of this, the PNN models outperformed LR, FM, FNN and the CCPM models in terms of Log Loss
@@ -766,8 +766,8 @@ than its peers. Furthermore, since the PNN model leverages a Single Tower archit
 same issue as the FNN model wherein the lower order interactions are ignored.
 
 The \textbf{Neural Factorization Machine} (NFM) model introduced by \cite{RefWorks:he2017neural} works
-on a similar principle to PNN, in that it also includes a product layer the architecture
-of its architecture. The NFM model calculates the pre-sigmoid prediction as
+on a similar principle to PNN, in that it also has a product layer in
+its architecture. The NFM model calculates the pre-sigmoid prediction as
 in equation~\ref{eqn:nfm}:
 
 \begin{equation}
@@ -800,11 +800,29 @@ layer then takes the embedded feature vector $\dot{\mathbf{x}}$ produced by the 
 input and combines all of the respective feature embeddings $\{\mathbf{e}_i\}_{i=1}^{n}$ into a single feature
 vector by the following operation:
 
-\begin{equation}
-    \sum_{i=1}^{n} \sum_{j=i+1}^{n} \mathbf{e}_i \odot \mathbf{e}_j
+\begin{equation}\label{eqn:bi-interaction-pooling}
+    f^{BI}(\{\mathbf{e}_i\}_{i=1}^{n})\sum_{i=1}^{n} = \sum_{j=i+1}^{n} \mathbf{e}_i \odot \mathbf{e}_j
 \end{equation}
 
-where $\odot$ represents the element-wise product of two vectors.
+where $\odot$ represents the element-wise product of two vectors. The benefit of the Bi-Interaction
+Pooling layer is its efficiency. It does not introduce any additional model parameters and can
+be calculated in linear time. Equation~\ref{eqn:bi-interaction-pooling} can be reformulated as:
+
+\begin{equation*}
+    f^{BI}(\{\mathbf{e}_i\}_{i=1}^{n})\sum_{i=1}^{n} 
+    =\frac{1}{2} \left[ (\sum_{i=1}^{n} \mathbf{e}_i)^2 - \sum_{i=1}^{n} (\mathbf{e}_i)^2 \right]\
+\end{equation*}
+
+When considering the feature cardinalities $C_i$ and the embedding dimension $D$, the above calculation
+can be performed in $O(n)$ time \cite{RefWorks:he2017neural}. The NFM model therefore benefits from better
+training efficiency and stability in comparison to most other Deep Learning methods, while simaltaneously
+being able to capture both feature interactions through the $f_{\Phi}^{NFM-Deep}$ as well as
+key feature signals through the linear components of equation~\ref{eqn:nfm} \citep{RefWorks:zhang2021deep}.
+
+However, neither the PNN nor the NFM models guaruntee that each order of feature interaction
+will be modelled. The \textbf{Deep \& Cross Network} (DCN) devoloped by \cite{RefWorks:wang2017deep}
+applies feature crossing at each layer and efficiently learns predictive cross features to a hyperparametized
+bounded degree without requiring additional feature engineering.
 
 \subsubsection{Convolutional Operators}
 
