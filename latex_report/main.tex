@@ -582,7 +582,7 @@ and DeepFM models aim to solve for these issues.
 
 \subsubsection{Wide and Deep}
 
-The \textbf{Wide and Deep} (W\&D) model was developed by \cite{RefWorks:cheng2016wide}.
+The \textbf{Wide and Deep Learning} (WDL) model was developed by \cite{RefWorks:cheng2016wide}.
 
 \begin{equation}
     \label{eqn:wdl}
@@ -593,7 +593,7 @@ The \textbf{Wide and Deep} (W\&D) model was developed by \cite{RefWorks:cheng201
 \begin{figure}[h]
 \centering
 \includegraphics[width = 0.8\textwidth]{../figures/wdl.png}
-\caption{Wide and Deep Model, as illustrated in \citep{RefWorks:shen2017deepctr:}}
+\caption{Wide and Deep Learning Model, as illustrated in \citep{RefWorks:shen2017deepctr:}}
 \label{fig:wdl}
 \end{figure}
 
@@ -632,7 +632,7 @@ feature engineering component that would be necessary to use this model effectiv
 The \textbf{DeepFM} model was developed by \cite{RefWorks:guo2017deepfm:} in order
 to address the shortcomings of the FNN and W\&D models mentioned in this section, as 
 well as those of the PNN model which will be covered in section~\ref{sec:feature-operator-models}.
-Similarly to the W\&D model, the DeepFM network two components arranged as a Dual Tower
+Similarly to the WDL model, the DeepFM network two components arranged as a Dual Tower
 architecture, as visualized in Figure~\ref{fig:deepfm}.
 
 \begin{figure}[h]
@@ -642,7 +642,7 @@ architecture, as visualized in Figure~\ref{fig:deepfm}.
     \label{fig:deepfm}
 \end{figure}
 
-The \emph{FM component} effectively replaces the Wide component in the W\&D model. It consists
+The \emph{FM component} effectively replaces the Wide component in the WDL model. It consists
 of a 2-way Factorization Machine layer that models pairwise feature interactions between the
 different fields of $\tilde{\mathbf{x}}$ as inner products of the respective feature latent
 vectors $\mathbf{v}_j$ \citep{RefWorks:guo2017deepfm:}. Due to the linear scalability of
@@ -650,10 +650,10 @@ the FM discussed in section~\ref{sec:shallow-models}, the FM component can effec
 capture important order-2 feature interactions automatically, without the need to manually
 define cross-product functions as in the case of the W\&D model.
 
-Meanwhile, the \emph{Deep component} fulfills a similar purpose as in the case of the W\&D
+Meanwhile, the \emph{Deep component} fulfills a similar purpose as in the case of the WDL
 model. The deep component is a MLP network that takes the feature embedding vector $\tilde{\mathbf{x}}$
 as inputs, and learns the higher-order feature interactions that cannot by captured by the
-2-way FM component. Like with the W\&D model, the Deep component acts as a residual network
+2-way FM component. Like with the WDL model, the Deep component acts as a residual network
 for capturing signals that we ommitted by the FM component. The DeepFM model can therefore
 be formulated as in equation~\ref{eqn:deepfm}.
 
@@ -662,7 +662,7 @@ be formulated as in equation~\ref{eqn:deepfm}.
 \end{equation}
 
 A notable difference
-in the Deep components between the W\&D and DeepFM models are in the construction of the
+in the Deep components between the WDL and DeepFM models are in the construction of the
 embedding layers that preprocess the input to the MLP. In DeepFM, the latent feature vectors
 ($\mathbf{V}$) are trainable network weights that are derived during SGD optimization in the FM
 component. For every successive step in the model training, the learned latent feature vectors
@@ -1341,7 +1341,7 @@ On the basis of the above critea, the following models from chapter~\ref{chap:ba
 \item Product Based Neural Networks (PNN) \citep{RefWorks:qu2016product-based}
 \item Neural Factorization Machines (NFM) \citep{RefWorks:he2017neural}
 \item Deep and Cross Network (DCN) \citep{RefWorks:wang2017deep}
-\item Wide and Deep (W\&D) \citep{RefWorks:cheng2016wide}
+\item Wide and Deep Learning (WDL) \citep{RefWorks:cheng2016wide}
 \item DeepFM (DFM) \citep{RefWorks:guo2017deepfm:}
 \item Automatic Feature Interaction (AutoInt) \citep{RefWorks:song2019autoint}
 \item Convolutional Click Prediction Model (CCPM) \citep{RefWorks:liu2015convolutional}
@@ -1617,17 +1617,9 @@ values, namely $c \in \{2,3,4,5,6\}$.
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{../figures/kdd12_model_scores.png}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/avazu_model_scores.png}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/criteo_model_scores.png}
+    \includegraphics[width=\textwidth]{../figures/model_scores.png}
+    \caption{Experiment 1 Model Scores}
+    \label{fig:experiment-1}
 \end{figure}
 
 
