@@ -884,7 +884,8 @@ due to the equivariance property of the Convolution operations, the degree to wh
 important feature interactions in the data is highly dependant on how the features are ordered in the
 input matrix \citep{RefWorks:zhang2021deep,RefWorks:qu2018product-based,RefWorks:gu2021ad}. Convolutions
 by nature extract feature maps in the local neighbourhood of each variable, but fail to do so globally.
-The \textbf{Feature Generation by Convolutional Neural Network} model proposed by \cite{RefWorks:liu2019feature}.
+The \textbf{Feature Generation by Convolutional Neural Network} model proposed by \cite{RefWorks:liu2019feature}
+introduces a \emph{feature recombination layer} to mitigate this issue.
 The architecture for the FGCNN model is shown in Figure~\ref{fig:fgcnn}
 
 \begin{figure}[h]
@@ -1044,15 +1045,7 @@ The above leads to the key equations that underpin Reinforcement Learning - the 
 \end{proposition}
 
 In other words, the optimal policy is found by maximizing the $Q$-function at each stage and
-state.
-
-\subsubsection{Dynamic Programming, UCBRL and Thompson Sampling RL}
-
-When the transition probabilities $P_h(s^\prime|s,a)$ and reward function
-$r_h(s,a)$ are known, it is then possible to find the optimal policy by first calculating the
-value of the $Q$ function at stage of the episode (which will simply be $r_H(s,a)$), and then working
-back to find $Q_h^*(s,a)$ for each stage. This is known as the \emph{Dynamic Programming} or 
-the \emph{Backward Recursion} algorithm. The steps involved are described in algorithm~\ref{alg:dynammic-programming}.
+state. The basic idea of this is implemented in the \emph{Dynamic Programming} algorithm, shown below:
 
 \begin{algorithm}
     \caption{Dynammic Programming algorithm}\label{alg:dynammic-programming}
@@ -1068,8 +1061,10 @@ the \emph{Backward Recursion} algorithm. The steps involved are described in alg
 \end{algorithm}
 
 Of course in practice, we more often than not do not know the transition probabilities and
-reward function of the environment. A possible method for proceeding in this case in by executing a Reinforcement Learning
-algorithm that chooses actions in such a way that simultaneously allows for the collection of sufficient
+reward function of the environment.
+The aim of Reinforcement Learning
+is to define an algorithm that adequately manages the \emph{exploration-exploitation trade off}.
+Ideally, actions should be chosen in such a way that simultaneously allows for the collection of sufficient
 datapoints for estimating the reward function and transition probabilities, while also minimizing
 the long term cumulative \emph{regret} as much as possible.
 
@@ -1081,38 +1076,24 @@ the policy chosen for episode $t$. The the cumulative regret over $K$ episodes i
 \end{equation}
 \end{definition}
 
-Two algorithms for doing this are the Upper Confidence Bound for Reinforcement Learning (UCBRL)
+One possible approach for achieving this is through algorithms that explicitly model the transition
+probabilities $P_h$. Two popular methods for doing so are the Upper Confidence Bound for Reinforcement Learning (UCBRL)
 \citep{RefWorks:auer2008near-optimal} and the Thompson Sampling algorthm for Reinforcement
-Learning \citep{RefWorks:pike-burke2024optimism/thompson}. UCBRL works by calculating the
-empirical mean transition probabilities as:
+Learning \citep{RefWorks:pike-burke2024optimism/thompson}. In UCBRL, the transition probabilities
+are empirically estimated on the basis of observed feedback from the environment, whereas Thompson
+Sampling proceeds by maining a posterior categorical distribution with a Dirichelet conjugate prior,
+and then sampling the transition function from the posterior.
 
-\[
-\hat{P}_{h,t}(s^\prime|s,a) = \frac{N_{h,t}(s,a,s^\prime)}{\max \left( N_{h,t}(s,a),1\right)}
-\]
+\subsection{Q-Learning and Deep Q-Learning}
 
-Where $N_{h,t}(s,a,s^\prime)$ represents the number of times until episode $t$ that taking action
-$a$ from state $s$ resulted in a transition to state $s^\prime$, and $N_{h,t}(s,a)$ is the number
-of times upt to episode $t$ that action $a$ was taken from state $s$. The result from \cite{RefWorks:weissman2003inequalities}
-is then used to establish confidence bounds on the transition probabilities, which is then used to
-calculate the $Q$-value of each action-state pair to some minimum degree of confidence.
-
-Meanwhile, the Thompson RL algorithm \citep{RefWorks:pike-burke2024optimism/thompson} proceeds by
-taking a Bayesian approach and sampling a transition distribution from a Dirichelet distribution, which is the conjugate prior distribution
-for a categorical distribution. It then establishes a policy calculating the $Q$-function values
-with this transition distribution, and acts accordingly for the episode. Finally, it then revises the
-Dirichelet distribution by posterior update before the next episode.
-
-Both of the methods above are sufficient in cases where the state and action spaces are finite
-and relatively small. However, a major drawback with both of these algorithms is that they both
+A major drawback with both of the UCBRL and Thompson Sampling algorithms is that they both
 require the state transtition model to be approximated and stored. This poses a serious practical
 issue in the case of Ad personalization, since as we have covered in section\ref{sec:problem-formulation-data},
 Ad marketplace data tends to be extremely sparse once encoded. This means that in order to fully
 calculate the transition probabilities, one would need to account for a vast number to state-action-transition
-tuples, which is likely to be computationally infeasible. In the next section, we explore $Q$-learning,
+tuples, which is likely to be computationally unfeasible. In this section, we explore $Q$-learning,
 a subdomain of Reinforcement Learning that aims to learn the $Q$-function directly, and is therefore 
 \emph{model free}.
-
-\subsection{Q-Learning and Deep Q-Learning}
 
 Q-learning was pioneered by \cite{RefWorks:watkins1989learning} as a model-free, and therefore
 computationally efficient method for solving RL problems that have a sparse state
@@ -1157,7 +1138,7 @@ transition probabilities, which significantly lowers the memory requirement \cit
 Note that in Algorithm~\ref{alg:basic-q-learning} the $\alpha_{h,t}$ parameter represents an
 \emph{update step size} parameter, which usually depends inversely on $N_{h,t}(s_{h,t}, a_{h,t})$.
 
-While the basic Deep Q-Learning algorithm significantly decreases the computational requirement
+While the basic Q-Learning algorithm significantly decreases the computational requirement
 by removing the need to store the transition probability model, keeping track of Q-function values
 may still be prohibitive in the case where the state and action spaces are probibitively sparse,
 as is the case in the Ad personalization domain. All of the aforementioned algorithms are designed
@@ -1171,25 +1152,7 @@ we will only have to store the function parameters $\Theta$, and assume that $\h
 thereby changing the memory requirement from $H \times |\mathcal{S}| \times |\mathcal{A}|$ to simply
 $|\Theta|$.
 
-\cite{RefWorks:jin2020provably} provide a method for deriving the Q-function approximator
-$f_{\Theta}$ by means of linear approximation. Let $\phi$ represent a feature L2 normalization 
-such that $\forall \mathbf{x} \in \mathbf{X}, ||\phi(\mathbf{x})||_2 \leq 1$. \cite{RefWorks:jin2020provably}
-showed that for any policy $\pi$, there exists a set of vectors $w_h^{\pi}$ such that
-\begin{equation}\label{eqn:linear-approx-rl}
-    Q_h^{\pi}(s,a) = \phi(\mathbf{x})^{\intercal} w_h^{\pi}
-\end{equation}
-
-Equation~\ref{eqn:linear-approx-rl} then essentially reduces the problem of finding the
-finding the optimal policy approximator $f_{\Theta} \approx Q_h^*(s,a)$ problem to one
-that can be solved using gradient descent with respective to the function parameters
-$\Theta = w_h$.
-
-Although linear approximation may be sufficient for simple tasks, it is still however
-likely that in a lot of practical applications, assuming that the realtionship between
-the state-action features and the expected rewards is linear may be too simplistic. The
-linear Q-function approximator in the form of equation~\ref{eqn:linear-approx-rl} may not
-be expressive enough for the problem at hand \citep{pike-burke2024LearnigAgents}. For these
-cases, \cite{RefWorks:mnih2015human-level} proposed the Deep Q-Learning algorithm in which
+\cite{RefWorks:mnih2015human-level} proposed the Deep Q-Learning algorithm in which
 which the Q-function is approximated using a Deep Neural Network called a \emph{Deep Q-Network}.
 The full Deep Q-Learning algorithm is shown in Algorithm~\ref{alg:deep-q-learning}.
 
@@ -1209,7 +1172,7 @@ The full Deep Q-Learning algorithm is shown in Algorithm~\ref{alg:deep-q-learnin
                 \State Proprocess the features of the next state $\phi_{h+1} = \phi(s_{h+1})$
                 \State Store the transition $(\phi_{h}, a_h, r_h, \phi_{h+1})$ in $\mathbf{D}$
                 \State Sample a random set of transitions $(\phi_{j}, a_j, r_j, \phi_{j+1})$
-                \State Set $y_j = \begin{cases} r_j, & \text{if } j=H\\ r_j + \gamma \max_{a} \hat{f}_{\hat{\Theta}}(\phi_{j+1},a), & \text{otherwise} \end{cases}$
+                \State \label{dqn-target} Set $y_j = \begin{cases} r_j, & \text{if } j=H\\ r_j + \gamma \max_{a} \hat{f}_{\hat{\Theta}}(\phi_{j+1},a), & \text{otherwise} \end{cases}$
                 \State Perform gradient descent step on $L(\Theta) = \left(y_j - f_{\Theta}(\phi_j,a_j)\right)^2$ with respect to $\Theta$
                 \State Every $C$ steps reset the target action-value function $\hat{f} = f$ by setting weights $\hat{\Theta} = \Theta$
             \EndFor
@@ -1257,12 +1220,42 @@ and \textbf{user activeness}, as formulated in the equation below:
 
 \cite{RefWorks:zheng2018drn:} defines $r_{active}$ to take real values in $[0,1]$ according to how frequently
 the user has visited the news site recently before $t_i$. Specifically, $r_{active}$ is calculated using
-Survival Analysis \citep{ibrahim2001bayesian,jing2017neural}. Secondly rather than applying the
-$\epsilon$-greedy method for exploration, DRN uses the \textbf{Dueling Bandit Gradient Descent} algorithm.
-This algorithm proceeds by generating an \emph{explore network} $\tilde{Q}$ (a copy of the regular 
-\emph{exploit network} $Q$, with it's weights randomly perturbed) before each timestamp $t_i$, and
-then by randomly choosing either $Q$ or $\tilde{Q}$ to determine the next action. If $\tilde{Q}$
-outperforms $Q$ after a set number of actions, $\tilde{Q}$ is then adoped as the \emph{exploit network}.
+Survival Analysis \citep{ibrahim2001bayesian,jing2017neural}. 
+
+Secondly rather than applying the
+$\epsilon$-greedy method for exploration as in Algorithm~\ref{alg:deep-q-learning}, DRN uses the \textbf{Dueling Bandit Gradient Descent} algorithm.
+This algorithm proceeds by generating an \emph{explore network} $\tilde{Q}(s,a) \approx \tilde{f}_{\tilde{\Theta}}$ before each timestamp $t_i$.
+
+\begin{definition}
+The \emph{explore network} $\tilde{f}_{\tilde{\Theta}}$ with weights $\tilde{\Theta}$ has the same architecture
+as the base Deep Q-Network $Q \approx f_{\Theta}$ (otherwise referred to as the \emph{exploit network}), and
+the weights $\tilde{\Theta}$ are calculated as
+\begin{equation*}
+\tilde{\Theta} = \Theta + \alpha U \Theta
+\end{equation*}
+where $\Theta$ represents the weights for $Q$ , $U \sim Uniform(-1,1)$ and $\alpha$ is an explore parameter
+\end{definition}
+
+For each user-query session at each timestamp $t_i$, the list of news articles $L_i$ is then chosen
+from the list of candidates $I_i$ by ramdomly combining recommendations using both the exploit network
+$Q$ and explore network $\tilde{Q}$. If the items recommended by $\tilde{Q}$ recieve better feedback from
+the user by the end of the session, the exploit network weights $\Theta$ are updated towards $\tilde{\Theta}$.
+
+Lastly, the DRN algorithm uses the Double DQN target calculation to calculate $y_t$ (replacing line~\ref{dqn-target} in algorithm~\ref{alg:deep-q-learning})
+\begin{equation}
+    \label{eqn:ddqn}
+    y_j = 
+    \begin{cases} 
+        r_j, & \text{if } j=H\\ 
+        r_j + \gamma \hat{f}_{\hat{\Theta}}(\phi_{j+1},\arg \max_{a}f_{\Theta}(\phi_{j+1},a)), & \text{otherwise} 
+    \end{cases}
+\end{equation}
+
+The key distinction in the equation above is that rather than using the target network $\hat{f}_{\hat{\Theta}}$ to directly
+estimate the value of future rewards $Q(\phi_{j+1},a_{j+1})$, the base Q-function approximator $f_{\Theta}$ is used to
+find the optimal action at time $j+1$, after which the target approximator $\hat{f}_{\hat{\Theta}}$ is used
+to evaluate the future value of this action. This method was introduced by \cite{RefWorks:van2016deep} in order
+to mitigate instabilities in the DQN algorithm.
 
 \begin{figure}[h]
     \centering
@@ -1271,13 +1264,17 @@ outperforms $Q$ after a set number of actions, $\tilde{Q}$ is then adoped as the
     \label{fig:drn}
 \end{figure}
 
+The DRN algorithm is composed of an Offline part and an Online part, as shown in Figure~\ref{fig:drn}.
+The Offline part consists fitting the initial $Q$-function approximator network $f_{\Theta}$,
+using previously collected session records containing the user, contextual and news article features previously
+discussed.
 The Online Learning part of the DRN framework proceeds as follows, as per \citep{RefWorks:zheng2018drn:}:
 
 \begin{enumerate}
     \item \textbf{Push:} At each timestamp $t_i$, a user $u$ browses to the news website, thereby
     submitting a request for news articles. The agent $G$ takes account of the user and context
     features, as well as the features for the set of currently available news candidates $I_i$.
-    The agent then selects the top $L$ candidantes. The list of $L$ candidates is compiled by mixing
+    The agent then selects the top $l$ candidantes. The list of $L_i$ candidates is compiled by mixing
     items reccomended by the \emph{exploit Q-network} $Q$ and the \emph{explore network} $\tilde{Q}$.
     The list is then shown to the user.
     \item \textbf{Feedback:} The user will then provide feedback by either clicking or not clicking
@@ -1290,7 +1287,7 @@ The Online Learning part of the DRN framework proceeds as follows, as per \citep
     \item \textbf{Major Update:} After a pre-defined time period $T_R$, the agent will use the feedback
     data stored in $D$ to update the exploit network $Q$. The reward will be based on a compination
     of user clicks and activeness, and $Q$ will be updated using the Experience Replay technique from
-    Algorithm~\ref{alg:deep-q-learning}.
+    Algorithm~\ref{alg:deep-q-learning}, with the target value adaptation from equation~\ref{eqn:ddqn}.
 \end{enumerate}
 
 \chapter{Deep CTR model Evaluation}
@@ -1351,7 +1348,8 @@ On the basis of the above critea, the following models from chapter~\ref{chap:ba
 \item Feature Generation by Convolutional Neural Network (FGCNN) \citep{RefWorks:liu2019feature}
 \end{itemize}
 
-For comparison, we also evaluate the predictive performance of the following models, as a Shallow model baseline:
+For comparison, we also evaluate the predictive performance of the shallow models, 
+as a baseline:
 
 \begin{itemize}
     \item Logistic Regression (LR) \citep{RefWorks:richardson2007predicting}
@@ -1365,7 +1363,7 @@ The full script for both experiments outlined above is contained in the iPython 
 \verb|ctr_model_testing.ipynb|, which is available on the Github Repository for this project \citep{Batek_Deep_Reinforcement_Leaning_2024}.
 All experiments were carried out using Tensorflow version 2.14 on AWS Sagemaker JupyterLab, utilizing a ml.g5.2x.large compute instance.
 Model implementations from the DeepCTR Python package \citep{RefWorks:shen2017deepctr:} were
-used where possible. For full Python environment specifications, please refer to the
+used for all Deep models. For full Python environment specifications, please refer to the
 \verb|environment_gpu.yml| file on the aforementioned Github repository for this project.
 
 \subsection{Datasets and Preprocessing}
@@ -1588,9 +1586,9 @@ In experiment~\ref{exp:comparative-model-analysis}, all models were compiled and
 standard hyperparameter settings mentioned above. In experiment~\ref{exp:hyperparameter-analysis},
 we took inspiration from \citep{RefWorks:guo2017deepfm:}, and explored the predictive accuracy of the
 best performing model from experiment~\ref{exp:comparative-model-analysis} for different
-\emph{DNN Hidden Unit} settings, namely exploring the following aspects:
+\emph{DNN Hidden Unit} settings, namely sequentially cumulatively the following aspects:
 
-\begin{itemize}
+\begin{enumerate}
     \item \textbf{Neurons per layer:} Here we scored the model when using 100, 200, 300, 400
     and 500 neurons per layer in the MLP component. Tests were carried out using 3 hidden layers.
     \item \textbf{Number of layers:} Here we scored the model when using 2, 3, 4, 5 and 6 hidden layers in
@@ -1598,22 +1596,40 @@ best performing model from experiment~\ref{exp:comparative-model-analysis} for d
     \item \textbf{DNN shape:} Her we compared the predictive performance when using the following
     DNN hidden unit settings:
     \begin{itemize}
-        \item \emph{Constant:} $[200,200,200]$
-        \item \emph{Increasing:} $[100,200,300]$
-        \item \emph{Decreasing:} $[300,200,100]$
-        \item \emph{Diamond:} $[150, 300, 150]$
-    \end{itemize}
+        \item \emph{Constant:} $[400,400,400]$
+        \item \emph{Increasing:} $[300,400,500]$
+        \item \emph{Decreasing:} $[500,400,300]$
+        \item \emph{Diamond:} $[300,600,300]$
+    \end{itemize}.
+\end{enumerate}
 
-    The DNN Unit settings for each shape above were purposefully chosen so that the total number
-    of MLP component hidden layer neurons adds up to 600, as in experiment~\ref{exp:comparative-model-analysis}.
-\end{itemize}
-
+Note that experiment~\ref{exp:hyperparameter-analysis} was conducted \emph{cumulatively} in the
+order above. This means that the best Neuron per layer setting was determined first and that
+this setting was used when exploring the Layer count settings, and so on.
 Since experiment~\ref{exp:comparative-model-analysis} revealed that the DCN model was the best performing
 candidate, we additionally elected to explore the performance of this model for different cross layer parameter
 values, namely $c \in \{2,3,4,5,6\}$.
 
 \section{Deep CTR Model Results}
 \label{sec:model-results}
+
+\subsection{Experiment 1: Comparitive Model Analysis}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/kdd12_model_scores.png}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/avazu_model_scores.png}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/criteo_model_scores.png}
+\end{figure}
+
 
 \chapter{Deep Reinforcement Learning for Ad Personalization}
 \label{chap:deep-rl-for-ad-personalization}
