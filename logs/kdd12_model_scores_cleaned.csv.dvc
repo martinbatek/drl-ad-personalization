@@ -1,0 +1,5 @@
+outs:
+- md5: d428c23296585e4ad50371fe96464504
+  size: 516
+  hash: md5
+  path: kdd12_model_scores_cleaned.csv

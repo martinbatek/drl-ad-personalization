@@ -55,3 +55,6 @@
 /cross_layers_4.csv
 /cross_layers_5.csv
 /cross_layers_6.csv
+/criteo_model_scores_cleaned.csv
+/kdd12_model_scores_cleaned.csv
+/avazu_model_scores_cleaned.csv

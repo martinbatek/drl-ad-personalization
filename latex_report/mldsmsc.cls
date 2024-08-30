@@ -30,7 +30,10 @@
 \RequirePackage{algorithm}
 
 % for bold symbols, e.g. bold Greek symbols, use the bm package
-%\usepackage{bm} 
+%\usepackage{bm}
+
+% For inserting tables from csv files
+\RequirePackage{csvsimple}
 
 % Graphics, importing figures
 \RequirePackage{graphicx}

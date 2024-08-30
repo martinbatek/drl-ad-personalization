@@ -1678,15 +1678,6 @@ values, namely $c \in \{2,3,4,5,6\}$.
 
 \section{DeepCTR-RL Framework}
 
-\subsection{Model Framework}
-
-\subsection{Feature types}
-
-\subsection{Double Deep Q-Learning Network}
-
-\subsection{Exploration}
-
-\subsection{Experience Replay}
 
 \section{Experiment Setup}
 
@@ -1698,12 +1689,10 @@ values, namely $c \in \{2,3,4,5,6\}$.
 
 \section{Deep CTR-RL Results}
 
-\chapter{Discussion}
-\label{chap:discussion}
-
-Discussion goes here.
+\section{Discussion}
 
 \chapter{Conclusion}
+\label{chap:conclusion}
 
 
 Conclusion goes here. 
@@ -1763,6 +1752,27 @@ Conclusion goes here.
     \end{tabular}
 \end{table}
 
+\section{Experiment Results}
+
+\subsection{Experiment 1: Comparative Model Analysis}
+
+\begin{table}
+    \csvautotabular{../logs/kdd12_model_scores_cleaned.csv}
+    \caption{Experiment 1 model scores on KDD12 dataset}
+    \label{tab:exp-1-kdd12}
+\end{table}
+
+\begin{table}
+    \csvautotabular{../logs/avazu_model_scores_cleaned.csv}
+    \caption{Experiment 1 model scores on Avazu dataset}
+    \label{tab:exp-1-avazu}
+\end{table}
+
+\begin{table}
+    \csvautotabular{../logs/criteo_model_scores_cleaned.csv}
+    \caption{Experiment 1 model scores on Criteo dataset}
+    \label{tab:exp-1-criteo}
+\end{table}
 
 %%References part of appendices
 % References: modify the file refs.bib
