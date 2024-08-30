@@ -1405,7 +1405,7 @@ however, the semintic significance of these fields is not given - they
 are simply labelled as ``Categorical 1-26'' and ``Numerical 1-13'' 
 respectively.
 
-\subsubsection{Preprocessing}
+\subsubsection{Exploratory Data Analysis and Preprocessing}
 
 As a first step in preprocessing, each dataset was shuffled and split into training (80\%) and validation (20\%)
 sets. The size if the datasets (roughly 15GB for KDD2 alone) necessitated the use of Amazon Web Services'
@@ -1442,26 +1442,40 @@ feature values.
     \label{fig:boxplots}
 \end{figure}
 
-Finally, an examinationation of the boxplots (see figure~\ref{fig:boxplots}) for the numerical features in
+Subsequently, an examinationation of the boxplots (see figure~\ref{fig:boxplots}) for the numerical features in
 each of the datasets reveals the presence of high varience numerical outliers,
 particularly in the case of the Criteo dataset. In order to ensure efficient
 training by means of gradient descent, these values needed to be normalized to unit
 variance and zero mean. In order words, for each numerical feature $x$,
 the following transformation was applied:
-
 $$
 z = \frac{x - \bar{x}}{\sigma}
 $$
-
 where $\bar{x}$ and $\sigma$ represents the mean and standard deviation of the
 the numerical feature in question. Furthermore, for the Criteo Dataset the following
 transformation was applied to the normalized values, as recommended by \cite{RefWorks:song2019autoint}:
-
 \begin{equation*}
 \tilde{z} = \begin{cases} z & \text{ if } z \leq 2 \\
     \log^{2}(z) & \text{ otherwise}
 \end{cases}
 \end{equation*}
+Finally, since the datasets will be used to train a binary classifier, we examined the distributions
+of target label values in each of the datasets. In Figure~\ref{fig:target-imbalance}, we see that
+there is a significant target-variable imbalance for all three datasets, with positive label rates
+ranging from 5\% for KDD12 to 25\% for Criteo. This is range is fairly typical of what one
+can expect of average digital ad placement Click-Through rates, and KDD12 is the
+most representative of the three in this regard \citep{RefWorks:cxl“good”}. We can
+expect that this imbalance will have an adverse impact model Precision and AUC.
+Due to the large imbalance for KDD12, we upweight all positive class labels by a
+factor of $4.98$ and downweight all of the negative labels by a factor of $0.26$.
+in all experiments.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/dataset_target_imbalance.png}
+    \caption{Target variable distribution from 10K record random samples from each dataset}
+    \label{fig:target-imbalance}
+\end{figure}
 
 \subsection{Evaluation Metrics}
 \label{sec:evaluation-metrics}
@@ -1565,6 +1579,9 @@ use the following hyperparameter inputs, which we have standardized for experime
     found that introducing such randomness during training can greatly improve regularization. As recommended
     by \cite{RefWorks:guo2017deepfm:}, this parameter was set to $0.6$ for both experiments.
 
+    \item \textbf{Categorical Feature Embedding Dimension:} This is represented by variable $D$
+    in equation~\ref{eqn:cat-embedding}. For all experiments, we set $D=4$.
+
     \item \textbf{Embedding L2 Regularization:} The L2 regularization strength that was applied while fitting
     the categorical feature embedding matrices ($B_i$). This was set to $0.005$ for both experiments.
 
@@ -1593,7 +1610,7 @@ best performing model from experiment~\ref{exp:comparative-model-analysis} for d
     and 500 neurons per layer in the MLP component. Tests were carried out using 3 hidden layers.
     \item \textbf{Number of layers:} Here we scored the model when using 2, 3, 4, 5 and 6 hidden layers in
     the MLP component. Tests were carried out using 200 neurons per layer.
-    \item \textbf{DNN shape:} Her we compared the predictive performance when using the following
+    \item \textbf{DNN shape:} Here we compared the predictive performance when using the following
     DNN hidden unit settings:
     \begin{itemize}
         \item \emph{Constant:} $[400,400,400]$
@@ -1622,6 +1639,39 @@ values, namely $c \in \{2,3,4,5,6\}$.
     \label{fig:experiment-1}
 \end{figure}
 
+\subsection{Experiment 2: Hyperparameter Setting Analysis}
+
+\subsubsection{Neurons per Layer}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/neurons.png}
+    \caption{Model scores for different neuron counts}
+    \label{fig:neurons}
+\end{figure}
+
+\subsubsection{Number of Layers}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/layers.png}
+    \caption{Model scores for different layer counts}
+    \label{fig:layers}
+\end{figure}
+
+\subsubsection{DNN Shape}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/shape.png}
+    \caption{Model scores for different DNN shapes}
+    \label{fig:shape}
+\end{figure}
+
+\subsubsection{Number of Cross Layers}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/cross_layers.png}
+    \caption{Model scores for different Cross Layer settings}
+    \label{fig:cross-layers}
+\end{figure}
 
 \chapter{Deep Reinforcement Learning for Ad Personalization}
 \label{chap:deep-rl-for-ad-personalization}
