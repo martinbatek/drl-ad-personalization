@@ -1816,8 +1816,71 @@ for Ad Personalization (DRL-AP) algorithm, a Reinforcement
 Learning algorithm that leverages the DCN model as a Deep Q-Network function appromator, and is
 otherwise largely based in DRN algorithm. We then conduct an offline simulation using the KDD12
 dataset introduced in chapter~\ref{chap:deep-ctr-model-evaluation} as a proof-of-concept for DRL-AP.
+The pretraining step of the DRL-AP algorithm is implemented in the Python Notebook \verb|rl_model_pretraining.ipynb|,
+whereas the simulation of the Online Part of the algorithm using the KDD12 dataset is implemented in
+\verb|drl_algorithm.ipynb|. Both of these scrips are avalable at the root of the Github repository
+for this report \citep{Batek_Deep_Reinforcement_Leaning_2024}.
 
 \section{DRL-AP Algorithm}
+
+The DRL-AP algorithm is largly based on the DRN algorithm described in section~\ref{sec:drn},
+and leverages the DCN model as the Q-function approximator. Since the DCN model trained in 
+chapter~\ref{chap:deep-ctr-model-evaluation} is trained as a binary classifier, the target
+value used during the experience replay update $y_j$ can only take values on the interval $[0,1]$.
+Therefore, we modified
+the target value label calculation in equation~\ref{eqn:ddqn} to the following:
+\begin{equation}
+    \label{eqn:drl-ap-target}
+    y_j = 
+    \begin{cases} 
+        r_j, & \text{if } j=H\\ 
+        \frac{1}{1+\gamma}\left(r_j + \gamma \hat{f}_{\hat{\Theta}}(\phi_{j+1},\arg \max_{a}f_{\Theta}(\phi_{j+1},a))\right) & \text{otherwise} 
+    \end{cases}
+\end{equation}
+thereby normalizing the target value by a factor of $1+\gamma$ for sequences
+where $j\neq H$. Furthermore, due to the fact that we have been constrained
+to offline testing only for this project, we have chosen not to include the
+user activeness component from DRN in DRL-AP. However, this can straightforwardly
+be included in future iterations. The DRL-AP algorithm is summarized in \ref{alg:drl-ap}.
+
+\begin{algorithm}
+    \caption{Deep Reinforcement Learning for Ad Personalization Algorithm}
+    \label{alg:drl-ap}
+    \begin{algorithmic}[1]
+        \State \textbf{Pretrain:} DCN Q-function approximator $f_{\theta}$ with offline historical data.
+        \State \textbf{Initialize:} Replay memory $\mathbf{D}$ to capacity $\mathbf{N}$.
+        \State \textbf{Initialize:} Set target action-value function $\hat{f}_{\hat{\Theta}}$ with $\hat{\Theta} = \Theta$
+        \For{Episode $k=1,\ldots, K$}
+            \State Initialize state sequence $s_1$ as a combination of user $u_1$ and context/query $c_1$ features
+            \State Preprocess the sequence and set as state values for the first session $\{\phi_h\}_{h=1}^P = \phi(s_1)$
+            \For{Session $t=1,\ldots,M$}
+            \State Retrive the list of avalable ads on the platform $\mathcal{A}_t$
+            \State \textbf{Initialize:} Ranked ad List $L_t$ of length $P$ to display to the user
+            \State \textbf{Initialize:} Explore model weights $\tilde{\Theta} = \Theta + \alpha U(-1,1) \Theta$
+            \State \textbf{Initialize:} Explore model $\tilde{f}_{\tilde{\Theta}}$
+                \For{List position $p=1,\ldots,P$}
+                    \State $h = (t-1)P + p$
+                    \State with probability $\epsilon$ select ad $a_h = \arg\max_{a \in \mathcal{A}_t} \Tilde{f}_{\tilde{\Theta}}(\phi_h, a)$,
+                    otherwise select ad $a_h = \arg\max_{a \in \mathcal{A}_t} f_{\Theta}(\phi_h, a)$
+                    %\State Execute action $a_h$ and observe reward $r_h(s_h, a_h)$ and the next state $s_{h+1}$
+                    \State Place ad $a_h$ in position $p$ of the ad list $L_t$
+                    \State Remove ad $a_h$ from $\mathcal{A}_t$ for the remainder of the session
+                \EndFor
+            \State \textbf{PUSH:} Display list $L_t$ to the user
+            \State \textbf{FEEDBACK:} Recieve feedback from the user in the form of clicks $\{r_h\}_{h=(t-1)P+1}^{tP}$
+            \If{Session CTR for $\tilde{f}_{\tilde{\Theta}}$ exceeds Session CTR for $f_{\theta}$}
+                \State \textbf{MINOR UPDATE} Update $\Theta$ to $\tilde{\Theta}$
+            \EndIf
+            \State Proprocess the features of the next state $\phi_{h+1} = \phi(s_{h+1})$
+            \State Store the transition $(\phi_{h}, a_h, r_h, \phi_{h+1})$ in $\mathbf{D}$
+            \State Sample a random set of transitions $(\phi_{j}, a_j, r_j, \phi_{j+1})$
+            \State Set $y_j = \begin{cases} r_j, & \text{if } j=H\\ r_j + \gamma \max_{a} \hat{f}_{\hat{\Theta}}(\phi_{j+1},a), & \text{otherwise} \end{cases}$
+            \State Perform gradient descent step on $\mathcal{L}(\Theta) = \left(y_j - f_{\Theta}(\phi_j,a_j)\right)^2$ with respect to $\Theta$
+            \State Every $C$ steps reset the target action-value function $\hat{f} = f$ by setting weights $\hat{\Theta} = \Theta$
+            \EndFor
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
 
 \section{Experiment Setup}
 
