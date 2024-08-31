@@ -1407,9 +1407,15 @@ respectively.
 
 \subsubsection{Exploratory Data Analysis and Preprocessing}
 
+The KDD12, Avazu and Criteo datasets mentioned above contain approximately 150, 231
+and 99 million records, adding up to a 26.2 GB collective memory requirement.
 As a first step in preprocessing, each dataset was shuffled and split into training (80\%) and validation (20\%)
-sets. The size if the datasets (roughly 15GB for KDD2 alone) necessitated the use of Amazon Web Services'
+sets. The size if the datasets necessitated the use of Amazon Web Services'
 Data Wrangler Tool \citep{AWSDataWrangler} for shuffling and splitting, and this was done using a random seed of 42.
+In order to restrict the training time and cost for the 11 models to a reasonable
+amount (approximately half a minute on average per ephoch), model fitting was conducted using a 157440 record
+training subsample and a 39360 record
+subsample of each dataset.
 
 We then proceeded to preprocess the categorical and numberical features. As previously
 discussed in chapter~\ref{chap:background}, ad platform categorical features tend to contain
@@ -1638,6 +1644,50 @@ values, namely $c \in \{2,3,4,5,6\}$.
     \caption{Experiment 1 Model Scores}
     \label{fig:experiment-1}
 \end{figure}
+
+The results for experiment~\ref{exp:comparative-model-analysis} are visualized
+in Figure~\ref{fig:experiment-1} (the metrics are are also available in the appendix
+in tables \ref{tab:exp-1-kdd12}, \ref{tab:exp-1-avazu} and \ref{tab:exp-1-criteo}). Only the
+metrics for the epochs with the minimal training loss function (Binary Crossentropy) are 
+reported. The left-hand panes show plots of Binary Crossentropy
+vs AUC for all of the models, the middel panes show Precision vs Recall and the right
+hand panes show the number of Epochs before the lowest Loss value was reached during
+training for each of the model.
+
+We see that our models generally did not reach the levels
+of predictive performance mentioned in the respective experiments conducted in the original papers.
+As an example of this, DeepFM and DCN attained a minimum Binary Crossentropy of 0.45083 and 0.4419
+as reported in \citep{RefWorks:guo2017deepfm:} and \citep{RefWorks:wang2017deep}, but in
+our experiments these models attained minimum Log Loss values of 0.5546 and 0.5225 respectively.
+This can be expected, since the fact that the intention of experiment~\ref{exp:comparative-model-analysis}
+was to deliver a broader comparitive analysis of a larger number of models, we have had to use
+a relatively small subsamples of the benchmark datasets. The original authors of the models were
+generally not constrained in this way, and had therefore used larger samples; for Deep \& Cross Learning,
+\cite{RefWorks:wang2017deep} used 41 million records of the Criteo dataset, and were therefore able
+to reach much higher levels of predictive performance.
+
+When examining the Shallow model vs Deep model aspect of the metrics
+in Figure~\ref{fig:experiment-1}, we find that although the Logistic
+Regression and Factorization Machines models are consistantly in the
+bottom 5 models in terms Binary Crossentropy and AUC for the three datasets,
+the difference in performance is not significantly large, and in some cases
+they outperformed some of their DNN counterparts (such as in the case of
+WDL and PNN for the Avazu dataset). This marginal performance differential consistant with what has been
+shown with experiments using larger dataset samples in \citep{RefWorks:guo2017deepfm:,RefWorks:wang2017deep,RefWorks:liu2019feature},
+and shows that although DNN models do tend to perform better, LR and FM can
+still be considered to be viable ``parameter-light'' alternatives to DNN models
+in CTR prediction.
+
+The Binary Crossentropy vs AUC reveal that the \textbf{Deep and Cross Network} (DCN)
+model outperformed the rest relatively consistantly for all three datasets. For both
+Avazu and Criteo, DCN outperformed all other models on the basis of both Binary Crossentropy
+and AUC, whereas for the KDD12 dataset it outperformed in terms of AUC. The DCN
+model also performed relalatively well in terms of both Precision and Recall,
+scoring on par with or better than the majority of the models in scope. It displayed
+a significant degree of efficiency during training, with relatively stable improvements in
+loss for successive epochs (this is where the closest contender, NFM, struggled - particularly with the
+Criteo and Avazu datasets). It is for these reasons that the DCN model was selected as the model
+for use in experiment~\ref{exp:hyperparameter-analysis} and in chapter~\ref{chap:deep-rl-for-ad-personalization}.
 
 \subsection{Experiment 2: Hyperparameter Setting Analysis}
 
