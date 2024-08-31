@@ -1616,14 +1616,8 @@ best performing model from experiment~\ref{exp:comparative-model-analysis} for d
     and 500 neurons per layer in the MLP component. Tests were carried out using 3 hidden layers.
     \item \textbf{Number of layers:} Here we scored the model when using 2, 3, 4, 5 and 6 hidden layers in
     the MLP component. Tests were carried out using 200 neurons per layer.
-    \item \textbf{DNN shape:} Here we compared the predictive performance when using the following
-    DNN hidden unit settings:
-    \begin{itemize}
-        \item \emph{Constant:} $[400,400,400]$
-        \item \emph{Increasing:} $[300,400,500]$
-        \item \emph{Decreasing:} $[500,400,300]$
-        \item \emph{Diamond:} $[300,600,300]$
-    \end{itemize}.
+    \item \textbf{DNN shape:} Here we compared the predictive performance for different
+    shapes of the Deep Neural Network, namely constant, increasing, decreasing, and diamond.
 \end{enumerate}
 
 Note that experiment~\ref{exp:hyperparameter-analysis} was conducted \emph{cumulatively} in the
@@ -1691,6 +1685,15 @@ for use in experiment~\ref{exp:hyperparameter-analysis} and in chapter~\ref{chap
 
 \subsection{Experiment 2: Hyperparameter Setting Analysis}
 
+Experiment~\ref{exp:comparative-model-analysis} revealed that the DCN model consistantly outperformed
+all of the models in scope for the data and standard parameter settings discussed in
+section~\ref{sec:experiment-setup}. In experiment~\ref{exp:hyperparameter-analysis} we
+sequentially explore each of the hyperparameter settings as discussed in the latter half
+of section~\ref{sec:hyperparameter-selection}, by refitting the DCN model to each hyperparameter
+setting. This hyperparameter experiment was inspired by a similar exercise conducted in section
+3.3 of \citep{RefWorks:guo2017deepfm:}. Experiment~\ref{exp:hyperparameter-analysis} was
+conducted using the KDD12 dataset samples only.
+
 \subsubsection{Neurons per Layer}
 \begin{figure}[h]
     \centering
@@ -1698,6 +1701,13 @@ for use in experiment~\ref{exp:hyperparameter-analysis} and in chapter~\ref{chap
     \caption{Model scores for different neuron counts}
     \label{fig:neurons}
 \end{figure}
+
+When all other factors remain the same, increasing the number of neurons per layer introduces
+complexity in the model \citep{RefWorks:wang2017deep}. The level of expressiveness that this brings
+initially improves the degree to which the model can learn and generalize more complex patterns in the data, 
+but will eventially result in overfitting for higher neuron values. Figure~\ref{fig:neurons} reveals
+that for the DCN model, the best Binary Crossentropy and Precision scores were attained with 400 neurons
+per layer.
 
 \subsubsection{Number of Layers}
 \begin{figure}[h]
@@ -1707,6 +1717,13 @@ for use in experiment~\ref{exp:hyperparameter-analysis} and in chapter~\ref{chap
     \label{fig:layers}
 \end{figure}
 
+Similarly as to the case with neurons, we find that the same model bias-variance dynamic
+applies when exporing the performance for an increasing number of layers. Figure~\ref{fig:layers}
+reveals that initially, the Binary
+Crossentropy and Precision of the DCN model improved from 2 to 3 layers, but performance
+deteriorated in terms of both of these metrics thereafter. The DCN model therefore performed
+best with 3 layers.
+
 \subsubsection{DNN Shape}
 \begin{figure}[h]
     \centering
@@ -1715,6 +1732,13 @@ for use in experiment~\ref{exp:hyperparameter-analysis} and in chapter~\ref{chap
     \label{fig:shape}
 \end{figure}
 
+For shape exploration, we fix the total number of neurons and the number of layers
+to 1200 and 3 respectively in order to remain in line with the two previous findings.
+This means that in terms of DNN Neuron settings, we used $[400,400,400]$ for Constant,
+$[300,400,500]$ for Increasing, $[500,400,300]$ for Decreasing and $[300,600,300]$ for Diamond.
+Figure~\ref{fig:shape} revealed that Constant yielded the best results for the
+DCN model.
+
 \subsubsection{Number of Cross Layers}
 \begin{figure}[h]
     \centering
@@ -1722,6 +1746,31 @@ for use in experiment~\ref{exp:hyperparameter-analysis} and in chapter~\ref{chap
     \caption{Model scores for different Cross Layer settings}
     \label{fig:cross-layers}
 \end{figure}
+
+Finally, we explore the DCN model performance for different Cross Layer settings, ranging
+from 2 to 6 Cross Layers. Recall from section~\ref{sec:feature-operator-models} that
+the Cross Network component in the DCN model explicitly captures feature interations
+up to order $k+1$, where $k$ is the number of Cross Layers. In Figure~\ref{fig:cross-layers},
+we see that the DCN model generally tends to perform better for higher Cross Layer parameter
+values. We choose to set this parameter to 5, as informed by the Precision metric specifically.
+The final model and parameter settings chosen after experiments \ref{exp:comparative-model-analysis}
+and \ref{exp:hyperparameter-analysis} are shown in table~\ref{tab:deepctr-model-result}.
+
+\begin{table}[h]
+    \begin{tabular}{|l|r|}
+        \hline
+        \textbf{Hyperparameter} & \textbf{Value}\\
+        \hline
+        Model & DCN \\
+        Neurons per Layer & $400$ \\
+        Number of Layers & $3$ \\
+        DNN Shape & Constant \\
+        Number of Cross Layers & 5 \\
+        \hline
+    \end{tabular}
+    \caption{Model and Hyperparameters chosen after experiments 1 and 2}
+    \label{tab:deepctr-model-result}
+\end{table}
 
 \chapter{Deep Reinforcement Learning for Ad Personalization}
 \label{chap:deep-rl-for-ad-personalization}
