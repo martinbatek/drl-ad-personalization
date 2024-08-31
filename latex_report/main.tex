@@ -1368,7 +1368,7 @@ as a baseline:
     \item 2-way Factorization Machines (FM) \citep{RefWorks:rendle2010factorization}
 \end{itemize}
 
-\section{Experiment Setup}
+\section{Experiment Setting}
 \label{sec:experiment-setup}
 
 The full script for both experiments outlined above is contained in the iPython notebook
@@ -1816,10 +1816,6 @@ for Ad Personalization (DRL-AP) algorithm, a Reinforcement
 Learning algorithm that leverages the DCN model as a Deep Q-Network function appromator, and is
 otherwise largely based in DRN algorithm. We then conduct an offline simulation using the KDD12
 dataset introduced in chapter~\ref{chap:deep-ctr-model-evaluation} as a proof-of-concept for DRL-AP.
-The pretraining step of the DRL-AP algorithm is implemented in the Python Notebook \verb|rl_model_pretraining.ipynb|,
-whereas the simulation of the Online Part of the algorithm using the KDD12 dataset is implemented in
-\verb|drl_algorithm.ipynb|. Both of these scrips are avalable at the root of the Github repository
-for this report \citep{Batek_Deep_Reinforcement_Leaning_2024}.
 
 \section{DRL-AP Algorithm}
 
@@ -1841,7 +1837,10 @@ thereby normalizing the target value by a factor of $1+\gamma$ for sequences
 where $j\neq H$. Furthermore, due to the fact that we have been constrained
 to offline testing only for this project, we have chosen not to include the
 user activeness component from DRN in DRL-AP. However, this can straightforwardly
-be included in future iterations. The DRL-AP algorithm is summarized in \ref{alg:drl-ap}.
+be included in future iterations. The DRL-AP algorithm is summarized in \ref{alg:drl-ap}. In
+the ad personalization context, the state space $\mathcal{S}$ is defined as by the
+user and contextual features at time $t$, the action set $\mathcal{A}_t$ is defined
+by the ad's available for display at time $t$ and the rewards are the user clicks.
 
 \begin{algorithm}
     \caption{Deep Reinforcement Learning for Ad Personalization Algorithm}
@@ -1851,9 +1850,9 @@ be included in future iterations. The DRL-AP algorithm is summarized in \ref{alg
         \State \textbf{Initialize:} Replay memory $\mathbf{D}$ to capacity $\mathbf{N}$.
         \State \textbf{Initialize:} Set target action-value function $\hat{f}_{\hat{\Theta}}$ with $\hat{\Theta} = \Theta$
         \For{Episode $k=1,\ldots, K$}
-            \State Initialize state sequence $s_1$ as a combination of user $u_1$ and context/query $c_1$ features
-            \State Preprocess the sequence and set as state values for the first session $\{\phi_h\}_{h=1}^P = \phi(s_1)$
             \For{Session $t=1,\ldots,M$}
+            \State Observe state $s_{(t-1)P+1}$ as a combination of user $u$ and context/query $c$ features
+            \State Preprocess and set state values for all positions in the ad list $\{\phi_h\}_{h=(t-1)P+1}^{tP} = \phi(s_{(t-1)P+1})$
             \State Retrive the list of avalable ads on the platform $\mathcal{A}_t$
             \State \textbf{Initialize:} Ranked ad List $L_t$ of length $P$ to display to the user
             \State \textbf{Initialize:} Explore model weights $\tilde{\Theta} = \Theta + \alpha U(-1,1) \Theta$
@@ -1867,28 +1866,95 @@ be included in future iterations. The DRL-AP algorithm is summarized in \ref{alg
                     \State Remove ad $a_h$ from $\mathcal{A}_t$ for the remainder of the session
                 \EndFor
             \State \textbf{PUSH:} Display list $L_t$ to the user
-            \State \textbf{FEEDBACK:} Recieve feedback from the user in the form of clicks $\{r_h\}_{h=(t-1)P+1}^{tP}$
+            \State \textbf{FEEDBACK:} Recieve clicks feedback $\{r_h\}_{h=(t-1)P+1}^{tP}$ from user
             \If{Session CTR for $\tilde{f}_{\tilde{\Theta}}$ exceeds Session CTR for $f_{\theta}$}
                 \State \textbf{MINOR UPDATE} Update $\Theta$ to $\tilde{\Theta}$
             \EndIf
-            \State Proprocess the features of the next state $\phi_{h+1} = \phi(s_{h+1})$
-            \State Store the transition $(\phi_{h}, a_h, r_h, \phi_{h+1})$ in $\mathbf{D}$
-            \State Sample a random set of transitions $(\phi_{j}, a_j, r_j, \phi_{j+1})$
-            \State Set $y_j = \begin{cases} r_j, & \text{if } j=H\\ r_j + \gamma \max_{a} \hat{f}_{\hat{\Theta}}(\phi_{j+1},a), & \text{otherwise} \end{cases}$
-            \State Perform gradient descent step on $\mathcal{L}(\Theta) = \left(y_j - f_{\Theta}(\phi_j,a_j)\right)^2$ with respect to $\Theta$
-            \State Every $C$ steps reset the target action-value function $\hat{f} = f$ by setting weights $\hat{\Theta} = \Theta$
+            \State Store the transitions $(\phi_{h}, a_h, r_h, \phi_{h+1})$ in $\mathbf{D}$
             \EndFor
+            \State Sample a random set of transitions $(\phi_{j}, a_j, r_j, \phi_{j+1})$ from $\mathbf{D}$
+            \State Set $y_j = \begin{cases} r_j, & \text{if } j=M \cdot P\\ \frac{1}{1+\gamma}\left(r_j + \gamma \hat{f}_{\hat{\Theta}}(\phi_{j+1},\arg \max_{a}f_{\Theta}(\phi_{j+1},a))\right) & \text{otherwise} \end{cases}$
+            \State \textbf{MAJOR UPDATE} Perform gradient descent step on $\mathcal{L}(\Theta) = \left(y_j - f_{\Theta}(\phi_j,a_j)\right)^2$ with respect to $\Theta$
+            \State Every $C$ steps reset the target action-value function $\hat{f} = f$ by setting weights $\hat{\Theta} = \Theta$
         \EndFor
     \end{algorithmic}
 \end{algorithm}
 
-\section{Experiment Setup}
+\section{Experiment Setting}
 
-\subsection{Dataset and Preprocessing}
+To provide a proof-of-concept for the DRL-AP algorithm, we conduct a simulation of the online
+learning environment using the KDD12 dataset. The pretraining step of the DRL-AP algorithm 
+is implemented in the Python Notebook \verb|rl_model_pretraining.ipynb|,
+whereas the simulation of the Online Part of the algorithm using the KDD12 dataset is implemented in
+\verb|drl_algorithm.ipynb|. Both of these scrips are avalable at the root of the Github repository
+for this report \citep{Batek_Deep_Reinforcement_Leaning_2024}.
+
+\subsection{Simulating the Online Environment using KDD12}
+
+The KDD12 dataset was selected to simulate the online RL environment due to the fact that out
+of the three datasets introduced in section~\ref{sec:datasets-preprocessing}, it is the
+only dataset with clearly discernable user, context and advertisment features. Both Criteo
+and Avazu contain anonymized features, and it is therefore unclear what type of features these are.
+
+All of the preprocessing steps discussed in section~\ref{sec:datasets-preprocessing} including
+categorical value binning and encoding, numberical value normalization and target label weighting
+apply here as well, and these steps have therefore been encoded as in the preprocessing functions
+$\phi$ used for the model pretraining for the Offline Part, as well as the Online Algorithm.
+The pretraining of the DCN model $f_{\Theta}$ was conducted on first 157440 records the same training
+data as in chapter~\ref{chap:deep-ctr-model-evaluation}. 
+
+Our method for the online simulation proceeds as follows. A list of unique
+user ID $u$ and query ID $c$ entries from the KDD12 validation set has been compiled, ensuring that each
+$u$-$c$ combination in this list had at least $P$ observations in the validation set (where $P$ is the chosen ad list length
+for the environment). For each session $t$ in the simulation, we ``observe'' the
+user-query combination by selecting values from our pre-prepared list, thereby
+establishing the state $s_t$ for the session. The set of available adverts $\mathcal{A}_t$ is
+then retrieved by querying the KDD12 validation set for observations with the
+specific user-query entries that match the current state for the session. The DRL-AP
+algorithm then proceeds to construct ad list $L_t$ by choosing $P$ adverts from $\mathcal{A}_t$ as described
+in algorithm~\ref{alg:drl-ap}. Finally the user feedback $\{r_h\}_{h=(t-1)P+1}^{tP}$
+is then simply the target labels for the specific observations used to construct $L_t$.
+
 
 \subsection{Evaluation Metrics}
 
-\subsection{Hyperparameter Selection}
+We demonstrate the simulated performance of the DRL-AP algorithm in terms of
+\textbf{session level click through rate} and \textbf{regret}. The prior is simply
+defined as the number of ad observations chosen for $L_t$ with positive click target
+labels, divided by list length $P$. For the latter, we adapt definition~\ref{def:regret}
+as follows to suit the context of our simulation:
+
+\begin{equation*}
+    \mathcal{R}_T = \sum_{t=1}^K \left[ \min(P, \sum_{r \in \mathcal{A}_t}r) - \sum_{r \in L_t}r\right]   
+\end{equation*}
+The first term contained in the square brackets above represents the value for the
+optimal policy $\pi^*$. This policy should in theory be able to maximize the number
+of clicks for each session, given ad list $\mathcal{A}_t$ and list length constraint
+$P$. The second term is simply equal to the value realized by the agent by constructing
+and displaying list $L_t$.
+
+\subsection{Hyperparameter Settings}
+
+The hyperparameter settings for the RL simulations have been chosen arbitrarily
+are stipulated in table~\ref{tab:rl-parameters}
+
+\begin{table}[h]
+    \begin{tabular}{|l|c|r|}
+        \hline
+        \textbf{Hyperparameter} & \textbf{Description} & \textbf{Value}\\
+        \hline
+        $\mathbf{N}$ & Size of memory $\mathbf{D}$ & 1800 \\
+        $K$ & Number of episodes & 30 \\
+        $M$ & Sessions per episode & 10 \\
+        $\alpha$ & Explore parameter & 1.0 \\
+        $P$ & Ad List length & 6 \\
+        $\epsilon$ & List-item level explore probability & 0.5\\
+        $\gamma$ & Future value discount & 0.1\\
+        \hline
+    \end{tabular}
+    \caption{Hyperparameter settings for RL simulation}
+    \label{tab:rl-parameters}
+\end{table}
 
 \section{Deep CTR-RL Results and Discussion}
 
