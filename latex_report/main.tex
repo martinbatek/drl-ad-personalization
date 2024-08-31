@@ -138,12 +138,10 @@ Deep Learning models for CTR prediction on three well-known benchmark datasets, 
 and Avazu \citep{RefWorks:wang2014click-through}. In chapter~\ref{chap:deep-rl-for-ad-personalization}, I construct a Deep Reinforcement Learning model for Ad personalization and evaluate its performance
 on the same benchmark datasets. Finally, in chapter~\ref{chap:discussion}, I discuss the results of the experiments and provide some concluding remarks.
 
-\chapter{Background}
-\label{chap:background}
+\chapter{Background: Deep CTR Prediction}
+\label{chap:background-deepctr}
 
-\section{Deep CTR Prediction}
-
-\subsection{Problem Formulation and Ad Marketplace Data}
+\section{Problem Formulation and Ad Marketplace Data}
 \label{sec:problem-formulation-data}
 
 In their respective surveys on the use of Deep Learning methods for CTR prediction, \cite{RefWorks:gu2021ad} 
@@ -271,10 +269,10 @@ accurate CTR prediction model, and is a key motivating factor as to why Deep Neu
 networks have out performed the classical shallow counterparts. This transition will be examined
 in more detail in sections \ref{sec:shallow-models} to \ref{sec:feature-operator-models}.
 
-\subsection{Shallow CTR Models}
+\section{Shallow CTR Models}
 \label{sec:shallow-models}
 
-\subsubsection{Logistic Regression}
+\subsection{Logistic Regression}
 
 The earliest examples of CTR classification models incorporated classical ``shallow'' 
 (single layer) statistical regression methods. The most basic example of this was 
@@ -316,7 +314,7 @@ Unfortunately, the prior still tends to exhibit poor performance with sparse dat
 whereas the fact that the Gradient Boosting algorithm for the latter is difficult to paralellize
 makes this solution difficult to scale in many applications in practice \citep{RefWorks:zhang2021deep}.
 
-\subsubsection{Factorization Machines}
+\subsection{Factorization Machines}
 
 \textbf{Factorization Machines} first proposed by \cite{RefWorks:rendle2010factorization} can 
 be thought of as an extension of the Logistic Regression framework in equation~\ref{eqn:lr-model}
@@ -397,7 +395,7 @@ both are componets of embedding vector $mathbf{e}_i$ for some categorical featur
 as well as Gradient Boosted Factorization Machines \citep{RefWorks:cheng2014gradient}, 
 which again aims to augment the FM framework by means of the Gradient Boosting algorithm.
 
-\subsection{Introducing MLP's in CTR prediction}
+\section{Introducing MLPs in CTR prediction}
 
 Despite the advantages of the FM framework, a setback of the formulation in equation~\ref{eqn:fm-rway}
 is that the framework grows highly compex and overparametized for higher values of $R$.
@@ -457,7 +455,7 @@ modelling frameworks have been developed that use Deep Learning techniques to bu
 imporved the previously discussed classical methods by incorporating Deep Neural Networks such
 as the ML in the model architecture \citep{RefWorks:zhang2021deep}.
 
-\subsection{Single vs Dual Tower Architectures}
+\section{Single vs Dual Tower Architectures}
 
 Before moving on to DNN enhanced CTR models in section~\ref{sec:mlp-enhanced-models}
 it is worth briefly discussing the difference between \textbf{Single-Tower}
@@ -489,10 +487,10 @@ better performance \citep{RefWorks:zhang2021deep}.
     \label{fig:single-dual-models}
 \end{figure}
 
-\subsection{DNN Enhanced CTR models}
+\section{DNN Enhanced CTR models}
 \label{sec:mlp-enhanced-models}
 
-\subsubsection{Factorization-machine Supported Neural Networks}
+\subsection{Factorization-machine Supported Neural Networks}
 
 One of the earliest example of the use of Deep Neural Networks being used to enhance existing
 CTR modeling methods is the \textbf{Factorization-machine Supported Neural Network} (FNN)
@@ -580,7 +578,7 @@ the FM pretraining step described above represents a significant overhead in
 terms of training efficiency. In the next subsections, we will see how the Wide \& Deep
 and DeepFM models aim to solve for these issues.
 
-\subsubsection{Wide and Deep}
+\subsection{Wide and Deep}
 
 The \textbf{Wide and Deep Learning} (WDL) model was developed by \cite{RefWorks:cheng2016wide}.
 
@@ -627,7 +625,7 @@ need to be manually incorporated by defining the cross-product transformation
 functions $\{\upsilon_k(x)\}_{k=1}^{P}$. This means that there is a significant
 feature engineering component that would be necessary to use this model effectively. 
 
-\subsubsection{DeepFM}
+\subsection{DeepFM}
 
 The \textbf{DeepFM} model was developed by \cite{RefWorks:guo2017deepfm:} in order
 to address the shortcomings of the FNN and W\&D models mentioned in this section, as 
@@ -690,7 +688,7 @@ FM model means that DeepFM is relatively scalable in terms of the number of feat
 the latent embedding space, especially in comparison to the Product based Neural Network
 (PNN) models \citep{RefWorks:qu2016product-based}, which will be covered in section \ref{sec:feature-operator-models}.
 
-\subsection{Feature Interaction Operator Models}
+\section{Feature Interaction Operator Models}
 \label{sec:feature-operator-models}
 
 MLPs have been proven to be universal function approximators, meaning that any function can be
@@ -714,11 +712,13 @@ to learn higher feature interactions \citep{RefWorks:zhang2021deep}. The three d
 Operators that are discussed in this section are Product Operators, Convolutional Operators
 and Attention Operators.
 
-\subsubsection{Product Operators models}
+\subsection{Product Operators models}
+
+\subsubsection{Product-based Neural Network}
 
 \textbf{Product Operator} networks are neural networks that include layers with inner or outer
 product operations in order to explicitly model feature interactions \citep{RefWorks:zhang2021deep}.
-The \textbf{Product-bassed Neural Network} (PNN) introduced the concept of product operator models
+The \textbf{Product-based Neural Network} (PNN) introduced the concept of product operator models
 as it includes a product layer between the embedding layer and the MLP in order to model second
 order feature interactions in the data. All of this is arranged as a Single Tower architecture, as shown
 in Figure~\ref{fig:pnn}.
@@ -764,6 +764,8 @@ computations (in which some neurons are eliminated in the inner product, and the
 is compressed for all fields at once), but even then the PNN models are still tend to be less computationally efficient
 than its peers. Furthermore, since the PNN model leverages a Single Tower architecture it suffers from the
 same issue as the FNN model wherein the lower order interactions are ignored.
+
+\subsubsection{Neural Factorization Machine}
 
 The \textbf{Neural Factorization Machine} (NFM) model introduced by \cite{RefWorks:he2017neural} works
 on a similar principle to PNN, in that it also has a product layer in
@@ -819,7 +821,9 @@ training efficiency and stability in comparison to most other Deep Learning meth
 being able to capture both feature interactions through the $f_{\Phi}^{NFM-Deep}$ as well as
 key feature signals through the linear components of equation~\ref{eqn:nfm} \citep{RefWorks:zhang2021deep}.
 
-However, neither the PNN nor the NFM models guaruntee that each order of feature interaction
+\subsubsection{Deep \& Cross Network}
+
+Neither the PNN nor the NFM models guaruntee that each order of feature interaction
 will be modelled. The \textbf{Deep \& Cross Network} (DCN) devoloped by \cite{RefWorks:wang2017deep}
 applies feature crossing at each layer and efficiently learns predictive cross features to a hyperparametized
 bounded degree without requiring additional feature engineering. The DCN model is has a Dual-Tower architecture
@@ -847,7 +851,9 @@ are trainable weight and bias parameter vectors for each cross layer. \cite{RefW
 show linking crossing operations formulated by equation~\ref{eqn:cross-layer}, the output of of a
 $L$-layer Cross Network comprises explicitly of cross-feature terms of degrees 1 to $L+1$.
 
-\subsubsection{Convolutional Operator Models}
+\subsection{Convolutional Operator Models}
+
+\subsubsection{Convolutional Click Prediction Model}
 
 \textbf{Convolutional Operator Models} use the convolution operation to extract key local-global
 features from the categorical field embeddings. The earliest and most well known example of a
@@ -884,6 +890,9 @@ due to the equivariance property of the Convolution operations, the degree to wh
 important feature interactions in the data is highly dependant on how the features are ordered in the
 input matrix \citep{RefWorks:zhang2021deep,RefWorks:qu2018product-based,RefWorks:gu2021ad}. Convolutions
 by nature extract feature maps in the local neighbourhood of each variable, but fail to do so globally.
+
+\subsubsection{Feature Generation by Convolutional Neural Network}
+
 The \textbf{Feature Generation by Convolutional Neural Network} model proposed by \cite{RefWorks:liu2019feature}
 introduces a \emph{feature recombination layer} to mitigate this issue.
 The architecture for the FGCNN model is shown in Figure~\ref{fig:fgcnn}
@@ -906,7 +915,7 @@ embedding matrix as an input. However, in order to solve for the input order dep
 prevailent with CCPM, the resulting feature maps are first passed through a fully connected \emph{recombination layer}
 that models non-adjacent interactions.
 
-\subsubsection{Attention Operator Models}
+\subsection{Attention Operator Models}
 
 \textbf{Attention Operator Models} aim to utilize the attention mechanism for identifying
 the key feature interactions in the data. The \textbf{Autotomatic Feature Interaction Learning} (AutoInt) 
@@ -936,9 +945,10 @@ The architecture of the AutoInt model is shown in Figure\ref{fig:autoint}.
 \end{figure}
 
 
-\section{Deep Reinforcement Learning}
+\chapter{Background: Deep Reinforcement Learning}
+\label{chap:background-drl}
 
-The second part of the background chapter is dedicated to Deep Reinforcement Learning. We first
+The second part of the background material in this report is dedicated to Deep Reinforcement Learning. We first
 proceed by explaining the fondational concepts, in which we will establish definitions for
 Markov Decision Processes, Reinforcement Learning and Dynamic Programming. We then move on to explain
 Q-Learning, a specific class of Reinforcement Learning algorithms, as well as how Deep Learning
@@ -946,9 +956,7 @@ models are being applied in the case of Deep Q-Learning. Finally, we introduce t
 Learning News reccomendation (DRN) algorithm \citep{RefWorks:zheng2018drn:}, a Q-learning algorithm
 which we have repurposed for ad recommendation.
 
-\subsection{Reinforcement Learning Basics}
-
-\subsubsection{Markov Decision Process and Bellman Optimality Equations}
+\section{RL Basics: MDPs and Bellman Optimality Equations}
 
 In the case of many online systems and applications where there is a series of interactions between
 users and the system, it is often desirable to find the optimal set of content to display to the
@@ -1084,7 +1092,9 @@ are empirically estimated on the basis of observed feedback from the environment
 Sampling proceeds by maining a posterior categorical distribution with a Dirichelet conjugate prior,
 and then sampling the transition function from the posterior.
 
-\subsection{Q-Learning and Deep Q-Learning}
+\section{Q-Learning and Deep Q-Learning}
+
+\subsection{Q-Learning}
 
 A major drawback with both of the UCBRL and Thompson Sampling algorithms is that they both
 require the state transtition model to be approximated and stored. This poses a serious practical
@@ -1137,6 +1147,8 @@ for $\hat{Q}(s,a)$, as opposed to $H \times |\mathcal{S}| \times |\mathcal{A}| \
 transition probabilities, which significantly lowers the memory requirement \citep{pike-burke2024LearnigAgents}.
 Note that in Algorithm~\ref{alg:basic-q-learning} the $\alpha_{h,t}$ parameter represents an
 \emph{update step size} parameter, which usually depends inversely on $N_{h,t}(s_{h,t}, a_{h,t})$.
+
+\subsection{Deep Q-Learning}
 
 While the basic Q-Learning algorithm significantly decreases the computational requirement
 by removing the need to store the transition probability model, keeping track of Q-function values
@@ -1198,7 +1210,7 @@ basic Q-Learning:
     To prevent this, a separate \emph{target model} $\hat{f}$ is used to calculate the $y_j$ values.
 \end{itemize}
 
-\subsection{DRN: Deep Reinforcement Learning for News Recommendation}
+\section{DRN: Deep Reinforcement Learning for News Recommendation}
 \label{sec:drn}
 
 DRN \citep{RefWorks:zheng2018drn:} is a Deep Q-Learning framework 
@@ -1367,6 +1379,7 @@ used for all Deep models. For full Python environment specifications, please ref
 \verb|environment_gpu.yml| file on the aforementioned Github repository for this project.
 
 \subsection{Datasets and Preprocessing}
+\label{sec:datasets-preprocessing}
 
 In order to evaluate and compare the predictive performance of each of the previously mentioned
 models, we perform experiments using three widely known real-world benchmark datasets for
@@ -1627,7 +1640,7 @@ Since experiment~\ref{exp:comparative-model-analysis} revealed that the DCN mode
 candidate, we additionally elected to explore the performance of this model for different cross layer parameter
 values, namely $c \in \{2,3,4,5,6\}$.
 
-\section{Deep CTR Model Results}
+\section{Deep CTR Model Results and Discussion}
 \label{sec:model-results}
 
 \subsection{Experiment 1: Comparitive Model Analysis}
@@ -1682,6 +1695,19 @@ a significant degree of efficiency during training, with relatively stable impro
 loss for successive epochs (this is where the closest contender, NFM, struggled - particularly with the
 Criteo and Avazu datasets). It is for these reasons that the DCN model was selected as the model
 for use in experiment~\ref{exp:hyperparameter-analysis} and in chapter~\ref{chap:deep-rl-for-ad-personalization}.
+
+There are several limitations of the method that we employ in experiment~\ref{exp:comparative-model-analysis}.
+We already mentioned that due to the fact that we are using relatively small subsamples of the three
+datasets, we do not attain the stated Log Loss and AUC from the original papers. Secondly, as we
+elected to standardize the DNN hyperparameter settings as described in section~\ref{sec:hyperparameter-selection} and to keep all hyperparameter values as per
+the defaults in the DeepCTR package \citep{RefWorks:shen2017deepctr:}, it is possible that this
+may have resulted in sub-optimal hyperparameter settings for the specific models. The final notable limitation
+stems from the target variable imbalance mentioned in section~\ref{sec:datasets-preprocessing}. Such
+target label imalance makes it difficult for the model to learn which feature combinations are most associated
+with a positive label, since the number of positively labelled observations is limited. In the case of
+KDD12 where the class imbalance is most severe, we partially remedy this by applying class weights during
+training. Unfortunately, this method tends to result in training instability. Some of the DeepCTR
+researchers such as \cite{RefWorks:liu2019feature} used negative sampling to remedy the class imbalance issue instead.
 
 \subsection{Experiment 2: Hyperparameter Setting Analysis}
 
@@ -1772,11 +1798,26 @@ and \ref{exp:hyperparameter-analysis} are shown in table~\ref{tab:deepctr-model-
     \label{tab:deepctr-model-result}
 \end{table}
 
+Experiment~\ref{exp:hyperparameter-analysis} shares the same limitations stemming from
+the small data sample size and target variable imbalance as mentioned for experiment~\ref{exp:comparative-model-analysis}.
+In addition, due to training time limitations we have had to employ the sequential parameter search
+method described above, which would not explore all of the possible parameter combinations, as in the case
+of a full Grid Search. This entails that the parameters found in experiment~\ref{exp:hyperparameter-analysis}
+are not guarunteed to be optimal.
+
 \chapter{Deep Reinforcement Learning for Ad Personalization}
 \label{chap:deep-rl-for-ad-personalization}
 
-\section{DeepCTR-RL Framework}
+In chapter~\ref{chap:deep-ctr-model-evaluation}, we conducted experiments to ascertain the
+best performing candidate CTR prediction model out of those listed in section~\ref{sec:model-selection},
+and to determine the ideal hyperparameter values. As a result we found the DCN model to be the
+ideal candidate. In chapter~\ref{chap:deep-rl-for-ad-personalization} we propose the Deep Reinforcement Learning
+for Ad Personalization (DRL-AP) algorithm, a Reinforcement
+Learning algorithm that leverages the DCN model as a Deep Q-Network function appromator, and is
+otherwise largely based in DRN algorithm. We then conduct an offline simulation using the KDD12
+dataset introduced in chapter~\ref{chap:deep-ctr-model-evaluation} as a proof-of-concept for DRL-AP.
 
+\section{DRL-AP Algorithm}
 
 \section{Experiment Setup}
 
@@ -1786,9 +1827,7 @@ and \ref{exp:hyperparameter-analysis} are shown in table~\ref{tab:deepctr-model-
 
 \subsection{Hyperparameter Selection}
 
-\section{Deep CTR-RL Results}
-
-\section{Discussion}
+\section{Deep CTR-RL Results and Discussion}
 
 \chapter{Conclusion}
 \label{chap:conclusion}
