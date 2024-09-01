@@ -1645,21 +1645,33 @@ values, namely $c \in \{2,3,4,5,6\}$.
 
 \subsection{Experiment 1: Comparitive Model Analysis}
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{../figures/model_scores.png}
-    \caption{Experiment 1 Model Scores}
-    \label{fig:experiment-1}
-\end{figure}
+The results for experiment~\ref{exp:comparative-model-analysis} for the KDD12, 
+Avazu and Criteo datasets are shown
+in tables \ref{tab:exp-1-kdd12}, \ref{tab:exp-1-avazu} and \ref{tab:exp-1-criteo} respectively
+A visualization of these results has been included in the appendix in Figure~\ref{fig:experiment-1}. 
+Only the
+metrics for the epochs with the minimum achieved training loss function (Binary Crossentropy) are 
+reported. The first column in the tables indicates the epochs in which the minimum loss function
+value was attained. Recall that in each case, the models were fitted to a maximum of 15 epochs,
+with an EarlyStopping callback and a patience value set to 5 epochs.
 
-The results for experiment~\ref{exp:comparative-model-analysis} are visualized
-in Figure~\ref{fig:experiment-1} (the metrics are are also available in the appendix
-in tables \ref{tab:exp-1-kdd12}, \ref{tab:exp-1-avazu} and \ref{tab:exp-1-criteo}). Only the
-metrics for the epochs with the minimal training loss function (Binary Crossentropy) are 
-reported. The left-hand panes show plots of Binary Crossentropy
-vs AUC for all of the models, the middel panes show Precision vs Recall and the right
-hand panes show the number of Epochs before the lowest Loss value was reached during
-training for each of the model.
+\begin{table}
+    \csvautotabular{../logs/kdd12_model_scores_cleaned.csv}
+    \caption{Experiment 1 model scores on KDD12 dataset}
+    \label{tab:exp-1-kdd12}
+\end{table}
+
+\begin{table}
+    \csvautotabular{../logs/avazu_model_scores_cleaned.csv}
+    \caption{Experiment 1 model scores on Avazu dataset}
+    \label{tab:exp-1-avazu}
+\end{table}
+
+\begin{table}
+    \csvautotabular{../logs/criteo_model_scores_cleaned.csv}
+    \caption{Experiment 1 model scores on Criteo dataset}
+    \label{tab:exp-1-criteo}
+\end{table}
 
 We see that our models generally did not reach the levels
 of predictive performance mentioned in the respective experiments conducted in the original papers.
@@ -1673,19 +1685,19 @@ generally not constrained in this way, and had therefore used larger samples; fo
 \cite{RefWorks:wang2017deep} used 41 million records of the Criteo dataset, and were therefore able
 to reach much higher levels of predictive performance.
 
-When examining the Shallow model vs Deep model aspect of the metrics
-in Figure~\ref{fig:experiment-1}, we find that although the Logistic
+When comparing the performance of SHallow models to their Deep 
+counterparts, we find that although the Logistic
 Regression and Factorization Machines models are consistantly in the
 bottom 5 models in terms Binary Crossentropy and AUC for the three datasets,
 the difference in performance is not significantly large, and in some cases
-they outperformed some of their DNN counterparts (such as in the case of
+they outperformed some of the Deep models (such as in the case of
 WDL and PNN for the Avazu dataset). This marginal performance differential consistant with what has been
 shown with experiments using larger dataset samples in \citep{RefWorks:guo2017deepfm:,RefWorks:wang2017deep,RefWorks:liu2019feature},
 and shows that although DNN models do tend to perform better, LR and FM can
 still be considered to be viable ``parameter-light'' alternatives to DNN models
 in CTR prediction.
 
-The Binary Crossentropy vs AUC reveal that the \textbf{Deep and Cross Network} (DCN)
+The results shown reveal that the \textbf{Deep and Cross Network} (DCN)
 model outperformed the rest relatively consistantly for all three datasets. For both
 Avazu and Criteo, DCN outperformed all other models on the basis of both Binary Crossentropy
 and AUC, whereas for the KDD12 dataset it outperformed in terms of AUC. The DCN
@@ -1890,6 +1902,7 @@ whereas the simulation of the Online Part of the algorithm using the KDD12 datas
 for this report \citep{Batek_Deep_Reinforcement_Leaning_2024}.
 
 \subsection{Simulating the Online Environment using KDD12}
+\label{sec:sim-description}
 
 The KDD12 dataset was selected to simulate the online RL environment due to the fact that out
 of the three datasets introduced in section~\ref{sec:datasets-preprocessing}, it is the
@@ -1935,8 +1948,10 @@ and displaying list $L_t$.
 
 \subsection{Hyperparameter Settings}
 
-The hyperparameter settings for the RL simulations have been chosen arbitrarily
-are stipulated in table~\ref{tab:rl-parameters}
+The proof-of-concept simulation was run over a time horizon of 30 episodes, each
+containing 10 user-query sessions for Ad-list requests of length 10.
+The hyperparameter settings for the RL simulation have been chosen arbitrarily
+are stipulated in table~\ref{tab:rl-parameters}.
 
 \begin{table}[h]
     \begin{tabular}{|l|c|r|}
@@ -1960,10 +1975,23 @@ are stipulated in table~\ref{tab:rl-parameters}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{../figures/drl-ap.png}
+    \includegraphics[width=\textwidth]{../figures/drl-ap.png}
     \caption{Episode level Regret and CTR for DRL-AP and Random Model}
     \label{fig:drl-ap}
 \end{figure}
+
+Figure~\ref{alg:drl-ap} shows the resulting episodic Cumulative Regret and 5-episode moving average
+Click Through rate for the simulation described in section~\ref{sec:sim-description}. The results
+for the DRL-AP algorithm are shown in blue. As a benchmark, we simulated the results for a random
+model. In this case, the ads we chosen from $\mathcal{A}_t$ uniformly at random. The mean result
+for the random model is represented by the orange line in both plots. Figure~\ref{fig:drl-ap}
+clearly shows that the DRL-AP algorithm minimizes regret and therefore maximizes CTR better than
+the random model. This indicates that the predictive precision DCN model as a Q-function approximator
+significantly improves the Ad selection agents ability to choose adverts that the user will click on,
+which demonstrates the proof-of-concept for the DRL-AP algorithm.
+
+T
+
 \chapter{Conclusion}
 \label{chap:conclusion}
 
@@ -2029,23 +2057,12 @@ Conclusion goes here.
 
 \subsection{Experiment 1: Comparative Model Analysis}
 
-\begin{table}
-    \csvautotabular{../logs/kdd12_model_scores_cleaned.csv}
-    \caption{Experiment 1 model scores on KDD12 dataset}
-    \label{tab:exp-1-kdd12}
-\end{table}
-
-\begin{table}
-    \csvautotabular{../logs/avazu_model_scores_cleaned.csv}
-    \caption{Experiment 1 model scores on Avazu dataset}
-    \label{tab:exp-1-avazu}
-\end{table}
-
-\begin{table}
-    \csvautotabular{../logs/criteo_model_scores_cleaned.csv}
-    \caption{Experiment 1 model scores on Criteo dataset}
-    \label{tab:exp-1-criteo}
-\end{table}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../figures/model_scores.png}
+    \caption{Experiment 1 Model Scores}
+    \label{fig:experiment-1}
+\end{figure}
 
 %%References part of appendices
 % References: modify the file refs.bib
