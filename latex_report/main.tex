@@ -54,8 +54,7 @@ COVID-19 pandemic, this number has been rapidly increasing and is expected to re
 Many of the of the major Ad platforms such as Google, Facebook and Amazon operate on a cost-per-user-engagement pricing model, which usually means that 
 advertisers get charged for every time a user clicks on an advertisment. This means that there is
 a significant commercial incentive to design Ad-serving platforms that ensure that the content 
-shown to each user is as relevent as possible, so as to maximize user engagement and platform revenues
-as much as possible.
+shown to each user is as relevent as possible, so as to maximize user engagement and platform revenues.
 
 \begin{figure}[h]
 \centering
@@ -64,79 +63,84 @@ as much as possible.
 \label{fig:ad-spending}
 \end{figure}
 
-Attaining accurate Click-Through Rate (CTR) 
-prediction is a necessary first step for Ad persionalization, which is why study of CTR prediction methods have been an extremely active part of 
-Machine Learning research over the past through years. Initially, shallow prediction methods such as Logistic Regression, Factorization Machines \citep{RefWorks:rendle2010factorization} and Field-Aware Factorization 
-Machines \citep{RefWorks:juan2016field-aware} have been used for CTR prediction. However, these methods have often been shown to be unable to capture the 
-higher order feature interactions in the sparse multi-value categorical Ad Marketplace datasets \citep{RefWorks:zhang2021deep}. Since then, Deep Learning methods have been 
-shown to show superior predictive ability on these datasets. A number of Deep Learning models have been proposed, each using a
-different techniques for feature interaction modelling, ranging from Deep Learning extensions of Factorization Machines
-such as DeepFM \citep{RefWorks:guo2017deepfm:}, to novel methods such as AutoInt \citep{RefWorks:song2019autoint}. By employing a
-multi-towered neural network architecture, these models are able to capture both low-order and high-order feature interactions in the data,
-and therefore tend to achieve supperior predictive performance to their shallow counterparts.
+Predicting the Click-Through Rate (CTR) 
+for a given Ad placement is a necessary first step for Ad persionalization. Consequentially, the study of CTR prediction methods have been an extremely active part of 
+Machine Learning research. Methods such as Logistic Regression, Factorization Machines \citep{RefWorks:rendle2010factorization} and Field-Aware Factorization 
+Machines \citep{RefWorks:juan2016field-aware} were initially considered to be best-in-class methods for CTR prediction. However, due to their relative simplicity, these methods are
+often unable to learn from
+higher order feature interactions, which often contain the key patterns for CTR prediction in the sparse multi-value categorical Ad Marketplace datasets \citep{RefWorks:zhang2021deep}. Deep Learning methods have been 
+shown to show superior predictive ability in this domain, since their multi-layered structure alows for the learning of higher-order interactions
+more easily. A number of Deep Learning models have been proposed using a
+range of techniques for feature interaction modelling, including from Deep Learning extensions of Factorization Machines
+such as DeepFM \citep{RefWorks:guo2017deepfm:}, to novel methods such as AutoInt \citep{RefWorks:song2019autoint}.
 
 However, irrespective of how well these models perform in a static environments, the reality is that user preferences
 and advertisment characteristics are constantly changing. Like most online reccomender systems,
 Ad personalization models must be able to adapt to these changes in order to continue to provide accurate predictions 
 over the longer period \citep{RefWorks:zheng2018drn:}. This problem necessitates the use
 of Reinforcement Learning for Ad personalization.
-
 Reinforcement Learning is a subdomain of Machine Learning in which the goal is for an agent to
 learn an optimal policy that maximizes the expected reward in an environment where the
 state-action-reward progression can be modelled as a Markov Decision Process
 \citep{puterman2014markov}. Early Reinforcement Learning methods involved 
 deriving a the transition probabilities for the state-action pairs on the basis of interactions
-with the environment and then using Dynamic Programming methods such as the Upper Confidence
-Bound RL (UCB-RL) algorithm \citep{RefWorks:auer2008near-optimal} and the
-the Thompson Sampling algorithm for Reinforcement Learning \citep{RefWorks:pike-burke2024optimism/thompson}.
-However, in cases where the state-action space is too sparce to be
-reasonably enumerated, it is often more practical to user a function approximator 
-to directly estimate the expacted cumalative reward for each action in each state. This method of Reinfocement
-Learning is commonly referred to as Q-learning \citep{RefWorks:watkins1989learning},
-and has the advantage of being \emph{model-free}, meaning that
-it does not require the agent to have a model of the environment
-thereby making it more scalable to large and sparce datasets. In \citep{RefWorks:hornik1989multilayer},
+with the environment. However, in cases where the state-action space is too sparce to be
+reasonably enumerated, it is often more practical 
+to directly estimate the expected cumalative reward for each action in each state. This method
+is commonly referred to as Q-learning \citep{RefWorks:watkins1989learning}. In \citep{RefWorks:hornik1989multilayer},
 \citep{RefWorks:cybenko1989approximation} and \citep{RefWorks:hornik1990universal} Deep
-Neural Networks with activation functions are shown to be universal function approximators
+Neural Networks are shown to be universal function approximators
 which naturally lead to the incorporation of DNN's in Q-Learning. This has lead to the
 development of the Deep Q-Learning Agent, which has been shown to be able to learn optimal
 policies in a number of different domains, such as the Atari 2600 game environment \cite{RefWorks:mnih2015human-level}.
-Beyond this, Deep Reinforcement Learning has shown promising results in a number
-of different aplications, including robot control and computer vision \citep{RefWorks:wang2024deep}.
-In the context of Ad personalization, DRL has also be applied to online reccomender systems
+DRL has also be applied to online reccomender systems
 such as News article reccomendation \citep{RefWorks:zheng2018drn:} and video
 reccomendation on Youtube \citep{RefWorks:chen2019top-k}. In both papers,
-the authors show that the DRL agent is able to learn an optimal content reccomendation
+the authors show that the DRL agent is able to learn an optimal content recommendation
 policy on the basis of user engagement data. This reveals that there is potential
 for applying these methods to the problem of Ad personlization, thereby creating a 
 truely adaptive marketing platform.
 
 \subsubsection{Research Question and Contributions}
 
-In this report, I aim to construct a Ad serving system that is truely adaptive and 
+In this report, we aim to construct a Ad serving system that is truely adaptive and 
 personalized to the changing user preferences and advertisment charateristics. In order
-to achieve this goal, I will first need to find a suitable Deep Learning Model arcitecture
-for CTR prediction, and then incorporating this model as the Q-function approximator in
-a Deep Q-Learning algorithm. The key contributions that I make in this report are as follows:
+to achieve this goal, we will first need to find a suitable Deep Learning Model arcitecture
+for CTR prediction and then incorporate this model as the Q-function approximator in
+a Deep Q-Learning algorithm. The key contributions that we make in this report are as follows:
 
-\begin{itemize}
-\item I evaluate the performance of five popular Deep Learning models for CTR prediction on three well-known benchmark datasets, Criteo \citep{RefWorks:tien2014display}, KDD12 \citep{RefWorks:aden2012kdd} and Avazu \citep{RefWorks:wang2014click-through}.
-\item I construct a novel Deep Reinforcement Learning Frame for Ad personalization, and as a proof-of-concept and evaluate its performance using the KDD12 dataset.
-\end {itemize}
+\begin{enumerate}
+    \item \label{exp:comparative-model-analysis} A \textbf{Comparitive Model Analysis}, whereby the predictive performance of a range of different CTR models
+    is measured using equivalent hyperparameter settings and the same benchmark CTR datasets.
+    \item[] \textbf{Research Question:} \emph{Which of the CTR prediction models in scope have the highest predicted performance
+    when measured using equivalent hyperparameter settings and using the same benchmark CTR prediction datasets?}
+    \item \label{exp:hyperparameter-analysis} A \textbf{Hyperparameter Setting Analysis}, whereby we take the highest performing model from the previous
+    experiment above, and calculate and compare that model's predictive performance for different parameter settings.
+    \item[] \textbf{Research Question:} \emph{What are the ideal hyperparameter values for the given CTR prediction model?}
+    \item \label{exp:rl-sim} A \textbf{Deep Reinforcement Learning for Ad Personalization} algorithm that demonstrates the
+    proof-of-concept for using Deep Reinforcement Learning in the Ad domain. 
+    \begin{enumerate}
+        \item \label{exp:dcn-model-advantage} \textbf{Research Question:} \emph{Does the use of a Deep Learning model provide an
+        advantage in terms of Reward (Click) maximization and Regret Minimization over using no model?}
+        \item \label{exp:drl-ap-advantage} \textbf{Research Question:} \emph{Does the DRL-AP algorithm provide a significant
+        advantage in terms of Reward (Click) maximization and Regret Minimization over using a Deep Learning model
+        with no updates?}
+    \end{enumerate}
+\end{enumerate}
 
 \subsubsection{Structure of the Report}
 
-In chapter~\ref{chap:background}, I begin by providing a background introducing the problem
-of Click-Through Rate prediction in the context of Ad personalization, and explore the unique challenges posed 
-by the typically sparse multi-value categorical datasets that are common in the Ad marketplace. I then 
+In chapter~\ref{chap:background-deepctr}, we begin by introducing the problem setting for
+of Click-Through Rate prediction, and explore the unique challenges posed 
+by the typically sparse multi-value categorical datasets that are common in the Ad marketplace. We then 
 proceed to review the literature on Deep Learning models for CTR prediction, highlighting
 the different techniques that each framework uses to capture the key feature interactions in the data. 
-I also review the literature on Deep Reinforcement
+In chapter~\ref{chap:background-drl} we review the literature on Deep Reinforcement
 Learning, specifically the DRN algorithm introduced by \cite{RefWorks:zheng2018drn:}, which can be analogously
 applied to the Ad personalization context. In chapter \ref{chap:deep-ctr-model-evaluation}, I evaluate the performance of different
 Deep Learning models for CTR prediction on three well-known benchmark datasets, Criteo \citep{RefWorks:tien2014display}, KDD12 \citep{RefWorks:aden2012kdd} 
-and Avazu \citep{RefWorks:wang2014click-through}. In chapter~\ref{chap:deep-rl-for-ad-personalization}, I construct a Deep Reinforcement Learning model for Ad personalization and evaluate its performance
-on the same benchmark datasets. Finally, in chapter~\ref{chap:discussion}, I discuss the results of the experiments and provide some concluding remarks.
+and Avazu \citep{RefWorks:wang2014click-through}. Finally, in chapter~\ref{chap:deep-rl-for-ad-personalization}, we introduce the Deep Reinforcement Learning model for Ad personalization algorithm and evaluate its performance
+using the KDD12 dataset.
 
 \chapter{Background: Deep CTR Prediction}
 \label{chap:background-deepctr}
@@ -158,14 +162,10 @@ will click on the ad in that given context. In other words, $f_{\Theta}: \mathbb
 = \sigma(f_{\Theta}(\mathbf{x}))
 = \hat{y}
 \end{equation}
-
 where $y$ is the binary click label, $\hat{y}$ is the predicted likelihood that $y=1$, $\Theta$ represents the parameter vector for $f$ and
-$\sigma(x)=(1 + e^{-x})^{-1}$ is the sigmoid function. To ease the notation for the rest of the report,
-we will use the shorthand $p(y) = \mathbb{P}(y=1 | \mathbf{x})$ formulations in the following
-sections. 
-
+$\sigma(x)=(1 + e^{-x})^{-1}$ is the sigmoid function. 
 An instance of the ad marketplace features $\mathbf{x}$ is typically
-recorded at a user/ad impression event level and typically consists of
+recorded at an user/ad impression event level and typically consists of
 
 \begin{itemize}
 \item \textbf{User Features:} Features that describe the user, such as User ID, demographic information,
@@ -178,21 +178,15 @@ the time of day, the position of the ad on the page and the site on which the ad
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{../figures/kdd12_snapshot.png}
-\caption{Snapshot of the KDD12 dataset \cite{RefWorks:aden2012kdd}}
+\caption{Snapshot of the KDD12 dataset \citep{RefWorks:aden2012kdd}}
 \label{fig:kdd12-snapshot}
 \end{figure}
 
-Figure~\ref{fig:kdd12-snapshot} shows a snapshot of the KDD12 dataset, which is a typical example of 
-the type of data that is used for CTR prediction.
-
 A defining characteristic for this type of data is that many of the features in $\mathbf{x}$ are multi-value categories with 
 a high degree of of cardinality \citep{RefWorks:he2017neural}. In order to use categorical data
-in a classifier model, it is necessary to first convert the categorical values into suitable real valued vector representations
-A common mothod for doins so is to encode these categorical features
-as \emph{one-hot vector} representations. In order words, let feature $x_i$ be
-a categorical feature with $C_i$ distict possible categories (i.e. with a \emph{cardinality}
-of $C_i$). The one-hot vector representation of $x_i$ then takes the form $\mathbf{x}_i^{OH}
-= \left(p_1, \ldots, p_{C_i} \right)$ where
+in a classifier model, it is necessary to first convert the categorical values into suitable real valued vector representations.
+A common mothod for doing so is to encode these categorical features $x_i$
+as \emph{one-hot} vectors $\mathbf{x}_i^{OH} = \left(p_1, \ldots, p_{C_i} \right)$, where
 
 \[
 p_k =
@@ -201,7 +195,6 @@ p_k =
     0 & \text{ otherwise}
 \end{cases}
 \]
-
 The \emph{sparse vector representation} $\tilde{\mathbf{x}}$ of feature vector $\mathbf{x}$
 is then given by the concatination of one-hot vector representations of the categorical features $\{x_i\}_{i=1}^{s}$,
 and any real-valued features $\{x_i\}_{s+1}^{s+d}$:
@@ -210,7 +203,6 @@ and any real-valued features $\{x_i\}_{s+1}^{s+d}$:
     \label{eqn:sparse-vector}
     \tilde{\mathbf{x}} = \left( \mathbf{x}_1^{OH}, \ldots, \mathbf{x}_s^{OH}, x_{s+1}, \ldots, x_{s+d}\right) \in \mathbb{R}^{\tilde{n}}
 \end{equation}
-
 where $s$ and $d$ are the number of (\textbf{s}parse) categorical and (\textbf{d}ense) numerical
 features in $\mathbf{x}$, and $\tilde{n} = \sum_{i=1}^{s}C_i + d$ is the size of $\tilde{\mathbf{x}}$.
 
@@ -242,26 +234,22 @@ b_{D, 1}^i & \cdots & b_{D, C_i}^i
 \end{bmatrix}
 \end{split}
 \end{equation}
-
 where $\mathbf{B}_i \in \mathbb{R}^{D \times C_i}$ is the embedding matrix for feature $x_i$, whose dimensions are determined
 by the chosen embedding dimension $D$ and the cardinality of the feature, $C_i$. For numerical features
 in $\mathbf{x}$ the cardinality is $C_i = 1$, so the embedding operation in equation~\ref{eqn:cat-embedding}
 simply reduces to a scalar multiplication of feature value $x_i$ and embedding vector $\mathbf{b}_i \in \mathbb{R}^{D}$.
-The embedding matrix $\mathbf{B}_i$ can either be derived by common dimensionality
-reduction methods such as Singular Value Decomposition, Principle Component Analysis, and Non-Negative Matrix Facorization,
-or by including $\mathbf{B}_i$ in the set of trainable parameters in the gradient descent
+In Deep Learning, the embedding matrix $\mathbf{B}_i$ is commonly derived as a trainable parameter in the gradient descent
 algorithm during model fitting \citep{RefWorks:hancock2020survey}. The embedded feature representation
 $\dot{\mathbf{x}}$ that then gets fed into the model is 
 then composed of a concatenation of all sparse feature embeddigs $\mathbf{e}_i$ dense 
 numerical feature values:
 
-\begin{equation}
+\begin{equation*}
     \dot{\mathbf{x}} = \left[ \mathbf{e}_1, \dots , \mathbf{e}_n\right]
     \in \mathbb{R}^{\dot{n}}
-\end{equation}
-
+\end{equation*}
 where $\dot{n} = D\cdot n$
-is the resulting dimensionality of $\dot{\mathbf{x}}$. However, it has been shown that
+is the resulting dimensionality of $\dot{\mathbf{x}}$. Unfortunately, it has been shown that
 even when using embeddings, constructing a model that learns the key informative patterns
 in highly sparse data still proves to be an extremely difficult task \citep{RefWorks:gu2021ad,RefWorks:zhang2021deep}.
 This is indeed the key challenge behind building an
@@ -274,11 +262,11 @@ in more detail in sections \ref{sec:shallow-models} to \ref{sec:feature-operator
 
 \subsection{Logistic Regression}
 
-The earliest examples of CTR classification models incorporated classical ``shallow'' 
+The earliest examples of CTR classification models leveraged classical ``shallow'' 
 (single layer) statistical regression methods. The most basic example of this was 
 the \textbf{Logistic Regression} model, as implemented by \cite{RefWorks:richardson2007predicting} on
-advistisment data from the Microsoft Search engine. The LR model
-is composed by modelling the \emph{log-odds} (also referred to as the \emph{logit}) 
+advertisement data from the Microsoft Search engine. The LR model
+is composed by modelling the \emph{logit}
 of a positive binary label as a linear combination
 of all of the respective feature values:
 
@@ -286,33 +274,20 @@ of all of the respective feature values:
 \label{eqn:lr-model}
 f_{\Theta}^{LR}(\tilde{\mathbf{x}}) = \theta_0 + \sum_{j=1}^{\tilde{n}}\theta_j \tilde{x}_j
 \end{equation}
-
 where $f_{\Theta}^{LR}: \mathbb{R}^n \rightarrow \mathbb{R}$ represents the Logistic regression
-model parametized by $\Theta = (\theta_0, \ldots, \theta_{\tilde{n}})$. The benefits of the LR
-model are that due to its simplicity and low number of parameters, it is relatively easy to
-train in computational terms and also relatively easy to deploy \citep{RefWorks:zhang2021deep}.
+model parametized by $\Theta = (\theta_0, \ldots, \theta_{\tilde{n}})$. The simplicity and 
+and the low number of parameters of the LR model mean it is relatively easy to
+train and deploy in production \citep{RefWorks:zhang2021deep}.
 Howevever, the formulation in equation~\ref{eqn:lr-model} reveals that the LR model does not explicitly 
-account for \emph{feature interactions}.
-As outlined in section~\ref{sec:problem-formulation-data}, the categorical features tend to have a
-high cardinality, resulting in highly sparse feature embeddings. Many of the of the important patterns
-for CTR prediction are therefore likely to be expressed in terms of \emph{combinations of features}
-rather then the individual feature values themselves. For example, a user's tendancy to
+account for \emph{feature interactions}. Many of the of the important patterns
+for CTR prediction are likely to be expressed in terms of \emph{combinations of features}
+rather then the individual feature values themselves \citep{RefWorks:zhang2021deep}. For example, a user's tendancy to
 click on a given advertisment is likely to by influenced by the \emph{combination} of the category
 of good or service the given advertisment is trying to sell (e.g. premium fashion retail, travel, electronics et. cetera)
 and the demographic/socio-economic category that the given user falls into (e.g. university student, young professional, retiree).
-These features combinations (and the corresponding combination of respective field values 
-in the preprocessed feature vector $\tilde{\mathbf{x}}$) are commonly referred to in
+These features combinations are commonly referred to in
 the literature as \emph{cross-features} \citep{RefWorks:zhang2023memonet:} or more commonly
 \emph{feature interactions} \citep{RefWorks:cheng2016wide,RefWorks:xiao2017attentional,RefWorks:song2019autoint}.
-
-Whilst it is possible to incorporate feature interactions in an LR model through feature
-engineering, this quickly becomes infeasible for large sparse datasets. A number of techniques
-have been developed to automate the necessary feature engineering steps for this, either by
-implicitly assigning a weight to all second order feature interactions \citep{RefWorks:chang2010training}
-or by utilizing Gradient Boosted Decision Trees to pick out the key interactions \citep{RefWorks:cheng2014gradient}.
-Unfortunately, the prior still tends to exhibit poor performance with sparse data, 
-whereas the fact that the Gradient Boosting algorithm for the latter is difficult to paralellize
-makes this solution difficult to scale in many applications in practice \citep{RefWorks:zhang2021deep}.
 
 \subsection{Factorization Machines}
 
@@ -328,52 +303,14 @@ A 2-way (maximum feature interaction degree of 2) Factorization Machine model is
 f_{\Theta}^{FM^2}(\tilde{\mathbf{x}}) = \theta_0 + \sum_{j=1}^{\tilde{n}} \theta_{j} \tilde{x}_j
 + \sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} \langle \mathbf{v}_j , \mathbf{v}_k \rangle \tilde{x}_j \tilde{x}_k
 \end{equation}
-
 where $\langle \cdot , \cdot \rangle$ represents the inner product between two vectors, the final
 interaction term above is parametized by $\mathbf{V} \in \mathbb{R}^{\tilde{n} \times F}$. Each
 row $\mathbf{v}_j$ of $\mathbf{V}$ represents the $j$-th feature in $\tilde{\mathbf{x}}$ in terms
 of $F$ latent factors. The factorization matrix $\mathbf{V}$ is typically fitted by optimizing
-the binary cross-entropy loss function by means of Stochastic Gradient Descent. It is 
-intutive to see that $\mathbf{V}$ will be fitted such that if the interaction
-between feature $j$ and $k$ have a positive impact on $p(y)$, then $j$-th and 
-$k$-th rows of $\mathbf{V}$ will have positive inner products (and vice versa) \citep{RefWorks:zhang2021deep}.
+the binary cross-entropy loss function by means of Stochastic Gradient Descent.
 
-\cite{RefWorks:rendle2010factorization} shows that although direct evaluation
-of equation~\ref{eqn:fm-2way} would appear to have a complexity of $O(F \tilde{n}^2)$, the 2-way
-FM model in fact scales linearly in $\tilde{n}$ and $F$:
-
-\begin{lemma}
-\label{lemma:fm-linearity}
-The model equation of a 2-way factorization machine (eq.~\ref{eqn:fm-2way}) can
-be computed in linear time $O(F\tilde{n})$.
-\end{lemma}
-
-\begin{proof}
-\label{prf:fm-linearity}
-
-Due to the factorization of the pairwise interactions, there is no model
-parameter that directly depends on two features $(j,k)$. This means that
-pairwise interactions can be reformulated as such
-
-\begin{align*}
-    &\sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} \langle \mathbf{v}_j , \mathbf{v}_k \rangle \tilde{x}_j \tilde{x}_k \\
-    &= \sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} 
-    \sum_{f=1}^{F}v_{j,f} v_{k,f}\tilde{x}_j \tilde{x}_k \\
-    &= \frac{1}{2} \left( \sum_{j=1}^{\tilde{n}} \sum_{k=1}^{\tilde{n}}
-    \sum_{f=1}^{F} v_{j,f} v_{k,f} \tilde{x}_j \tilde{x}_k -
-    \sum_{j=1}^{\tilde{n}} \sum_{f=1}^{F}v_{j,f} v_{j,f} \tilde{x}_j \tilde{x}_j \right)\\
-    &=\frac{1}{2}\sum_{f=1}^{F} \left( \sum_{j=1}^{\tilde{n}}v_{j,f} \tilde{x}_j
-    \sum_{k=1}^{\tilde{n}} v_{k,f} \tilde{x}_k - \sum_{j=1}^{\tilde{n}}
-    v_{j,f}^2 \tilde{x}_j^2 \right)\\
-    &= \frac{1}{2}\sum_{f=1}^{F} \left( \left(\sum_{j=1}^{\tilde{n}}v_{j,f} \tilde{x}_j\right)^2
-    - \sum_{j=1}^{\tilde{n}} v_{j,f}^2 \tilde{x}_j^2 \right)
-\end{align*}
-
-The complexity of the final line above is $O(F\tilde{n})$, and hence the FM formulation
-as per equation~\ref{eqn:fm-2way} scales linearly in $F$ and $\tilde{n}$.
-\end{proof}
-
-This quality greatly simplifies the computational complexity of scaling the FM model to larger
+By Lemma~\ref{lemma:fm-linearity} in the appendix, \cite{RefWorks:rendle2010factorization} shows that
+the 2-way FM model in fact scales linearly in $\tilde{n}$ and $F$. This quality greatly simplifies the computational complexity of scaling the FM model to larger
 datasets with a more sparse categorical features. Morever, the Factorization Machine framework
 can be generalized to degree $R$ (i.e. up to any limit of feature interation order) as follows:
 
@@ -424,7 +361,7 @@ The \textbf{Multilayer Perceptron} (MLP) \label{ref:mlp} is the most elementary 
 
 where $\mathbf{W}^{(k)} \in \mathbb{R}^{n_{l+1} \times n_l } $, $\mathbf{b}^{(k)} \in \mathbb{R}^{n_{l+1}}$,
 $\mathbf{h}^{(l)} \in \mathbb{R}^{n_l}$, $n_0 = \tilde{n}$, $n_l$ is the number of hidden
-units in layer $l$ and $\phi_{l}$ is the activation function for layer $l$, 
+units in layer $l$ and $\phi_{l}$ is the activation function for layer $l$.
 When rearranged in the form of equation~\ref{eqn:ctr-classifier}, the above becomes:
 
 \begin{equation}
@@ -432,7 +369,6 @@ When rearranged in the form of equation~\ref{eqn:ctr-classifier}, the above beco
 f_{\Theta}^{MLP}(\tilde{\mathbf{x}}) = \psi_{out} \left( \psi_{L} \left( \cdots \psi_{1} \left( 
     \tilde{\mathbf{x}} \right) \cdots \right) \right)
 \end{equation}
-
 where each function $\psi_{l}$ represents the affine transformation and element-wise activation
 operation for layer $l$. MLPs can be thought of as an acyclic graph, as displayed in
 Figure~\ref{fig:mlp}. The data $\tilde{\mathbf{x}}$ first gets fed through the
@@ -452,14 +388,14 @@ interactions. By training the network by means of Stochastic Gradient Descent, i
 possible to calculate the appropriate weight ($\mathbf{W}_l$) and bias ($\mathbf{b}_l$) parameters
 in order capture the relevant high-order feature patterns in the data. As such, many CTR
 modelling frameworks have been developed that use Deep Learning techniques to build upon and
-imporved the previously discussed classical methods by incorporating Deep Neural Networks such
-as the ML in the model architecture \citep{RefWorks:zhang2021deep}.
+improve the previously discussed classical methods by incorporating Deep Neural
+Networks in the model architecture \citep{RefWorks:zhang2021deep}.
 
 \section{Single vs Dual Tower Architectures}
 
 Before moving on to DNN enhanced CTR models in section~\ref{sec:mlp-enhanced-models}
 it is worth briefly discussing the difference between \textbf{Single-Tower}
-models and \textbf{Dual-Tower} architecture models. Single Towel models place
+models and \textbf{Dual-Tower} models. Single Towel models place
 all layers successively in the architecture, and can generally be formulated
 as in equation~\ref{eqn:mlp-2}. Since all feature inputs are passed through
 the same set of successive affine transformations and activations, Single Tower
@@ -473,11 +409,11 @@ are examples of Single Tower models.
 In order to avoid diluting the signal from the lower order feature interactions, many architectures
 adopt a Dual Tower architecture, as shown on the right-hand side of
 Figure~\ref{fig:single-dual-models}. A separate \textbf{Feature Interaction Layer}
-is placed paralelly to the DNN, and the final output is composed of a weighted sum
-of the feature interaction and DNN outputs. With this architecture, the feature interaction
+is placed parallely to the DNN, and the final output is composed of a weighted sum
+of the feature interaction layer and DNN outputs. With this architecture, the feature interaction
 layer is usually dedicated to capturing the important lower order feature interaction signals,
-whereas the DNN acts as a \emph{residual network} for capturing any meaningful signals that may
-be missing. As a result, Dual Tower networks tend to benefit form better training stability and
+whereas the DNN acts as a \emph{residual network} for capturing any other meaningful signals. 
+As a result, Dual Tower networks tend to benefit form better training stability and
 better performance \citep{RefWorks:zhang2021deep}.
 
 \begin{figure}[h]
@@ -492,7 +428,7 @@ better performance \citep{RefWorks:zhang2021deep}.
 
 \subsection{Factorization-machine Supported Neural Networks}
 
-One of the earliest example of the use of Deep Neural Networks being used to enhance existing
+One of the earliest examples of the use of Deep Neural Networks being used to enhance existing
 CTR modeling methods is the \textbf{Factorization-machine Supported Neural Network} (FNN)
 \citep{RefWorks:zhang2016deep}. The FNN model is a Single Tower model that works by pretraining
 a 2-way Factorization Machine model as in equation~\ref{eqn:fm-2way} on the concatenated
@@ -553,8 +489,7 @@ $c$-th feature in field $i$ in $\tilde{\mathbf{x}}$. Then, if we define $\tilde{
     = \left[\theta_j, \mathbf{v}_j\right] 
 \end{equation*}
 
-Figure~\ref{fig:fnn} portrays the structure of this model as it was presented in the original
-paper by \cite{RefWorks:zhang2016deep}.
+
 
 \begin{figure}[h]
     \centering
@@ -562,7 +497,8 @@ paper by \cite{RefWorks:zhang2016deep}.
     \caption{FNN model architecture. Source: \citep{RefWorks:zhang2016deep}}
     \label{fig:fnn}
 \end{figure}
-
+Figure~\ref{fig:fnn} portrays the structure of this model as it was presented in the original
+paper by \cite{RefWorks:zhang2016deep}.
 By incorporating the FM model feature interaction vectors in the embedding layer
 before the DNN, the FNN model is able to leverage the FM model's strength in
 interaction identification. The FNN model then leverages a MLP network
@@ -582,11 +518,11 @@ and DeepFM models aim to solve for these issues.
 
 The \textbf{Wide and Deep Learning} (WDL) model was developed by \cite{RefWorks:cheng2016wide}.
 
-\begin{equation}
-    \label{eqn:wdl}
+\begin{equation*}
+    %\label{eqn:wdl}
     f_{\Theta}^{W\&D} = \theta_0 + \sum_{k=1}^{\hat{n}} \theta_k \hat{\mathbf{x}}_k
     + f_{\Phi}^{MLP}(\tilde{\mathbf{x}})
-\end{equation}
+\end{equation*}
 
 \begin{figure}[h]
 \centering
@@ -594,7 +530,6 @@ The \textbf{Wide and Deep Learning} (WDL) model was developed by \cite{RefWorks:
 \caption{Wide and Deep Learning Model, as illustrated in \citep{RefWorks:shen2017deepctr:}}
 \label{fig:wdl}
 \end{figure}
-
 Figure~\ref{fig:wdl} reveals that the W\&D model is composed with a Dual-Tower Architecture,
 with a Deep Component and a Wide Component (shown on the left and right hand sides of Figure~\ref{fig:wdl}
 respectively). The Deep Component is composed of a MLP with multiple hidden layers, each
@@ -602,18 +537,14 @@ with the Rectified Linear Unit (ReLU) activation function. The Wide Component is
 by the first two terms in equation~\ref{eqn:wdl}, and is composed of a simple linear transformation
 of the input features. The key aspect of the Wide Component is the fact that the 
 linear transformation is not simply applied to the encoded features $\tilde{x}$,
-but instead to these concatinated with a set of cross-product transformed features. In
-other words:
+but instead to these concatinated with a set of cross-product transformed features.
 
 \begin{equation}
 \label{eqn:wdl-cross-product}
 \hat{\mathbf{x}} = [\tilde{\mathbf{x}}, \upsilon_1({\tilde{\mathbf{x}}}),\ldots , \upsilon_P({\tilde{\mathbf{x}}})]
 \end{equation}
-
-Where $\upsilon_k({\tilde{\mathbf{x}}}) = \prod_{j=1}^{\tilde{n}}\tilde{x}_j^{c_{kj}}$
-and $c_{kj} \in \{ 0, 1 \}$.
-
-Consequentially of equation~\ref{eqn:wdl-cross-product}, the Wide Component \emph{memorizes}
+where $\upsilon_k({\tilde{\mathbf{x}}}) = \prod_{j=1}^{\tilde{n}}\tilde{x}_j^{c_{kj}}$
+and $c_{kj} \in \{ 0, 1 \}$. Consequentially of equation~\ref{eqn:wdl-cross-product}, the Wide Component \emph{memorizes}
 the key feature interations that are defined by the specific \emph{cross-product transformations}
 ($\upsilon_{k}(\tilde{\mathbf{x}})$) \citep{RefWorks:cheng2016wide}. Meanwhile, the Deep Component captures any residual
 signals that may not have been explicitly included in the manually defined cross-product transformations
@@ -639,7 +570,6 @@ architecture, as visualized in Figure~\ref{fig:deepfm}.
     \caption{DeepFM network architecture. Source: \citep{RefWorks:shen2017deepctr:}}
     \label{fig:deepfm}
 \end{figure}
-
 The \emph{FM component} effectively replaces the Wide component in the WDL model. It consists
 of a 2-way Factorization Machine layer that models pairwise feature interactions between the
 different fields of $\tilde{\mathbf{x}}$ as inner products of the respective feature latent
@@ -667,7 +597,7 @@ component. For every successive step in the model training, the learned latent f
 are used in the embedding layer that preprocesses that raw input features before the MLP of 
 the Deep component (see Figure~\ref{fig:deepfm-embedding}). This is similar to how the feature embeddings were derived in the FNN model
 \citep{RefWorks:zhang2016deep}, except for fact the FM layer is included in the overall learning
-architecture of the model. This elimitates the need to pretrain the FM model, thereby allowing
+architecture of the model. This elimitates the need to pretrain the DeepFM model, thereby allowing
 for the FM latent feature vectors to by learned concurrently during the overall DeepFM model
 training procedure \citep{RefWorks:guo2017deepfm:}.
 
@@ -2099,6 +2029,39 @@ Conclusion goes here.
     \hline
     \end{tabular}
 \end{table}
+
+\section{Proofs}
+
+\begin{lemma}
+    \label{lemma:fm-linearity}
+    The model equation of a 2-way factorization machine (eq.~\ref{eqn:fm-2way}) can
+    be computed in linear time $O(F\tilde{n})$.
+    \end{lemma}
+    
+    \begin{proof}
+    \label{prf:fm-linearity}
+    
+    Due to the factorization of the pairwise interactions, there is no model
+    parameter that directly depends on two features $(j,k)$. This means that
+    pairwise interactions can be reformulated as such
+    
+    \begin{align*}
+        &\sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} \langle \mathbf{v}_j , \mathbf{v}_k \rangle \tilde{x}_j \tilde{x}_k \\
+        &= \sum_{j=1}^{\tilde{n}} \sum_{k=j+1}^{\tilde{n}} 
+        \sum_{f=1}^{F}v_{j,f} v_{k,f}\tilde{x}_j \tilde{x}_k \\
+        &= \frac{1}{2} \left( \sum_{j=1}^{\tilde{n}} \sum_{k=1}^{\tilde{n}}
+        \sum_{f=1}^{F} v_{j,f} v_{k,f} \tilde{x}_j \tilde{x}_k -
+        \sum_{j=1}^{\tilde{n}} \sum_{f=1}^{F}v_{j,f} v_{j,f} \tilde{x}_j \tilde{x}_j \right)\\
+        &=\frac{1}{2}\sum_{f=1}^{F} \left( \sum_{j=1}^{\tilde{n}}v_{j,f} \tilde{x}_j
+        \sum_{k=1}^{\tilde{n}} v_{k,f} \tilde{x}_k - \sum_{j=1}^{\tilde{n}}
+        v_{j,f}^2 \tilde{x}_j^2 \right)\\
+        &= \frac{1}{2}\sum_{f=1}^{F} \left( \left(\sum_{j=1}^{\tilde{n}}v_{j,f} \tilde{x}_j\right)^2
+        - \sum_{j=1}^{\tilde{n}} v_{j,f}^2 \tilde{x}_j^2 \right)
+    \end{align*}
+    
+    The complexity of the final line above is $O(F\tilde{n})$, and hence the FM formulation
+    as per equation~\ref{eqn:fm-2way} scales linearly in $F$ and $\tilde{n}$.
+    \end{proof}
 
 \section{Experiment Results}
 
