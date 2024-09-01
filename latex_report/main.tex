@@ -25,16 +25,36 @@
 
 % Generates plagiarism declaration
 \declarationname{Martin Bat\v{e}k}
-\declarationdate{17 July 2024}
+\declarationdate{1 September 2024}
 \declaration 
 
 
 \begin{abstract}
-    ABSTRACT GOES HERE
+    With the long-term
+    trend of consumers increasingly turning to online channels for their daily activities, 
+    sellers of a range of goods and services are increasingly
+    turning to digital advertising marketplaces such as Google, Amazon and Facebook as a means to reach new customers. This demonstrates the
+    commercial value of constructing an Ad marketplace that is able to autonomously adapt to
+    the preferences of its users, maximize the Click-Through Rate of the advertizing content
+    shown, and thereby maximize user engagement with the platforms over the longer term.
+
+    The aim of this report is to demonstrate the value of incorporating Deep Learning and
+    Reinforcement Learning techniques in online advertising. We conduct a broad and comprehensive
+    Comparitive Model Analysis that compares the predictive performance of a wide range of Deep
+    Learning models designed for Click Through Rate prediction, and explore the hyperparameter
+    settings for the best candidate, the Deep \& Cross Network. We then use this model to propose
+    a novel Deep Reinforcement Learning for Ad Personalization (DRL-AP) algorithm. By constructing
+    an offline simulation of an Ad serving environment, we demonstrate that the DRL-AP algorthm
+    shows promising results as framework for adaptive Click-Through Rate maximization.
 \end{abstract}
 
 \begin{acknowledgements}
-    ANY ACKNOWLEDGEMENTS GO HERE
+    I would like to thank my supervisor, Dr Mikko Pakkanen, for providing invaluable support
+    and advice throughout the duration of this project. I would also like to thank Dr Kevin
+    Webster and Dr Ciara Pike-Burke for inspiring my interest in the fields of Deep Learning
+    and Learning Agents, and for their patience during my various lines of questioning on the 
+    subjects during the respective MLDS modules. 
+    Finally, I would like to thank my wife, Juliette, for her support over the last two years.
 \end{acknowledgements}
 
 % add glossary?
@@ -2070,24 +2090,39 @@ deep learning agents in the future of Digital Advertizing.
 
 \begin{table}[ht]
     %\centering
-    \begin{tabular}{|l|l|l|}
+    \begin{tabular}{|l|l|}
       \hline
-        \textbf{Term} & \textbf{Definition} & \textbf{Reference} \\
+        \textbf{Term} & \textbf{Definition} \\
       \hline
-        LR& Logistic Regression & \\
-        FM & Factorization Machine & \\
-        FFM & Field-Aware Factorization Machine & \\
-        DNN & Deep Neural Network & \\
-        MLP & Multilayer Perceptron & \ref{ref:mlp} \\
+        LR& Logistic Regression  \\
+        FM & Factorization Machine  \\
+        FFM & Field-Aware Factorization Machine \\
+        DNN & Deep Neural Network \\
+        MLP & Multilayer Perceptron \\
+        FNN & Factorization Machine Supported Neural Network\\
+        PNN & Product-based Neural Network \\
+        NFM & Neural Factorization Machines \\
+        DCN & Deep \& Cross Network \\
+        WDL & Wide \& Deep Learning \\
+        DFM & DeepFM \\
+        AutoInt & Automatic Feature Interaction \\
+        CCPM & Convolutional Click Prediction Model \\ 
+        FGCNN & Feature Generation by Convolutional Neural Network\\
+        MDP & Markov Decision Process \\
+        RL & Reinforcement Learning \\ 
+        DQN & Deep Q-Network \\
+        DDQN & Double Deep Q-Network \\
+        DBGD & Dueling Bandit Gradient Descent \\
+        DRN & Deep Reinforcement Learning for News Reccomendation\\
     \hline
     \end{tabular}
 \end{table}
 
-
+\pagebreak
 \section{Notation}
 \label{app:notation}
 
-\begin{table}[ht]
+\begin{table}[h]
     %\centering
     \begin{tabular}{|l|l|l|}
       \hline
