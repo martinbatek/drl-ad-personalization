@@ -103,17 +103,17 @@ Reinforcement Learning is a subdomain of Machine Learning in which the goal is f
 learn an optimal policy that maximizes the expected reward in an environment where the
 state-action-reward progression can be modelled as a Markov Decision Process
 \citep{puterman2014markov}. Early Reinforcement Learning methods involved 
-deriving a the transition probabilities for the state-action pairs on the basis of interactions
-with the environment. However, in cases where the state-action space is too sparce to be
+deriving the transition probabilities for the state-action pairs on the basis of interactions
+with the environment. However, in cases where the state-action space is too sparse to be
 reasonably enumerated, it is often more practical 
 to directly estimate the expected cumalative reward for each action in each state. This method
 is commonly referred to as Q-learning \citep{RefWorks:watkins1989learning}. In \citep{RefWorks:hornik1989multilayer},
 \citep{RefWorks:cybenko1989approximation} and \citep{RefWorks:hornik1990universal} Deep
 Neural Networks are shown to be universal function approximators
 which naturally lead to the incorporation of DNN's in Q-Learning. This has lead to the
-development of the Deep Q-Learning Agent, which has been shown to be able to learn optimal
-policies in a number of different domains, such as the Atari 2600 game environment \cite{RefWorks:mnih2015human-level}.
-DRL has also be applied to online reccomender systems
+development of the Deep Q-Learning Network, which has been shown to be able to learn optimal
+policies in a number of different domains, such as the Atari 2600 game environment \citep{RefWorks:mnih2015human-level}.
+DRL has also be applied to online recommender systems
 such as News article reccomendation \citep{RefWorks:zheng2018drn:} and video
 reccomendation on Youtube \citep{RefWorks:chen2019top-k}. In both papers,
 the authors show that the DRL agent is able to learn an optimal content recommendation
@@ -651,7 +651,7 @@ with respect to the target decreases linearly with respect to the number of func
 The decrease in this variance has the effect of decreasing the correlation between the gratient
 and the target, causing the optimization of the DNN to fail. \cite{RefWorks:qu2018product-based}
 argues that since the target function for the CTR classification task typically consists of a
-set of uncorrilated if-then classifiers on the basis sparse categorical features, the insensitive
+set of uncorralated if-then classifiers on the basis sparse categorical features, the insensitive
 gradient issue is likely to be prevalent in cases where MLPs are relied upon directly
 to detect the key feature interactions in sparse CTR classification data.
 
@@ -755,7 +755,6 @@ vector by the following operation:
 \begin{equation}\label{eqn:bi-interaction-pooling}
     f^{BI}(\{\mathbf{e}_i\}_{i=1}^{n})\sum_{i=1}^{n} = \sum_{j=i+1}^{n} \mathbf{e}_i \odot \mathbf{e}_j
 \end{equation}
-
 where $\odot$ represents the element-wise product of two vectors. The benefit of the Bi-Interaction
 Pooling layer is its efficiency. It does not introduce any additional model parameters and can
 be calculated in linear time. Equation~\ref{eqn:bi-interaction-pooling} can be reformulated as:
@@ -831,11 +830,9 @@ as per equation~\ref{eqn:ccpm}.
 \begin{equation}\label{eqn:ccpm}
     f_{\Theta}^{CCPM}(\tilde{\mathbf{x}}) = f_{\Phi}^{MLP}(f_{\Omega}^{Conv}(\tilde{\mathbf{x}}))
 \end{equation}
-
 where $f_{\Omega}^{Conv}$ represents the series of convolutions and pooling layers described above.
-
 \cite{RefWorks:liu2015convolutional} show that the CCPM model outperforms the LR, FM and RNN models
-in terms of Log Loss/Binary Cross-Entropy. However, a common critisizm of the CCPM model is that
+in terms of Log Loss/Binary Cross-Entropy. However, a common criticism of the CCPM model is that
 due to the equivariance property of the Convolution operations, the degree to which it is able to capture
 important feature interactions in the data is highly dependant on how the features are ordered in the
 input matrix \citep{RefWorks:zhang2021deep,RefWorks:qu2018product-based,RefWorks:gu2021ad}. Convolutions
@@ -844,7 +841,7 @@ by nature extract feature maps in the local neighbourhood of each variable, but 
 \subsubsection{Feature Generation by Convolutional Neural Network}
 
 The \textbf{Feature Generation by Convolutional Neural Network} model proposed by \cite{RefWorks:liu2019feature}
-introduces a \emph{feature recombination layer} to mitigate this issue.
+introduces a \emph{feature recombination layer} to mitigate the feature location issue prevalent with CCPM.
 The architecture for the FGCNN model is shown in Figure~\ref{fig:fgcnn}
 
 \begin{figure}[h]
@@ -853,7 +850,6 @@ The architecture for the FGCNN model is shown in Figure~\ref{fig:fgcnn}
     \caption{FGCNN model architecture with Feature Generation Component. Source: \citep{RefWorks:liu2019feature}}
     \label{fig:fgcnn}
 \end{figure}
-
 The main body of the FGCNN model consists Deep Classifier that is essentially an Inner Product
 Neural Network, which was discussed above \citep{RefWorks:qu2018product-based}. The inputs
 to the Deep Classifier consist of the input feature embeddings ($\tilde{\mathbf{x}}$), concatenated
@@ -885,7 +881,7 @@ mechanism to determine which higher order feature interaction are meaningful in 
 improves the efficiency of model traning, but it also improves the model's explainability. Lastly,
 the output layer is a fully connected layer that takes in the concatinated output 
 of the interaction layer, and applies the sigmoid activation function to produce the final prediction.
-The architecture of the AutoInt model is shown in Figure\ref{fig:autoint}.
+The architecture of the AutoInt model is shown in Figure~\ref{fig:autoint}.
 
 \begin{figure}[h]
     \centering
@@ -899,7 +895,7 @@ The architecture of the AutoInt model is shown in Figure\ref{fig:autoint}.
 \label{chap:background-drl}
 
 The second part of the background material in this report is dedicated to Deep Reinforcement Learning. We first
-proceed by explaining the fondational concepts, in which we will establish definitions for
+proceed by explaining the foundational concepts, in which we will establish definitions for
 Markov Decision Processes, Reinforcement Learning and Dynamic Programming. We then move on to explain
 Q-Learning, a specific class of Reinforcement Learning algorithms, as well as how Deep Learning
 models are being applied in the case of Deep Q-Learning. Finally, we introduce the Deep Reinforcement
@@ -1039,7 +1035,7 @@ probabilities $P_h$. Two popular methods for doing so are the Upper Confidence B
 \citep{RefWorks:auer2008near-optimal} and the Thompson Sampling algorthm for Reinforcement
 Learning \citep{RefWorks:pike-burke2024optimism/thompson}. In UCBRL, the transition probabilities
 are empirically estimated on the basis of observed feedback from the environment, whereas Thompson
-Sampling proceeds by maining a posterior categorical distribution with a Dirichelet conjugate prior,
+Sampling proceeds by maintaining a posterior categorical distribution with a Dirichelet conjugate prior,
 and then sampling the transition function from the posterior.
 
 \section{Q-Learning and Deep Q-Learning}
@@ -1059,7 +1055,7 @@ Q-learning was pioneered by \cite{RefWorks:watkins1989learning} as a model-free,
 computationally efficient method for solving RL problems that have a sparse state
 and action space. The basic Q-learning algorithm works by maintaining an estimate
 of the Q-function for every state-action pair, and selecting a policy that
-ise greedy with respect to this estimate \citep{pike-burke2024LearnigAgents}.
+is greedy with respect to this estimate \citep{pike-burke2024LearnigAgents}.
 The Q-function estimate $\hat{Q}(s,a)$ is usually initialized with its value
 set to $\hat{Q}_{h}(s,a) = H$ for all $s \in \mathcal{S}, a \in \mathcal{A}$.
 In each stage, the algorithm proceeds by choosing the action that maximizes the
@@ -1102,7 +1098,7 @@ Note that in Algorithm~\ref{alg:basic-q-learning} the $\alpha_{h,t}$ parameter r
 
 While the basic Q-Learning algorithm significantly decreases the computational requirement
 by removing the need to store the transition probability model, keeping track of Q-function values
-may still be prohibitive in the case where the state and action spaces are probibitively sparse,
+may still be prohibitive in the case where the state and action spaces are sparse,
 as is the case in the Ad personalization domain. All of the aforementioned algorithms are designed
 for discrete state and action spaces with relatively small cardinalities, and the performance of these
 algorithms deteriorates for increased number of state-action combinations that need to be accounted for \citep{pike-burke2024LearnigAgents}.
@@ -1114,9 +1110,9 @@ we will only have to store the function parameters $\Theta$, and assume that $\h
 thereby changing the memory requirement from $H \times |\mathcal{S}| \times |\mathcal{A}|$ to simply
 $|\Theta|$.
 
-\cite{RefWorks:mnih2015human-level} proposed the Deep Q-Learning algorithm in which
+\cite{RefWorks:mnih2015human-level} proposed the Deep Q-Network algorithm in which
 which the Q-function is approximated using a Deep Neural Network called a \emph{Deep Q-Network}.
-The full Deep Q-Learning algorithm is shown in Algorithm~\ref{alg:deep-q-learning}.
+The full Deep Q-Network algorithm is shown in Algorithm~\ref{alg:deep-q-learning}.
 
 \begin{algorithm}
     \caption{Deep Q-Learning with Experience Replay. Source: \citep{RefWorks:mnih2015human-level}}
@@ -1141,11 +1137,10 @@ The full Deep Q-Learning algorithm is shown in Algorithm~\ref{alg:deep-q-learnin
         \EndFor
     \end{algorithmic}
 \end{algorithm}
-
 In the original paper, the Deep Q-learning Network (DQN) algorithm was initially proposed to find the optimal
 playing policies for 49 of the classic Atari 2600 games, where a given state would be represented by the game's
 pixel values, the set of actions were possible joystick movements and button presses and the rewards were the number
-of points accumalated throughout the game. \cite{RefWorks:mnih2015human-level} due to the highly sequential nature of
+of points accumalated throughout the game. \cite{RefWorks:mnih2015human-level} found that due to the highly sequential nature of
 the state-action-reward data, using newly observed data to directly update the Q-function DNN approximator
 would result in significant instabilities due to autocorrelation of inputs \citep{RefWorks:mnih2015human-level}.
 It is for this reason that the following modifications made in algorithm~\ref{alg:deep-q-learning} over and above
@@ -1157,7 +1152,7 @@ basic Q-Learning:
     to fit the model, a sample of \emph{experience observations}  $(\phi_{j}, a_j, r_j, \phi_{j+1})$ is sampled from $\mathbf{D}$
     uniformly at random, and is then used to train the model by means of gradient descent.
     \item Using the same model for selection and calculating the gradient descent targets ($y_j$) tends to lead to further model instability as the $y_j$ values are overestimated \citep{RefWorks:mnih2015human-level}.
-    To prevent this, a separate \emph{target model} $\hat{f}$ is used to calculate the $y_j$ values.
+    To prevent this, a separate \emph{target model} $\hat{f}$ with separate weights $\hat{\Theta}$ is used to calculate the $y_j$ values.
 \end{itemize}
 
 \section{DRN: Deep Reinforcement Learning for News Recommendation}
@@ -1185,7 +1180,7 @@ the user has visited the news site recently before $t_i$. Specifically, $r_{acti
 Survival Analysis \citep{ibrahim2001bayesian,jing2017neural}. 
 
 Secondly rather than applying the
-$\epsilon$-greedy method for exploration as in Algorithm~\ref{alg:deep-q-learning}, DRN uses the \textbf{Dueling Bandit Gradient Descent} algorithm.
+$\epsilon$-greedy method for exploration as in Algorithm~\ref{alg:deep-q-learning}, DRN uses the \textbf{Dueling Bandit Gradient Descent} algorithm \citep{grotov2016online}.
 This algorithm proceeds by generating an \emph{explore network} $\tilde{Q}(s,a) \approx \tilde{f}_{\tilde{\Theta}}$ before each timestamp $t_i$.
 
 \begin{definition}
@@ -1203,7 +1198,7 @@ from the list of candidates $I_i$ by ramdomly combining recommendations using bo
 $Q$ and explore network $\tilde{Q}$. If the items recommended by $\tilde{Q}$ recieve better feedback from
 the user by the end of the session, the exploit network weights $\Theta$ are updated towards $\tilde{\Theta}$.
 
-Lastly, the DRN algorithm uses the Double DQN target calculation to calculate $y_t$ (replacing line~\ref{dqn-target} in algorithm~\ref{alg:deep-q-learning})
+Lastly, the DRN algorithm uses the Double DQN target calculation \citep{RefWorks:van2016deep} to calculate $y_t$ (replacing line~\ref{dqn-target} in algorithm~\ref{alg:deep-q-learning})
 \begin{equation}
     \label{eqn:ddqn}
     y_j = 
@@ -1283,7 +1278,7 @@ was revealed to have the highest predictive accuracy on our chosen datasets.
 \section{Models and Model selection Criteria}
 \label{sec:model-selection}
 
-DeepCTR classification is an extremely active field of research, with many
+CTR classification with Deep Learing methods is an extremely active field of research, with many
 different model architectures being explored by different authors. It is because of this
 reason that it is practically impossible to evaluate all models within the scope
 of this project. For the purposes of this paper, the scope of models has therefore
@@ -1291,12 +1286,13 @@ been narrowed down using the following model selection criteria:
 
 \begin{itemize}
 \item Competitive predition accuracy in the KDD12, Criteo and Avazu datasets as published on Papers with Code \citep{RefWorks:2024papers}.
-\item Ideally, I was looking for a representitive set of models for each model type as discussed in (Zhang et. al. 2021). Therefore I was looking for models that employed Product Interaction Opetators, Attention Operators and Factorization Machines as a basis.
-\item The code for the model has to be accessible and intuitive to use. To implement the experiments
-in this chapter, I made use of the DeepCTR Python package \citep{RefWorks:shen2017deepctr:}.
+\item The set of models should be representitive of the range of feature modelling
+methods used in Deep CTR classification, as discussed in (Zhang et. al. 2021).
+\item The code for the models has to be accessible and intuitive to use. The DeepCTR Python package \citep{RefWorks:shen2017deepctr:} is used
+to implement the experiments in this chapter.
 \end{itemize}
 
-On the basis of the above critea, the following models from chapter~\ref{chap:background} have been selected for the scope of this paper:
+On the basis of the above critea, the following models from chapter~\ref{chap:background-deepctr} have been selected for the scope of this paper:
 
 \begin{itemize}
 \item Factorization Supported Neural Networks (FNN) \citep{RefWorks:zhang2016deep}
@@ -1381,7 +1377,7 @@ training subsample and a 39360 record
 subsample of each dataset.
 
 We then proceeded to preprocess the categorical and numberical features. As previously
-discussed in chapter~\ref{chap:background}, ad platform categorical features tend to contain
+discussed in chapter~\ref{chap:background-deepctr}, ad platform categorical features tend to contain
 a lot of unique values per feature - i.e. they exhibit high cardinality.
 
 \begin{figure}[h]
@@ -1415,13 +1411,7 @@ Subsequently, an examinationation of the boxplots (see figure~\ref{fig:boxplots}
 each of the datasets reveals the presence of high varience numerical outliers,
 particularly in the case of the Criteo dataset. In order to ensure efficient
 training by means of gradient descent, these values needed to be normalized to unit
-variance and zero mean. In order words, for each numerical feature $x$,
-the following transformation was applied:
-$$
-z = \frac{x - \bar{x}}{\sigma}
-$$
-where $\bar{x}$ and $\sigma$ represents the mean and standard deviation of the
-the numerical feature in question. Furthermore, for the Criteo Dataset the following
+variance and zero mean. Furthermore, for the Criteo Dataset the following
 transformation was applied to the normalized values, as recommended by \cite{RefWorks:song2019autoint}:
 \begin{equation*}
 \tilde{z} = \begin{cases} z & \text{ if } z \leq 2 \\
@@ -1456,7 +1446,7 @@ Predictive performance of each model was assessed in terms of the following five
     penalizes the model when the predicted log likelihood of a positive label $\hat{y} = \sigma(f_{\Theta}(\mathbf{x}))$ deviates from the
     log likelihood that $y=1$ as suggested by the data. For $K$ feature-label observations, this Loss metric is calculated as:
     \[
-    L^{\text{Cross-Entropy}}(\mathbf{x},y,\Theta) = - \sum_{k=1}^{K} \left[y \log \sigma(f_{\Theta}(\mathbf{x})) + (1-y)\log \left( 1 - \sigma(f_{\Theta}(\mathbf{x}))\right) \right]
+    \mathcal{L}^{\text{Cross-Entropy}}(\mathbf{x},y,\Theta) = - \sum_{k=1}^{K} \left[y \log \sigma(f_{\Theta}(\mathbf{x})) + (1-y)\log \left( 1 - \sigma(f_{\Theta}(\mathbf{x}))\right) \right]
     \]
     Binary Cross Entropy is commonly used as a loss metric in multiple binary classification models
     \citep{RefWorks:zhang2021deep}, and has therefore been utilized as the primary loss function
@@ -1516,18 +1506,15 @@ Predictive performance of each model was assessed in terms of the following five
 \label{sec:optimization-algorithms}
 
 In section~\ref{sec:evaluation-metrics} we have already stated that the primary loss function used in this report
-for model fitting is the Binary Crossentropy Loss function. For Logistic Regression (LR) and Factorization Machines (FM),
-the Stochastic Gradient Descent algorithm \citep{robbins1951stochastic} was used to optimize the model weights,
-as reccomended in the original papers \citep{RefWorks:richardson2007predicting,RefWorks:rendle2010factorization}.
-For the DNN models, we used the Adam Optimizer \citep{Kingma2014AdamAM}, a widely popular optimiztion algorithm
-for training Deep Neural Networks. In both cases, we set the learning parameter to $\eta = 0.001$, which the
+for model fitting is the Binary Crossentropy Loss function. For the all models, we used the Adam Optimizer \citep{Kingma2014AdamAM}, a widely popular optimiztion algorithm
+for training Deep Neural Networks. We set the learning parameter to $\eta = 0.001$, which the
 standard learning rate setting for the Keras Adam Optimizer implementation \citep{chollet2023keras}.
 
 In order to ensure that training times (and therefore training cost)
 remained within a reasonable range, all models were trained to a maximum of 15 epochs. In addition to this,
 the Keras EarlyStopping Callback was used with \verb|patience| parameter set to 5 epochs. This was done to
 further ensure that training time remained within a reasonable range, as well as in order to prevent
-model fitting.
+over-fitting.
 
 
 \subsection{Hyperparameter Selection}
@@ -1635,7 +1622,7 @@ generally not constrained in this way, and had therefore used larger samples; fo
 \cite{RefWorks:wang2017deep} used 41 million records of the Criteo dataset, and were therefore able
 to reach much higher levels of predictive performance.
 
-When comparing the performance of SHallow models to their Deep 
+When comparing the performance of Shallow models to their Deep 
 counterparts, we find that although the Logistic
 Regression and Factorization Machines models are consistantly in the
 bottom 5 models in terms Binary Crossentropy and AUC for the three datasets,
@@ -1958,7 +1945,7 @@ The results shown in Figure~\ref{fig:drl-ap} are promising in the context of Res
 \ref{exp:dcn-model-advantage} and \ref{exp:drl-ap-advantage}. The comparison between the DCN
 model and the Random indicates that the DCN model manages to accumulates a higher volume of cumulative
 clicks over the 30 episode time horizon, and therefore incurs a lower level of regret (research question \ref{exp:dcn-model-advantage}). Interestingly,
-the mazority of the relative outperformance by the DCN model occurs before eposide 20, when the DCN
+the majority of the relative outperformance by the DCN model occurs before eposide 20, when the DCN
 model appears to have the highest advantage over the random model in terms of average CTR rate attained.
 However, this advantage appears to erode in the latter episodes, and as a result the DCN model attains
 exactly the same number of clicks as Random Selection in the last 10 episode. One possible explaination
@@ -1977,7 +1964,7 @@ allows its agent to \emph{learn} from its interactions with the environment in a
 the Q-function approximator to adapt to any changes between the pretraining data and the current
 environment.
 
-The results shown above are encouraging show the potential that Deep Reinforcement Learning
+These results demonstrate the potential that Deep Reinforcement Learning
 methods have for creating a truly adaptive Ad personalization framework. Nevertheless, it is worthwhile to be mindful of a number of limitations
 of experiment~\ref{exp:rl-sim}. Firstly, the KDD12 dataset is not sequential, so it is not possible
 that experiment~\ref{exp:rl-sim} simulates the sequential dependencies that are characteristic of
@@ -1992,7 +1979,6 @@ at the detriment to long term user engagement on the given platform \cite{RefWor
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-\subsubsection{Contributions}
 
 In this report, our overarching objective is to demonstrate the potential of using a combination of 
 Deep Learning and Reinforcement Learning methods to construct a highly accurate truely
@@ -2005,17 +1991,15 @@ a novel Double-Deep Q-Network Algorithm which we introduce as the Deep Reinforce
 for Ad Personalization (DRL-AP) algorithms. The findings of this report offer substantial insight
 and contributions in the domains of Deep Learning, Reinforcement Learning and Ad personalization.
 
+\subsubsection{Contributions}
+
 Firstly, our comparative CTR model analysis provides an overview of the relative
 performance of the most popular deep learing models used for Click Through Rate prediction. Our
 literature review revealed that this is the first comparitive model analysis that was conducted in 
 the CTR prediction domain where the neuron and layer settings of the DNN components of each model
-was standardized, thereby providing a more level comparison. Our analysis analysis revealed that the Deep \& Cross Network model proposed
+was standardized, thereby providing a more level comparison. Our analysis reveals that the Deep \& Cross Network model proposed
 by \citep{RefWorks:wang2017deep} outperformed other model candidates relatively consistantly
-when scored using samples from the Avazu, Criteo and KDD12 CTR prediction datasets. The Cross
-Network present in the architecture of the DCN model explicitly calculates feature interactions
-to a pre-specified order, and this was shown to be a significant advantage in identifying and
-learning the key discriminative patterns of highly sparse CTR prediction data.
-
+when scored using samples from the Avazu, Criteo and KDD12 CTR prediction datasets.
 Furthermore, the comparative model analysis validates the performance of Deep Learning models
 over classical shallow methods such as Logistic Regression and Factorization Machines. Irrespective of
 the dataset that was used, the LR and FM models we both consistantly amongst the worst performing
