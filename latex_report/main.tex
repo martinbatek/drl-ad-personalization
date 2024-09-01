@@ -1972,12 +1972,88 @@ at the detriment to long term user engagement on the given platform \cite{RefWor
 \chapter{Conclusion}
 \label{chap:conclusion}
 
+\subsubsection{Contributions}
 
-Conclusion goes here. 
+In this report, our overarching objective is to demonstrate the potential of using a combination of 
+Deep Learning and Reinforcement Learning methods to construct a highly accurate truely
+adaptive algorithm for Ad personalization. We explore the relative predictive performance
+of a range of Deep Learning models from a pool of candidates that is representitive of the
+array of state-of-the-art techniques used in CTR prediction today. We then perform a
+sequential hyperparameter search to find the ideal hyperparameter settings for the Deep \& Cross
+Network model. Finally, we incorporate the DCN model as the Q-function approximator in
+a novel Double-Deep Q-Network Algorithm which we introduce as the Deep Reinforcement Learning
+for Ad Personalization (DRL-AP) algorithms. The findings of this report offer substantial insight
+and contributions in the domains of Deep Learning, Reinforcement Learning and Ad personalization.
+
+Firstly, our comparative CTR model analysis provides an overview of the relative
+performance of the most popular deep learing models used for Click Through Rate prediction. Our
+literature review revealed that this is the first comparitive model analysis that was conducted in 
+the CTR prediction domain where the neuron and layer settings of the DNN components of each model
+was standardized, thereby providing a more level comparison. Our analysis analysis revealed that the Deep \& Cross Network model proposed
+by \citep{RefWorks:wang2017deep} outperformed other model candidates relatively consistantly
+when scored using samples from the Avazu, Criteo and KDD12 CTR prediction datasets. The Cross
+Network present in the architecture of the DCN model explicitly calculates feature interactions
+to a pre-specified order, and this was shown to be a significant advantage in identifying and
+learning the key discriminative patterns of highly sparse CTR prediction data.
+
+Furthermore, the comparative model analysis validates the performance of Deep Learning models
+over classical shallow methods such as Logistic Regression and Factorization Machines. Irrespective of
+the dataset that was used, the LR and FM models we both consistantly amongst the worst performing
+candidates in terms of Binary Accuracy and AUC. Our experiments also showed that although the
+performance of the shallow models tends to be inferior in comparison to most DNN candidates, 
+the performance differential tends to be marginal in terms of both Binary Accuracy and AUC, 
+a result which has been present in many of the foundational research papers for the DNN models
+explored \citep{RefWorks:guo2017deepfm:,RefWorks:liu2015convolutional,RefWorks:he2017neural}.
+This indicates that the LR and FM models can still be considered reasonably viable ``parameter-light''
+alternatives to DNN models in cases where a slightly lower level of predictive accuracy is acceptable.
+
+The Deep Reinforcement Learning for Ad Personalization (DRL-AP) algorithm provides a viable
+proof-of-concept for incorporating Deep Learning and Reinforcement Learning in a Digital Ad marketplace
+environment. Our offline simulation demonstrates that the use of a pretrained DCN model
+to choose the set of advertisments to display results in an increase in user clicks over and above
+random selection. Furthermore, our simulation also demonstrates that the CTR performance of the ad
+recommendation system is significantly improved when the DCN model is used as a Q-function approximator
+in a Double Deep Q-Network algorithm that leverages Double Dualing Bandit method for exploration
+to enhance the online learning process. The result of our simulation showed that the DRL-AP algorithm
+accumulated 84\% more clicks than the use of a DNN model without Reinforcement Learning, and
+115\% more clicks than Random Selection. These results provide an encouraging view of the
+potential for the use of Deep Reinforcement Learning in ad personalization. 
 
 
+\subsubsection{Limitations and Further Research}
 
+The aim of the comparitive model analysis in this report was to provide a broad overview
+of the relative predictive performance of the popular Deep Learning techniques that are being
+applied to the CTR prediction domain. This domain represents an extremely active field of
+research, and it is therefor infeasible for me to cover all relevant models in scope of this project.
+While the analysis conducted in this project provide a good foundation to compare the different
+categories of Deep CTR modelling techniques, further research can add to the scope of models
+that have been included in this paper. In theory, the DRL-AP algorithm proposed as a part of this project
+is agnostic to the choice of Deep Learning model used as the Q-function approximator, which paves
+the way for the incorporation of other models in place of DCN should they be shown to have
+superior predictive performance.
 
+Furthermore, due to the number of models in scope, we have been force to work under certain data sample
+size constraints in order to carry our comparitive model analysis within a reasonable amount
+of training time and cost. This has already been shown to result in lower Log Loss and AUC measures
+being attained after model fitting in comparison to the foundational papers.
+
+Lastly, a significant limitation in our demonstration of the DRL-AP algorithm is the
+fact that this was done by means of an offline simulation that was constructed with the
+KDD12 dataset. This fact poses the following two issues. Firstly, the KDD12 dataset is not sequential, so it is not possible
+that experiments experiment perfectly simulate the sequential dependencies that are characteristic of
+reccomender systems. Secondly, it is extremely difficult for an offline
+simulation to capture the true transition dynamics and other characteristics of the online environment
+\citep{pike-burke2024LearnigAgents,RefWorks:wang2024deep,RefWorks:zheng2018drn:}.
+Further research in this domain should aim to incorporate a suitable sequential dataset
+containing discernable user, context and ad features for offline testing, as well as online
+testing in a controlled digital ad marketplace environment.
+
+In conclusion, throughout this report we present a Deep Reinforcement Learning
+framework that incorporates the recent deep learning techniques, and show that the resulting
+DRL-AP algorithm has the potential to autonomously adapt to user preferences and drive user
+engagement with the online advertising platform. This project emphasizes the role of autonomous
+deep learning agents in the future of Digital Advertizing.
 
 \clearpage
  %% reset page counter and start appendix pages with A
