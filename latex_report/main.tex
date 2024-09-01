@@ -1826,8 +1826,22 @@ and to determine the ideal hyperparameter values. As a result we found the DCN m
 ideal candidate. In chapter~\ref{chap:deep-rl-for-ad-personalization} we propose the Deep Reinforcement Learning
 for Ad Personalization (DRL-AP) algorithm, a Reinforcement
 Learning algorithm that leverages the DCN model as a Deep Q-Network function appromator, and is
-otherwise largely based in DRN algorithm. We then conduct an offline simulation using the KDD12
-dataset introduced in chapter~\ref{chap:deep-ctr-model-evaluation} as a proof-of-concept for DRL-AP.
+otherwise largely based in DRN algorithm. The next experiment that we conduct in this report will
+be a simulation of the online learning process of the DRL-AP algorithm, while aiming to answer two
+research questions:
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item \label{exp:rl-sim} A \textbf{ad search platform simulation} in which the KDD12 dataset will be used to
+    simulate the sequential events on a advertizing platform as a MDP, and DRL-AP algorithm
+    is used to choose the adverts that are shown to the user.
+    \begin{enumerate}
+        \item \label{exp:dcn-model-advantage} \textbf{Research Question:} \emph{Does the use of the DCN model provide a significant
+        advantage in terms of Reward (Click) maximization and Regret Minimization over using no model?}
+        \item \label{exp:drl-ap-advantage} \textbf{Research Question:} \emph{Does the DRL-AP algorithm provide a significant
+        advantage in terms of Reward (Click) maximization and Regret Minimization over using DCN model
+        with no updates?}
+    \end{enumerate}
+\end{enumerate}
 
 \section{DRL-AP Algorithm}
 
@@ -1908,18 +1922,19 @@ The KDD12 dataset was selected to simulate the online RL environment due to the 
 of the three datasets introduced in section~\ref{sec:datasets-preprocessing}, it is the
 only dataset with clearly discernable user, context and advertisment features. Both Criteo
 and Avazu contain anonymized features, and it is therefore unclear what type of features these are.
-
-All of the preprocessing steps discussed in section~\ref{sec:datasets-preprocessing} including
-categorical value binning and encoding, numberical value normalization and target label weighting
-apply here as well, and these steps have therefore been encoded as in the preprocessing functions
-$\phi$ used for the model pretraining for the Offline Part, as well as the Online Algorithm.
+All of the preprocessing steps discussed in section~\ref{sec:datasets-preprocessing} have 
+been encoded as in the preprocessing functions, as represented by $\phi$ in algorithm~\ref{alg:drl-ap}.
 The pretraining of the DCN model $f_{\Theta}$ was conducted on first 157440 records the same training
 data as in chapter~\ref{chap:deep-ctr-model-evaluation}. 
 
 Our method for the online simulation proceeds as follows. A list of unique
 user ID $u$ and query ID $c$ entries from the KDD12 validation set has been compiled, ensuring that each
 $u$-$c$ combination in this list had at least $P$ observations in the validation set (where $P$ is the chosen ad list length
-for the environment). For each session $t$ in the simulation, we ``observe'' the
+for the environment). This list was then filtered to then include only the queries for a
+selected subset of users, in order to emulate a significant change in user population in
+comparison to the training set.
+
+For each session $t$ in the simulation, we ``observe'' the
 user-query combination by selecting values from our pre-prepared list, thereby
 establishing the state $s_t$ for the session. The set of available adverts $\mathcal{A}_t$ is
 then retrieved by querying the KDD12 validation set for observations with the
@@ -1937,9 +1952,10 @@ defined as the number of ad observations chosen for $L_t$ with positive click ta
 labels, divided by list length $P$. For the latter, we adapt definition~\ref{def:regret}
 as follows to suit the context of our simulation:
 
-\begin{equation*}
+\begin{equation}
+    \label{eqn:sim-regret}
     \mathcal{R}_T = \sum_{t=1}^K \left[ \min(P, \sum_{r \in \mathcal{A}_t}r) - \sum_{r \in L_t}r\right]   
-\end{equation*}
+\end{equation}
 The first term contained in the square brackets above represents the value for the
 optimal policy $\pi^*$. This policy should in theory be able to maximize the number
 of clicks for each session, given ad list $\mathcal{A}_t$ and list length constraint
@@ -1980,17 +1996,56 @@ are stipulated in table~\ref{tab:rl-parameters}.
     \label{fig:drl-ap}
 \end{figure}
 
-Figure~\ref{alg:drl-ap} shows the resulting episodic Cumulative Regret and 5-episode moving average
-Click Through rate for the simulation described in section~\ref{sec:sim-description}. The results
-for the DRL-AP algorithm are shown in blue. As a benchmark, we simulated the results for a random
-model. In this case, the ads we chosen from $\mathcal{A}_t$ uniformly at random. The mean result
-for the random model is represented by the orange line in both plots. Figure~\ref{fig:drl-ap}
-clearly shows that the DRL-AP algorithm minimizes regret and therefore maximizes CTR better than
-the random model. This indicates that the predictive precision DCN model as a Q-function approximator
-significantly improves the Ad selection agents ability to choose adverts that the user will click on,
-which demonstrates the proof-of-concept for the DRL-AP algorithm.
+Figure~\ref{alg:drl-ap} shows the result of the reinfocement learning simulation
+described in section~\ref{sec:sim-description} over 30 episodes. The left-hand pane shows
+the simulation Regret, calculated cumulatively as in equation~\ref{eqn:sim-regret}.
+The middle pane shows the cumulative number of clicks by the end of each episode.
+The right-hand pane shows the 5-episode moving average Click-Through Rate. The underlying
+data for Figure~\ref{fig:drl-ap} is included in the appendix in Tables \ref{tab:drl-ap},
+\ref{tab:random-selection} and \ref{tab:dcn-model}.
 
-T
+The results for the DRL-AP algorithm (as outlined in Algorithm~\ref{alg:drl-ap}) are shown in blue. 
+Additionally, we include the results for two alternative benchmark algorithms. The first
+of these, represented by the orange line, is a Random Model, in which the set of 
+$P$ adverts are chosen by effectively sampling from $\mathcal{A}_t$ uniformly at random without
+replacement. The second baseline algorithm, represented by the green line in Figure~\ref{fig:drl-ap},
+simply uses the initial pre-trained DCN model for selecting ads and does not perform the Double Dualing
+Bandit Exploration, Minor Update and Major Updates stages described in section~\ref{sec:drn}.
+
+The results shown in Figure~\ref{fig:drl-ap} are promising in the context of Research Questions
+\ref{exp:dcn-model-advantage} and \ref{exp:drl-ap-advantage}. The comparison between the DCN
+model and the Random indicates that the DCN model manages to accumulates a higher volume of cumulative
+clicks over the 30 episode time horizon, and therefore incurs a lower level of regret (research question \ref{exp:dcn-model-advantage}). Interestingly,
+the mazority of the relative outperformance by the DCN model occurs before eposide 20, when the DCN
+model appears to have the highest advantage over the random model in terms of average CTR rate attained.
+However, this advantage appears to erode in the latter episodes, and as a result the DCN model attains
+exactly the same number of clicks as Random Selection in the last 10 episode. One possible explaination
+for this is that since the DCN model is not learning throughout the simulation, it is relying purely on
+the trends that it derived from the KDD12 training set during pre-training. The construction of the user-query
+list as discussed in section~\ref{sec:sim-description} allows for the possibility that the DCN model may have
+encountered user-query combinations in the simulation that we not adequately represented in the training set.
+In such a case, the model's ability to retrieve relevant Ad candidates is likely to be lower. 
+On the other hand, the performance of the DRL-AP algorithm relative to the DCN model with no updates
+gives a positive indication of the regret minimization advantage provided by the Minor and Major
+updates of the DRL-AP algorithm (research question \ref{exp:drl-ap-advantage}). The prior has consistantly
+attained a higher average CTR over the course of the simulation, and as a result has accumulated
+84\% more Clicks by the end of the simulation. In the same reasoning as mentioned previously,
+a possible explanation for this is that the exploration and update steps of the DRL-AP algorithm
+allows its agent to \emph{learn} from its interactions with the environment in a way that allows
+the Q-function approximator to adapt to any changes between the pretraining data and the current
+environment.
+
+The results shown above are encouraging show the potential that Deep Reinforcement Learning
+methods have for creating a truly adaptive Ad personalization framework. Nevertheless, it is worthwhile to be mindful of a number of limitations
+of experiment~\ref{exp:rl-sim}. Firstly, the KDD12 dataset is not sequential, so it is not possible
+that experiment~\ref{exp:rl-sim} simulates the sequential dependencies that are characteristic of
+reccomender systems \citep{RefWorks:zheng2018drn:}. Secondly, it is extremely difficult for an offline
+simulation to capture the true transition dynamics and other characteristics of the online environment
+\citep{pike-burke2024LearnigAgents,RefWorks:wang2024deep,RefWorks:zheng2018drn:}. This means that
+the results shown in Figure~\ref{fig:drl-ap} are not guarunteed in the case when DRL-AP is productionalized
+online. Lastly, the fact that we are not accounting for user engagement in the Reward function of
+algorithm~\ref{alg:drl-ap} means that DRL-AP targets immediate click maximization, which could come
+at the detriment to long term user engagement on the given platform \cite{RefWorks:zheng2018drn:}.
 
 \chapter{Conclusion}
 \label{chap:conclusion}
@@ -2063,6 +2118,26 @@ Conclusion goes here.
     \caption{Experiment 1 Model Scores}
     \label{fig:experiment-1}
 \end{figure}
+
+\subsection{Experiment 3: Ad Search Platform Simulation}
+
+\begin{table}[h]
+    \csvautotabular{../drl_simulation/DRL-AP_episode_data.csv}
+    \caption{Simulation results for the DRL-AP algorithm}
+    \label{tab:drl-ap}
+\end{table}
+
+\begin{table}[h]
+    \csvautotabular{../drl_simulation/Random_Model_episode_data.csv}
+    \caption{Simulation results for Random Selection}
+    \label{tab:random-selection}
+\end{table}
+
+\begin{table}[h]
+    \csvautotabular{../drl_simulation/DCN_No_Update_episode_data.csv}
+    \caption{Simulation results for the DCN model}
+    \label{tab:dcn-model}
+\end{table}
 
 %%References part of appendices
 % References: modify the file refs.bib
